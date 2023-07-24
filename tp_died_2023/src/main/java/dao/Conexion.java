@@ -1,19 +1,30 @@
-package clases;
+package dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Conexion {
-    Connection conexion=null;
+    public Connection conexion=null;
 
-    public Conexion(){
+    private Conexion(){
         super();
     }
-    public void abrir(){
+
+    private static Conexion _INSTANCE;
+
+    public static Conexion getInstance(){
+        if(_INSTANCE == null){
+            _INSTANCE = new Conexion();
+        }
+        return _INSTANCE;
+
+    }
+    public void abrir() throws SQLException {
         String serverUrl= "jdbc:postgresql://164.152.54.0:5432/died_psql";
         String user="died_dev";
         String password="misterdatabasepeasant";
+        if(conexion == null || conexion.isClosed()){
         try{
             Class.forName("org.postgresql.Driver"); //aparentemente innecesario
             conexion = DriverManager.getConnection(serverUrl,user,password);
@@ -22,7 +33,7 @@ public class Conexion {
         }catch(SQLException | ClassNotFoundException e){
             System.out.println("error al intentar conectar al server");
             e.printStackTrace();
-        }
+        }}
 
     }
 

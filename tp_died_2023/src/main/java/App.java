@@ -1,5 +1,4 @@
-package clases;
-
+import dao.Conexion;
 import gui.*;
 
 import java.sql.Connection;
@@ -12,9 +11,9 @@ public class App {
 		// TODO Auto-generated method stub
 		Inicio inicio = new Inicio();
 		inicio.setVisible(true);
-		/*Conexion conexion= new Conexion();
+		Conexion conexion= dao.Conexion.getInstance();
 		conexion.abrir();
-		conexion.cerrar();*/
+		conexion.cerrar();
 	}
 
 
