@@ -31,6 +31,8 @@ public class Inicio extends JFrame implements ActionListener{
 		JButton btnSucursales = new JButton("Sucursales");
 		btnSucursales.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				VentanaSucursales ventanaSucursales= new VentanaSucursales();
+				ventanaSucursales.setVisible(true);
 			}
 		});
 		btnSucursales.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -40,6 +42,8 @@ public class Inicio extends JFrame implements ActionListener{
 		btnProductos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("botn productos");
+				VentanaProductos ventanaProductos= new VentanaProductos();
+				ventanaProductos.setVisible(true);
 			}
 		});
 		btnProductos.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -48,6 +52,8 @@ public class Inicio extends JFrame implements ActionListener{
 		JButton btnCaminos = new JButton("Caminos");
 		btnCaminos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				VentanaCaminos ventanaCaminos= new VentanaCaminos();
+				ventanaCaminos.setVisible(true);
 			}
 		});
 		btnCaminos.setFont(new Font("Tahoma", Font.PLAIN, 12));
