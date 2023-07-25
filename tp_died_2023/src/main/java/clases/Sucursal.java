@@ -7,6 +7,10 @@ public class Sucursal {
 	int id;
 	String nombre;
 	LocalTime horaApertura;
+	LocalTime horaCierre;
+	boolean estado;
+	float capacidad;
+	List<StockProducto> stock;
 	public int getId() {
 		return id;
 	}
@@ -60,10 +64,6 @@ public class Sucursal {
 		this.capacidad = capacidad;
 		this.stock = stock;
 	}
-	LocalTime horaCierre;
-	boolean estado;
-	float capacidad;
-	List<StockProducto> stock;
 	public Sucursal() {
 		super();
 		// TODO Auto-generated constructor stub
