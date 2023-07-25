@@ -5,16 +5,18 @@ public class Producto {
 	String nombre;
 	double precioUnitario;
 	float peso;
+
+	String detalle;
 	public Producto() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public Producto(int id, String nombre, double precioUnitario, float peso) {
+	public Producto(String nombre, double precioUnitario, float peso, String detalle) {
 		super();
-		this.id = id;
 		this.nombre = nombre;
 		this.precioUnitario = precioUnitario;
 		this.peso = peso;
+		this.detalle = detalle;
 	}
 	public int getId() {
 		return id;
@@ -25,8 +27,16 @@ public class Producto {
 	public String getNombre() {
 		return nombre;
 	}
+
+	public String getDetalle() {
+		return detalle;
+	}
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
+	}
+
+	public void setDetalle(String detalle) {
+		this.detalle = detalle;
 	}
 	public double getPrecioUnitario() {
 		return precioUnitario;
