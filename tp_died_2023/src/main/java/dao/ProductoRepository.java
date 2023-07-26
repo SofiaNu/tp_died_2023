@@ -120,6 +120,84 @@ public class ProductoRepository {
         }
         return productos;
     }
+
+    public Producto buscarProducto(String n){
+        Producto producto= new Producto();
+        Conexion conn =Conexion.getInstance();
+        PreparedStatement pstm =null;
+        ResultSet rs= null;
+        try{
+            conn.abrir();
+            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"PRODUCTO\" WHERE \"NOMBRE\"="+n);
+            rs= pstm.executeQuery();
+            if(rs.next()){
+                Producto p = getProducto(rs);
+                String aux= rs.getString("NOMBRE");
+                System.out.println(aux);
+            }
+            else{
+                System.out.print("No existe el producto");
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            if (rs != null) try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (pstm != null) try {
+                pstm.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) try {
+                conn.cerrar();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return producto;
+    }
+
+    public Producto buscarProducto(int n){
+        Producto producto= new Producto();
+        Conexion conn =Conexion.getInstance();
+        PreparedStatement pstm =null;
+        ResultSet rs= null;
+        try{
+            conn.abrir();
+            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"PRODUCTO\" WHERE \"ID\"="+n);
+            rs= pstm.executeQuery();
+            if(rs.next()){
+                Producto p = getProducto(rs);
+                String aux= rs.getString("NOMBRE");
+                System.out.println(aux);
+            }
+            else{
+                System.out.print("No existe el producto");
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            if (rs != null) try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (pstm != null) try {
+                pstm.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) try {
+                conn.cerrar();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return producto;
+    }
     private Producto getProducto(ResultSet rs) throws SQLException {
         Producto producto = new Producto();
             producto.setNombre(rs.getString("NOMBRE"));

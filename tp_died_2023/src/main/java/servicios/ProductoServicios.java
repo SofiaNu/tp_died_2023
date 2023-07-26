@@ -16,12 +16,13 @@ public class ProductoServicios {
         return productoRepository.listarProductos();
     }
     public Producto buscarProducto(String nombre){
-        return null;
+        productoRepository = ProductoRepository.getInstance();
+        return productoRepository.buscarProducto(nombre);
     }
 
-    public List<Producto> buscarProducto(double precio) throws SQLException {
+    public Producto buscarProducto(int id ) throws SQLException {
         productoRepository = ProductoRepository.getInstance();
-        return null;
+        return productoRepository.buscarProducto(id);
     }
 
     public void agregarProducto(Producto producto) throws SQLException {
