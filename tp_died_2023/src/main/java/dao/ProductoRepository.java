@@ -56,7 +56,7 @@ public class ProductoRepository {
             }
         }
     }
-    public void bajaProducto(Producto p) throws SQLException {
+    public void bajaProducto(Producto p) throws SQLException { //MANEJAR POSIBLE ERROR DE NO ENCONTRAR LA FILA
         Conexion conn = Conexion.getInstance();
         PreparedStatement pstm = null;
         ResultSet rs = null;
@@ -197,6 +197,42 @@ public class ProductoRepository {
             }
         }
         return producto;
+    }
+
+    public void editarProducto(Producto producto){ //MANEJAR POSIBLE ERROR DE NO ENCONTRAR LA FILA A MODIF.
+        Conexion conn = Conexion.getInstance();
+        PreparedStatement pstm =null;
+        ResultSet rs=null;
+        try {
+            conn.abrir();
+            pstm = conn.conexion.prepareStatement("UPDATE tp_tablas.\"PRODUCTO\" " +
+                    "SET \"NOMBRE\"=?,\"PRECIO_UNITARIO\"=?,\"PESO\"=?,\"DETALLE\"=?)" +
+                    "WHERE \"ID\"="+producto.getId());
+            pstm.setString(1, producto.getNombre());
+            pstm.setDouble(2, producto.getPrecioUnitario());
+            pstm.setFloat(3, producto.getPeso());
+            pstm.setString(4, producto.getDetalle());
+            rs = pstm.executeQuery();
+            System.out.println(rs.getString(2));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            if (rs != null) try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (pstm != null) try {
+                pstm.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) try {
+                conn.cerrar();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
     private Producto getProducto(ResultSet rs) throws SQLException {
         Producto producto = new Producto();
