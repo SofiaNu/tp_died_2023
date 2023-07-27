@@ -56,13 +56,13 @@ public class ProductoRepository {
             }
         }
     }
-    public void bajaProducto(Producto p) throws SQLException { //MANEJAR POSIBLE ERROR DE NO ENCONTRAR LA FILA
+    public void bajaProducto(int p) throws SQLException { //MANEJAR POSIBLE ERROR DE NO ENCONTRAR LA FILA
         Conexion conn = Conexion.getInstance();
         PreparedStatement pstm = null;
         ResultSet rs = null;
         try {
             conn.abrir();
-            pstm = conn.conexion.prepareStatement("DELETE FROM tp_tablas.\"PRODUCTO\" WHERE \"ID\"=" + p.getId());
+            pstm = conn.conexion.prepareStatement("DELETE FROM tp_tablas.\"PRODUCTO\" WHERE \"ID\"=" + p);
             pstm.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -128,10 +128,11 @@ public class ProductoRepository {
         ResultSet rs= null;
         try{
             conn.abrir();
-            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"PRODUCTO\" WHERE \"NOMBRE\"="+n);
+            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"PRODUCTO\" WHERE \"NOMBRE\"=?");
+            pstm.setString(1,n);
             rs= pstm.executeQuery();
             if(rs.next()){
-                Producto p = getProducto(rs);
+                producto = getProducto(rs);
                 String aux= rs.getString("NOMBRE");
                 System.out.println(aux);
             }
@@ -170,7 +171,7 @@ public class ProductoRepository {
             pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"PRODUCTO\" WHERE \"ID\"="+n);
             rs= pstm.executeQuery();
             if(rs.next()){
-                Producto p = getProducto(rs);
+                producto = getProducto(rs);
                 String aux= rs.getString("NOMBRE");
                 System.out.println(aux);
             }
@@ -206,7 +207,7 @@ public class ProductoRepository {
         try {
             conn.abrir();
             pstm = conn.conexion.prepareStatement("UPDATE tp_tablas.\"PRODUCTO\" " +
-                    "SET \"NOMBRE\"=?,\"PRECIO_UNITARIO\"=?,\"PESO\"=?,\"DETALLE\"=?)" +
+                    "SET \"NOMBRE\"=?,\"PRECIO_UNITARIO\"=?,\"PESO\"=?,\"DETALLE\"=?" +
                     "WHERE \"ID\"="+producto.getId());
             pstm.setString(1, producto.getNombre());
             pstm.setDouble(2, producto.getPrecioUnitario());

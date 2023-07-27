@@ -16,19 +16,21 @@ public class ProductoServicios {
     public List<Producto> listarProductos() throws SQLException {
         return productoRepository.listarProductos();
     }
-    public Producto buscarProducto(String nombre){
+    //funciona
+    public Producto buscarProducto(String nombre) throws  SQLException{
         return productoRepository.buscarProducto(nombre);
     }
 
+    //funciona
     public Producto buscarProducto(int id ) throws SQLException {
         return productoRepository.buscarProducto(id);
     }
-
+    //funciona
     public void agregarProducto(Producto producto) throws SQLException {
         productoRepository.altaProducto(producto);
     }
-
-    public void borrarProducto(Producto producto) throws SQLException {
+    //funciona
+    public void borrarProducto(int producto) throws SQLException {
         productoRepository.bajaProducto(producto);
     }
 
