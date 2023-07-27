@@ -29,7 +29,7 @@ public class ProductoRepository {
             conn.abrir();
             pstm = conn.conexion.prepareStatement("INSERT INTO tp_tablas.\"PRODUCTO\" " +
                     "(\"NOMBRE\",\"PRECIO_UNITARIO\",\"PESO\",\"DETALLE\") values (?,?,?,?)");
-            //pstm.setInt(1,producto.getId());
+
             pstm.setString(1, producto.getNombre());
             pstm.setDouble(2, producto.getPrecioUnitario());
             pstm.setFloat(3, producto.getPeso());
