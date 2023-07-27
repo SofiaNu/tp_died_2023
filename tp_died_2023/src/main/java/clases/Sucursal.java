@@ -53,16 +53,13 @@ public class Sucursal {
 	public void setStock(List<StockProducto> stock) {
 		this.stock = stock;
 	}
-	public Sucursal(int id, String nombre, LocalTime horaApertura, LocalTime horaCierre, boolean estado,
-			float capacidad, List<StockProducto> stock) {
+	public Sucursal( String nombre, LocalTime horaApertura, LocalTime horaCierre, boolean estado, float capacidad) {
 		super();
-		this.id = id;
 		this.nombre = nombre;
 		this.horaApertura = horaApertura;
 		this.horaCierre = horaCierre;
 		this.estado = estado;
 		this.capacidad = capacidad;
-		this.stock = stock;
 	}
 	public Sucursal() {
 		super();
