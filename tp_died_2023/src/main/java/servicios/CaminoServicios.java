@@ -24,7 +24,7 @@ public class CaminoServicios {
         return null;
     };
 
-    public Camino buscarCamino(String nombre){
+    public Camino buscarCamino(int id){
         return null;
     };
 
