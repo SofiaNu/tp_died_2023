@@ -1,20 +1,20 @@
 package gui;
 
 import clases.Producto;
+import servicios.ProductoServicios;
 
 import java.awt.EventQueue;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeListener;
-import javax.swing.border.EmptyBorder;
+import java.sql.SQLException;
 import javax.swing.table.DefaultTableModel;
 
 public class VentanaProductos extends JFrame {
 
 	private JPanel contentPane;
-
+	ProductoServicios servicio = new ProductoServicios();
 	/**
 	 * Launch the application.
 	 */
@@ -62,7 +62,11 @@ public class VentanaProductos extends JFrame {
 		busquedabtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				showBusquedaDialog();
+				try {
+					showBusquedaDialog();
+				} catch (SQLException ex) {
+					throw new RuntimeException(ex);
+				}
 			}
 		});
 	}
@@ -84,7 +88,7 @@ public class VentanaProductos extends JFrame {
 		JButton guardarbtn = new JButton("Guardar");
 
 		JPanel editarProductoPanel = new JPanel();
-		editarProductoPanel.setLayout(new GridLayout(4, 2));
+		editarProductoPanel.setLayout(new GridLayout(5, 2));
 		editarProductoPanel.add(nombrelbl);
 		editarProductoPanel.add(nombretxt);
 		editarProductoPanel.add(descripcionlbl);
@@ -130,7 +134,7 @@ public class VentanaProductos extends JFrame {
 
 		// Add components to the panel
 		JPanel altaProductoPanel = new JPanel();
-		altaProductoPanel.setLayout(new GridLayout(4, 2));
+		altaProductoPanel.setLayout(new GridLayout(5, 2));
 		altaProductoPanel.add(nombrelbl);
 		altaProductoPanel.add(nombretxt);
 		altaProductoPanel.add(descripcionlbl);
@@ -156,34 +160,45 @@ public class VentanaProductos extends JFrame {
 		altaProductoFrame.setVisible(true);
 	}
 
-	private void showBusquedaDialog() {
+	private void showBusquedaDialog() throws SQLException {
 		String searchTerm = JOptionPane.showInputDialog(this, "Buscar:");
 		if (searchTerm != null && !searchTerm.isEmpty()) {
 			buscar(searchTerm);
 		}
 	}
 
-	private void  showModificarPanel(Producto producto) {
-		JFrame modificarProductoFrame = new JFrame("Editar Producto");
-		modificarProductoFrame.setSize(400, 200);
-		modificarProductoFrame.setLocationRelativeTo(null);
+	private void showResultadoPanel(Producto producto) {
+		JFrame resultadoProductoFrame = new JFrame("Editar Producto");
+		resultadoProductoFrame.setSize(500, 200);
+		resultadoProductoFrame.setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		String[] columnNames = {"nombre", "descripcion", "precio", "peso [kg]"};
-		String[][] resultado ={{producto.getNombre(),producto.getDetalle(), String.valueOf(producto.getPrecioUnitario()),
+		String[][] prod ={{producto.getNombre(),producto.getDetalle(), String.valueOf(producto.getPrecioUnitario()),
 				String.valueOf(producto.getPeso())}};
-		JTable table = new JTable(new DefaultTableModel(resultado, columnNames));
+
+		JTable resultado = new JTable(new DefaultTableModel(prod, columnNames));
+		JScrollPane contenedorTabla = new JScrollPane(resultado); //Sin esto no se muestra el nombre de las columnas
+
+		//controla el tamaño (si no no se ven los botones)
+		int maxVisibleRows = 3; // Change this value to limit the number of visible rows
+		int rowHeight = resultado.getRowHeight();
+		int headerHeight = resultado.getTableHeader().getPreferredSize().height;
+		Dimension preferredSize = new Dimension(contenedorTabla.getPreferredSize().width,
+				maxVisibleRows * rowHeight + headerHeight);
+		contenedorTabla.setPreferredSize(preferredSize);
+
 
 		// Create Editar, Dar de Baja, and Close buttons
 		JButton editarButton = new JButton("Editar");
 		JButton darDeBajaButton = new JButton("Dar de Baja");
-		JButton closeButton = new JButton("Close");
+		JButton cerrarButton = new JButton("Cerrar");
 
 		JPanel panel = new JPanel();
-		panel.add(table);
+		panel.add(contenedorTabla);
 		panel.add(editarButton);
 		panel.add(darDeBajaButton);
-		panel.add(closeButton);
+		panel.add(cerrarButton);
 
 		editarButton.addActionListener(new ActionListener() {
 			@Override
@@ -199,15 +214,15 @@ public class VentanaProductos extends JFrame {
 			}
 		});
 
-		closeButton.addActionListener(new ActionListener() {
+		cerrarButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//cerrarFrame;?
+				resultadoProductoFrame.dispose();
 			}
 		});
 
-		modificarProductoFrame.add(panel);
-		modificarProductoFrame.setVisible(true);
+		resultadoProductoFrame.add(panel);
+		resultadoProductoFrame.setVisible(true);
 	}
 
 	private void showDarBajaDialog(Producto producto){
@@ -217,10 +232,16 @@ public class VentanaProductos extends JFrame {
 			//DAR DE BAJA DE VERDAD
 			}
 	}
-		private Producto buscar(String prodNombre){
+		private void buscar(String prodNombre) throws SQLException {
 			//METODO QUE REALIZA LA BUSQUEDA
+			Producto producto =servicio.buscarProducto(prodNombre);
+			if(producto != null){
+				showResultadoPanel(producto);
+			}
+			else{
+				JOptionPane.showMessageDialog(this,"Producto no encontrado","Error",JOptionPane.OK_OPTION);
+			}
 			//si encuentra, abre panel, si no, msg producto no encontrado
-			return null;
 		}
 
 }

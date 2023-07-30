@@ -122,7 +122,7 @@ public class ProductoRepository {
     }
 
     public Producto buscarProducto(String n){
-        Producto producto= new Producto();
+        Producto producto= null;
         Conexion conn =Conexion.getInstance();
         PreparedStatement pstm =null;
         ResultSet rs= null;
@@ -162,7 +162,7 @@ public class ProductoRepository {
     }
 
     public Producto buscarProducto(int n){
-        Producto producto= new Producto();
+        Producto producto= null;
         Conexion conn =Conexion.getInstance();
         PreparedStatement pstm =null;
         ResultSet rs= null;
