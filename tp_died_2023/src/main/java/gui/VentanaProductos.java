@@ -102,10 +102,22 @@ public class VentanaProductos extends JFrame {
 		guardarbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Implement your "Guardar" functionality here
+				if(!String.valueOf(nombretxt.getText()).isEmpty())
+				producto.setNombre(String.valueOf(nombretxt.getText()));
+				if(!String.valueOf(descripciontxt.getText()).isEmpty())
+				producto.setDetalle(String.valueOf(descripciontxt.getText()));
+				try {
+					if(!String.valueOf(preciotxt.getText()).isEmpty())
+					producto.setPrecioUnitario(Double.parseDouble(preciotxt.getText()));
 
-				// Save the data or perform any other actions
-				editarProductoFrame.dispose(); // Close the Alta Producto frame after saving
+					if(!String.valueOf(pesotxt.getText()).isEmpty())
+					producto.setPeso(Float.parseFloat(pesotxt.getText()));
+				}
+				catch(NumberFormatException ex){
+					ex.printStackTrace();
+				}
+				servicio.editarProducto(producto);
+				editarProductoFrame.dispose();
 			}
 		});
 
@@ -149,9 +161,22 @@ public class VentanaProductos extends JFrame {
 		guardarbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Implement your "Guardar" functionality here
-
+				Producto producto = new Producto();
+				producto.setNombre(String.valueOf(nombretxt.getText()));
+				producto.setDetalle(String.valueOf(descripciontxt.getText()));
+				try {
+					producto.setPrecioUnitario(Double.parseDouble(preciotxt.getText()));
+					producto.setPeso(Float.parseFloat(pesotxt.getText()));
+				}
+				catch(NumberFormatException ex){
+					ex.printStackTrace();
+				}
 				// Save the data or perform any other actions
+				try {
+					servicio.agregarProducto(producto);
+				} catch (SQLException ex) {
+					throw new RuntimeException(ex);
+				}
 				altaProductoFrame.dispose(); // Close the Alta Producto frame after saving
 			}
 		});
@@ -204,13 +229,19 @@ public class VentanaProductos extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				showEditarPanel(producto);
+				resultadoProductoFrame.dispose();
 			}
 		});
 
 		darDeBajaButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				showDarBajaDialog(producto);
+				try {
+					showDarBajaDialog(producto);
+					resultadoProductoFrame.dispose();
+				} catch (SQLException ex) {
+					throw new RuntimeException(ex);
+				}
 			}
 		});
 
@@ -225,11 +256,11 @@ public class VentanaProductos extends JFrame {
 		resultadoProductoFrame.setVisible(true);
 	}
 
-	private void showDarBajaDialog(Producto producto){
+	private void showDarBajaDialog(Producto producto) throws SQLException {
 		int opcion = JOptionPane.showConfirmDialog(this,"¿Seguro desea dar de baja el producto"+
 				producto.getNombre(),"Dar de Baja",JOptionPane.YES_NO_OPTION);
 		if(opcion == JOptionPane.YES_OPTION) {
-			//DAR DE BAJA DE VERDAD
+			servicio.borrarProducto(producto.getId());
 			}
 	}
 		private void buscar(String prodNombre) throws SQLException {
@@ -241,7 +272,6 @@ public class VentanaProductos extends JFrame {
 			else{
 				JOptionPane.showMessageDialog(this,"Producto no encontrado","Error",JOptionPane.OK_OPTION);
 			}
-			//si encuentra, abre panel, si no, msg producto no encontrado
 		}
 
 }
