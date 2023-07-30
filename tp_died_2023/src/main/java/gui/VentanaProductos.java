@@ -7,7 +7,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeListener;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 public class VentanaProductos extends JFrame {
 
@@ -65,9 +67,9 @@ public class VentanaProductos extends JFrame {
 		});
 	}
 
-	private void showEditarPanel() {
+	private void showEditarPanel(Producto producto) {
 		JFrame editarProductoFrame = new JFrame("Editar Producto");
-		editarProductoFrame.setSize(300, 200);
+		editarProductoFrame.setSize(400, 200);
 		editarProductoFrame.setLocationRelativeTo(null);
 
 		JLabel nombrelbl = new JLabel("Nombre:");
@@ -109,7 +111,7 @@ public class VentanaProductos extends JFrame {
 
 	private void showAltaProductoPanel() {
 		JFrame altaProductoFrame = new JFrame("Alta Producto");
-		altaProductoFrame.setSize(300, 200);
+		altaProductoFrame.setSize(400, 200);
 		altaProductoFrame.setLocationRelativeTo(null);
 
 		// Create labels and text fields
@@ -161,24 +163,53 @@ public class VentanaProductos extends JFrame {
 		}
 	}
 
-	private void showModificarDialog(Producto producto) {
-		String[] opciones = {"Editar", "Dar Baja", "Cancelar"};
-		int opcion = JOptionPane.showOptionDialog(this, "ACARESULTADO", "Resultado",
-				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, JOptionPane.CANCEL_OPTION);
-		switch (opcion) {
-			case (JOptionPane.YES_OPTION): {
-				//EDITAR
-				showEditarPanel();
+	private void  showModificarPanel(Producto producto) {
+		JFrame modificarProductoFrame = new JFrame("Editar Producto");
+		modificarProductoFrame.setSize(400, 200);
+		modificarProductoFrame.setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		String[] columnNames = {"nombre", "descripcion", "precio", "peso [kg]"};
+		String[][] resultado ={{producto.getNombre(),producto.getDetalle(), String.valueOf(producto.getPrecioUnitario()),
+				String.valueOf(producto.getPeso())}};
+		JTable table = new JTable(new DefaultTableModel(resultado, columnNames));
+
+		// Create Editar, Dar de Baja, and Close buttons
+		JButton editarButton = new JButton("Editar");
+		JButton darDeBajaButton = new JButton("Dar de Baja");
+		JButton closeButton = new JButton("Close");
+
+		JPanel panel = new JPanel();
+		panel.add(table);
+		panel.add(editarButton);
+		panel.add(darDeBajaButton);
+		panel.add(closeButton);
+
+		editarButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showEditarPanel(producto);
 			}
-			case (JOptionPane.NO_OPTION): {
-				//DAR BAJA
+		});
+
+		darDeBajaButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				showDarBajaDialog(producto);
 			}
-			case (JOptionPane.CANCEL_OPTION): {
-				//cerrar
+		});
+
+		closeButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//cerrarFrame;?
 			}
-		}
+		});
+
+		modificarProductoFrame.add(panel);
+		modificarProductoFrame.setVisible(true);
 	}
+
 	private void showDarBajaDialog(Producto producto){
 		int opcion = JOptionPane.showConfirmDialog(this,"¿Seguro desea dar de baja el producto"+
 				producto.getNombre(),"Dar de Baja",JOptionPane.YES_NO_OPTION);
@@ -188,7 +219,7 @@ public class VentanaProductos extends JFrame {
 	}
 		private Producto buscar(String prodNombre){
 			//METODO QUE REALIZA LA BUSQUEDA
-			//si encuentra, abre dialogo, si no, msg producto no encontrado
+			//si encuentra, abre panel, si no, msg producto no encontrado
 			return null;
 		}
 
