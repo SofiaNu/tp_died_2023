@@ -111,18 +111,61 @@ public class CaminoRepository {
         return caminos;
     }
 
+    public Camino buscarCamino(Sucursal origen, Sucursal destino){
+        String query= "SELECT * FROM tp_tables.tp_tables.\"CAMINO\" "+
+                "WHERE \"SUCURSAL_ORIGEN\"="+origen.getId()+
+                "AND \"SUCURSAL_DESTINO\"="+destino.getId();
+        return busqueda(query);
+    }
     public Camino buscarCamino(int id){
+        String query = "SELECT * FROM tp_tables.\"CAMINO\" " +
+                "WHERE \"ID\"="+id;
+        return busqueda(query);
+    }
+
+    public void editarCamino(Camino camino){
+        String query= "UPDATE tp_tablas.\"CAMINO\" SET \"SUCURSAL_ORIGEN\"=? SET \"SUCURSAL_DESTINO\"=?" +
+                "SET \"TIEMPO_TRANSITO\"=? SET \"CAPACIDAD_MAXIMA\"=? "+
+                "WHERE \"ID\"="+camino.getId();
+        Conexion conn = Conexion.getInstance();
+        PreparedStatement pstm= null;
+        try{
+            conn.abrir();
+            pstm = conn.conexion.prepareStatement(query);
+            pstm.setInt(1,camino.getOrigen().getId());
+            pstm.setInt(2,camino.getDestino().getId());
+            pstm.setFloat(3,camino.getTiempoTransito());
+            pstm.setFloat(4,camino.getCapacidadMaxima());
+            pstm.executeQuery();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            if (pstm != null) try {
+                pstm.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) try {
+                conn.cerrar();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    private Camino busqueda(String query){
         Conexion conn = Conexion.getInstance();
         Camino camino = new Camino();
         PreparedStatement pstm= null;
         ResultSet rs = null;
         try{
             conn.abrir();
-            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tables.\"CAMINO\" " +
-                    "WHERE \"ID\"="+id);
+            pstm = conn.conexion.prepareStatement(query);
             rs = pstm.executeQuery();
             if(rs.next()) {
                 camino = getCamino(rs);
+            }
+            else{
+                camino = null;
             }
         }catch(SQLException e){
             e.printStackTrace();
@@ -143,9 +186,8 @@ public class CaminoRepository {
                 e.printStackTrace();
             }
         }
-
         return camino;
-    }
+    };
     private Camino getCamino(ResultSet rs) throws SQLException {
         Camino camino = new Camino();
         camino.setId(rs.getInt("ID"));

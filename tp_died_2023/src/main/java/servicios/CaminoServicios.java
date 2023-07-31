@@ -15,24 +15,28 @@ public class CaminoServicios {
         caminoRepository= CaminoRepository.getInstance();
     };
 
-    public void altaCamino(Camino camino){}
+    public void altaCamino(Camino camino){
+        caminoRepository.altaCamino(camino);
+    }
 
     public void bajaCamino(Camino camino){
-        //CAMBIA ESTADO A NO OPERATIVO!
+        caminoRepository.bajaCamino(camino.getId());
     };
 
     public List<Camino> listarCaminos(){
-        return null;
+        return caminoRepository.listarCaminos();
     };
 
     public Camino buscarCamino(int id){
-        return null;
+        return caminoRepository.buscarCamino(id);
     };
 
     public Camino buscarCamino(Sucursal origen, Sucursal destino){
-        return null;
+
+        return caminoRepository.buscarCamino(origen,destino);
     }
 
     public void editarCamino(Camino camino){
+        caminoRepository.editarCamino(camino);
     }
 }
