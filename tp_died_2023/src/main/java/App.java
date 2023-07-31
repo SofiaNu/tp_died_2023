@@ -1,8 +1,11 @@
 import clases.Producto;
+import clases.Sucursal;
 import dao.ProductoRepository;
+import dao.SucursalRepository;
 import gui.*;
 
 import java.sql.SQLException;
+import java.time.LocalTime;
 
 public class App {
 
@@ -13,6 +16,11 @@ public class App {
 		/*ProductoRepository productoRepository = ProductoRepository.getInstance();
 		Producto producto = new Producto("Computadora",500.0, 2.0F);
 		productoRepository.altaProducto(producto); */
+		SucursalRepository sucursalRepository = SucursalRepository.getInstance();
+		Sucursal sucursal = new Sucursal("Cordoba", LocalTime.now(),LocalTime.now(),true ,25500);
+		sucursalRepository.altaSucursal(sucursal);
+		sucursalRepository.buscarSucursal("Cordoba");
+		sucursalRepository.listarSucursal();
 	}
 
 
