@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
 public class VentanaProductos extends JFrame {
@@ -69,8 +70,37 @@ public class VentanaProductos extends JFrame {
 				}
 			}
 		});
+
+		listarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 	}
 
+	/*private  void showListadoPanel(){
+		JFrame listadoFrame = new JFrame("Lista de productos");
+		listadoFrame.setSize(400, 200);
+		listadoFrame.setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		String[] columnNames = {"nombre", "descripcion", "precio", "peso [kg]"};
+		String[][] productos = listarProductos();
+
+
+		JTable resultado = new JTable(new DefaultTableModel(productos, columnNames));
+		JScrollPane contenedorTabla = new JScrollPane(resultado); //Sin esto no se muestra el nombre de las columnas
+
+		//controla el tamaño (si no no se ven los botones)
+		int maxVisibleRows = 3; // Change this value to limit the number of visible rows
+		int rowHeight = resultado.getRowHeight();
+		int headerHeight = resultado.getTableHeader().getPreferredSize().height;
+		Dimension preferredSize = new Dimension(contenedorTabla.getPreferredSize().width,
+				maxVisibleRows * rowHeight + headerHeight);
+		contenedorTabla.setPreferredSize(preferredSize);
+
+
+	}*/
 	private void showEditarPanel(Producto producto) {
 		JFrame editarProductoFrame = new JFrame("Editar Producto");
 		editarProductoFrame.setSize(400, 200);
