@@ -97,7 +97,7 @@ public class SucursalRepository {
         }
         return sucursal;
     }
-    private Sucursal getSucursal(ResultSet rs) throws SQLException {
+    private Sucursal  getSucursal(ResultSet rs) throws SQLException {
         Sucursal sucursal = new Sucursal();
         sucursal.setNombre(rs.getString("NOMBRE"));
         sucursal.setHoraApertura(rs.getTime("HORA_APERTURA").toLocalTime());

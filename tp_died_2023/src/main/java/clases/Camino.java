@@ -1,10 +1,9 @@
 package clases;
 
 public class Camino {
-	public Camino(int id, Sucursal origen, Sucursal destino, float tiempoTransito, float capacidadMaxima,
+	public Camino(Sucursal origen, Sucursal destino, float tiempoTransito, float capacidadMaxima,
 			boolean estado) {
 		super();
-		this.id = id;
 		this.origen = origen;
 		this.destino = destino;
 		this.tiempoTransito = tiempoTransito;
