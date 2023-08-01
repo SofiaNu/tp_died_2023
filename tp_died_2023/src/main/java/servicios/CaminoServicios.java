@@ -1,11 +1,8 @@
 package servicios;
 
 import clases.Camino;
-import clases.Sucursal;
 import dao.CaminoRepository;
-import gui.Inicio;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class CaminoServicios {
@@ -19,8 +16,8 @@ public class CaminoServicios {
         caminoRepository.altaCamino(camino);
     }
 
-    public void bajaCamino(Camino camino){
-        caminoRepository.bajaCamino(camino.getId());
+    public void caminoNoOperativo(Camino camino){
+        caminoRepository.setNoOperativoCamino(camino.getId());
     };
 
     public List<Camino> listarCaminos(){
@@ -31,7 +28,7 @@ public class CaminoServicios {
         return caminoRepository.buscarCamino(id);
     };
 
-    public Camino buscarCamino(Sucursal origen, Sucursal destino){
+    public Camino buscarCamino(int origen, int destino){
 
         return caminoRepository.buscarCamino(origen,destino);
     }

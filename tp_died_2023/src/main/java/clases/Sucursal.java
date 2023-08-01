@@ -65,4 +65,8 @@ public class Sucursal {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
+	public String toString(){
+		return nombre;
+	}
 }

@@ -1,7 +1,6 @@
 package dao;
 
 import clases.Camino;
-import clases.Sucursal;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,14 +25,13 @@ public class CaminoRepository {
         try{
             conn.abrir();
             pstm = conn.conexion.prepareStatement("INSERT INTO tp_tablas.\"CAMINO\"" +
-                    "(\"ID\",\"SUCURSAL_ORIGEN\", \"SUCURSAL_DESTINO\", \"TIEMPO_TRANSITO\", " +
-                    "\"CAPACIDAD_MAXIMA\", \"ESTADO)\" values (?,?,?,?,?,?)");
-            pstm.setInt(1,camino.getId());
-            pstm.setInt(2,camino.getOrigen().getId());
-            pstm.setInt(3,camino.getDestino().getId());
-            pstm.setFloat(4,camino.getTiempoTransito());
-            pstm.setFloat(5,camino.getCapacidadMaxima());
-            pstm.setBoolean(6,camino.isEstado());
+                    "(\"SUCURSAL_ORIGEN\", \"SUCURSAL_DESTINO\", \"TIEMPO_TRANSITO\", " +
+                    "\"CAPACIDAD_MAXIMA\", \"ESTADO\") values (?,?,?,?,?)");
+            pstm.setInt(1,camino.getOrigen().getId());
+            pstm.setInt(2,camino.getDestino().getId());
+            pstm.setFloat(3,camino.getTiempoTransito());
+            pstm.setFloat(4,camino.getCapacidadMaxima());
+            pstm.setBoolean(5,camino.isEstado());
             pstm.executeQuery();
 
         }catch (SQLException e){
@@ -52,7 +50,7 @@ public class CaminoRepository {
         }
 
     }
-    public void bajaCamino(int id){
+    public void setNoOperativoCamino(int id){
         Conexion conn = Conexion.getInstance();
         PreparedStatement pstm=null;
         try{
@@ -111,14 +109,14 @@ public class CaminoRepository {
         return caminos;
     }
 
-    public Camino buscarCamino(Sucursal origen, Sucursal destino){
-        String query= "SELECT * FROM tp_tables.tp_tables.\"CAMINO\" "+
-                "WHERE \"SUCURSAL_ORIGEN\"="+origen.getId()+
-                "AND \"SUCURSAL_DESTINO\"="+destino.getId();
+    public Camino buscarCamino(int origen, int destino){
+        String query= "SELECT * FROM tp_tablas.\"CAMINO\" "+
+                "WHERE \"SUCURSAL_ORIGEN\"="+origen+
+                "AND \"SUCURSAL_DESTINO\"="+destino;
         return busqueda(query);
     }
     public Camino buscarCamino(int id){
-        String query = "SELECT * FROM tp_tables.\"CAMINO\" " +
+        String query = "SELECT * FROM tp_tablas.\"CAMINO\" " +
                 "WHERE \"ID\"="+id;
         return busqueda(query);
     }
