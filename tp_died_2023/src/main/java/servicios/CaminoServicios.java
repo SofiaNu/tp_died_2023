@@ -20,8 +20,9 @@ public class CaminoServicios {
         caminoRepository.setNoOperativoCamino(camino.getId());
     };
 
+    public void modificarEstado(Camino camino){ caminoRepository.modificarEstado(camino.getId(),camino.getEstado());}
     public void bajaCamino(Camino camino){
-        caminoRepository.setNoOperativoCamino(camino.getId());
+        caminoRepository.bajaCamino(camino.getId());
     };
 
     public List<Camino> listarCaminos(){

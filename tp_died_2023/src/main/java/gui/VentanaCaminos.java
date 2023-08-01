@@ -423,11 +423,8 @@ public class VentanaCaminos extends JFrame {
 		String msg="Actualmente el camino se encuentra "+String.valueOf(camino.getEstado())+
 				"¿Desea modificarlo?";
 		int opcion =JOptionPane.showConfirmDialog(this,msg,"Confirmacion",JOptionPane.YES_NO_OPTION);
-		if(opcion == JOptionPane.YES_OPTION && camino.getEstado()==Estado.OPERATIVO){
-			caminoServicios.caminoNoOperativo(camino);
-		}
-		if(opcion == JOptionPane.YES_OPTION && camino.getEstado()==Estado.NO_OPERATIVO){
-			//caminoServicios.caminoOperativo(camino);
+		if(opcion == JOptionPane.YES_OPTION){
+			caminoServicios.modificarEstado(camino);
 		}
 	}
 

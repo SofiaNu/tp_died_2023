@@ -85,6 +85,18 @@ public class CaminoRepository {
         }
     }
 
+    public void modificarEstado(int id, Estado estado){
+        String query;
+        if(estado == Estado.OPERATIVO){
+            query="UPDATE tp_tablas.\"CAMINO\" SET \"ESTADO\"=false "+
+                    "WHERE \"ID\"="+id;
+        }
+        else{
+            query="UPDATE tp_tablas.\"CAMINO\" SET \"ESTADO\"=true"+
+                    "WHERE \"ID\"="+id;
+        }
+        ejecutarQuery(query);
+    }
     public List<Camino> listarCaminos(){
         List<Camino> caminos =new ArrayList<Camino>();
         Conexion conn = Conexion.getInstance();
@@ -160,6 +172,34 @@ public class CaminoRepository {
             }
         }
     }
+    public void bajaCamino(int id){
+        String query ="DELETE FROM tp_tablas.\"CAMINO\" WHERE \"ID\" ="+ id;
+        ejecutarQuery(query);
+    }
+
+    private void ejecutarQuery(String query){
+        Conexion conn = Conexion.getInstance();
+        PreparedStatement pstm=null;
+        try{
+            conn.abrir();
+            pstm = conn.conexion.prepareStatement(query);
+            pstm.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            if (pstm != null) try {
+                pstm.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) try {
+                conn.cerrar();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private Camino busqueda(String query){
         Conexion conn = Conexion.getInstance();
         Camino camino = new Camino();
