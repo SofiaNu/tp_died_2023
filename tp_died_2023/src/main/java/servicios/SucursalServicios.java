@@ -4,6 +4,7 @@ import clases.Sucursal;
 import dao.SucursalRepository;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class SucursalServicios {
     private SucursalRepository sucursalRepository;
@@ -27,6 +28,9 @@ public class SucursalServicios {
         sucursalRepository.bajaSucursal(sucursal);
     }
 
+    public List<Sucursal> listarSucursales() throws SQLException {
+        return sucursalRepository.listarSucursal();
+    }
     public void editarSucursal(Sucursal sucursal){
         sucursalRepository.editarSucursal(sucursal);
     }

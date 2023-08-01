@@ -8,6 +8,7 @@ import servicios.SucursalServicios;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -255,13 +256,11 @@ public class VentanaCaminos extends JFrame {
 
 	}
 
-	private Sucursal getSucursal(String nombre){
-		//return sucursalServicios.buscarSucursal(nombre);
-		return null;
+	private Sucursal getSucursal(String nombre) throws SQLException {
+		return sucursalServicios.buscarSucursal(nombre);
 	}
-	private List<Sucursal> listaSucursales(){
-		//return sucursalServicios.listarSucursales();
-		return null;
+	private List<Sucursal> listaSucursales() throws SQLException {
+		return sucursalServicios.listarSucursales();
 	}
 
 }
