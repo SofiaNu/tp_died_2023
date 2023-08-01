@@ -20,6 +20,10 @@ public class CaminoServicios {
         caminoRepository.setNoOperativoCamino(camino.getId());
     };
 
+    public void bajaCamino(Camino camino){
+        caminoRepository.setNoOperativoCamino(camino.getId());
+    };
+
     public List<Camino> listarCaminos(){
         return caminoRepository.listarCaminos();
     };

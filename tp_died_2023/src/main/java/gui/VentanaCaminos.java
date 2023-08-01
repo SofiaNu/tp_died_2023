@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 public class VentanaCaminos extends JFrame {
 	CaminoServicios caminoServicios = new CaminoServicios();
@@ -293,6 +294,106 @@ public class VentanaCaminos extends JFrame {
 	}
 
 	public void showResultadoBusqueda(Camino camino){
+		JFrame resultadoFrame = new JFrame("Resultado Busqueda:");
+		resultadoFrame.setSize(500, 200);
+		resultadoFrame.setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		String[] columnNames = {"Id", "Origen", "Destino", "Tiempo en transito", "Capacidad Maxima","Estado"};
+		String[][] prod ={{String.valueOf(camino.getId()),camino.getOrigen().getNombre(),
+				camino.getDestino().getNombre(),String.valueOf(camino.getTiempoTransito()),
+				String.valueOf(camino.getCapacidadMaxima()), String.valueOf(camino.isEstado())}};
+
+		JTable resultado = new JTable(new DefaultTableModel(prod, columnNames));
+		JScrollPane contenedorTabla = new JScrollPane(resultado); //Sin esto no se muestra el nombre de las columnas
+
+		//controla el tamaño (si no no se ven los botones)
+		int maxVisibleRows = 3;
+		int rowHeight = resultado.getRowHeight();
+		int headerHeight = resultado.getTableHeader().getPreferredSize().height;
+		Dimension preferredSize = new Dimension(contenedorTabla.getPreferredSize().width,
+				maxVisibleRows * rowHeight + headerHeight);
+		contenedorTabla.setPreferredSize(preferredSize);
+
+
+		// Create Editar, Dar de Baja, and Close buttons
+		JButton editarButton = new JButton("Editar");
+		JButton darDeBajaButton = new JButton("Eliminar camino");
+		JButton modificarEstadoButton = new JButton("Modificar Estado");
+		JButton cerrarButton = new JButton("Cerrar");
+
+		editarButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					showEditarPanel(camino);
+				} catch (SQLException ex) {
+					throw new RuntimeException(ex);
+				}
+				resultadoFrame.dispose();
+			}
+		});
+		darDeBajaButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showBajaDialog(camino);
+			}
+		});
+
+		modificarEstadoButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showModificarEstadoDialog(camino);
+			}
+		});
+
+		cerrarButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				resultadoFrame.dispose();
+			}
+		});
+
+		JPanel panel = new JPanel();
+		panel.add(contenedorTabla);
+		panel.add(editarButton);
+		panel.add(darDeBajaButton);
+		panel.add(modificarEstadoButton);
+		panel.add(cerrarButton);
+
+		resultadoFrame.add(panel);
+		resultadoFrame.setVisible(true);
+
+
+	}
+	public void showModificarEstadoDialog(Camino camino){
+		String msg="¿Desea definir el estado del camino como "+!camino.isEstado()+"?";
+		int opcion =JOptionPane.showConfirmDialog(this,msg,"Confirmacion",JOptionPane.YES_NO_OPTION);
+		if(opcion == JOptionPane.YES_OPTION && camino.isEstado()){
+			caminoServicios.caminoNoOperativo(camino);
+		}
+		if(opcion == JOptionPane.YES_OPTION && !camino.isEstado()){
+			//caminoServicios.caminoOperativo(camino);
+		}
+	}
+
+	public void showEditarPanel(Camino camino) throws SQLException {
+		JFrame frameEditar = new JFrame("Resultado Busqueda:");
+		frameEditar.setSize(500, 200);
+		frameEditar.setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		JPanel panelEdicion =setPanelAltaEdicion();
+
+
+	}
+
+	public void showBajaDialog(Camino camino){
+		int opcion = JOptionPane.showConfirmDialog(this,"Esta opcion eliminará para siempre el camino" +
+				"¿Desea dar de baja?)","Cuidado",JOptionPane.YES_NO_OPTION);
+		if(opcion == JOptionPane.YES_OPTION){
+			caminoServicios.bajaCamino(camino);
+		}
 
 	}
 
@@ -308,4 +409,39 @@ public class VentanaCaminos extends JFrame {
 		return sucursalServicios.listarSucursales();
 	}
 
+	public JPanel setPanelAltaEdicion() throws SQLException {
+		JPanel panelAtributos = new JPanel(new GridLayout(6, 2 ));
+
+
+		JLabel label1 = new JLabel("Origen:");
+		JLabel label2 = new JLabel("Destino:");
+		JLabel label3 = new JLabel("Tiempo en Transito:");
+		JLabel label4 = new JLabel("Capacidad Maxima:");
+		JLabel label5 = new JLabel("Estado:");
+
+
+		JTextField tiempotxt = new JTextField(10);
+		JTextField capacidadtxt = new JTextField(10);
+
+		List<Sucursal> sucursales = listaSucursales();
+		DefaultComboBoxModel<Sucursal> origenModel = new DefaultComboBoxModel<>(sucursales.toArray(new Sucursal[0]));
+		DefaultComboBoxModel<Sucursal> destinoModel = new DefaultComboBoxModel<>(sucursales.toArray(new Sucursal[0]));
+
+		JComboBox<Sucursal> origenCombo = new JComboBox<Sucursal>(origenModel);
+		JComboBox<Sucursal> destinoCombo = new JComboBox<Sucursal>(destinoModel);
+		JComboBox<String> estadoCombo = new JComboBox<>(new String[]{"Operativo", "No operativo"});
+
+		panelAtributos.add(label1);
+		panelAtributos.add(origenCombo);
+		panelAtributos.add(label2);
+		panelAtributos.add(destinoCombo);
+		panelAtributos.add(label3);
+		panelAtributos.add(tiempotxt);
+		panelAtributos.add(label4);
+		panelAtributos.add(capacidadtxt);
+		panelAtributos.add(label5);
+		panelAtributos.add(estadoCombo);
+
+		return panelAtributos;
+	}
 }
