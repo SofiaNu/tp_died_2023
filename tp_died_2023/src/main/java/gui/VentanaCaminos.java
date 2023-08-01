@@ -1,6 +1,7 @@
 package gui;
 
 import clases.Camino;
+import clases.Estado;
 import clases.Sucursal;
 import servicios.CaminoServicios;
 import servicios.ProductoServicios;
@@ -147,9 +148,9 @@ public class VentanaCaminos extends JFrame {
 				float capacidad=0;
 				if(!tiempotxt.getText().isEmpty()){tiempo = Float.parseFloat(tiempotxt.getText());}
 				if(!capacidadtxt.getText().isEmpty()){capacidad = Float.parseFloat(capacidadtxt.getText());}
-				boolean estado;
-				if(estadoCombo.getSelectedItem() == "Operativo"){estado = true;}
-				else{estado =false;}
+				Estado estado;
+				if(estadoCombo.getSelectedItem() == "Operativo"){estado = Estado.OPERATIVO;}
+				else{estado =Estado.NO_OPERATIVO;}
 				darAlta(origen,destino,tiempo,capacidad,estado);
 			}
 		});
@@ -352,7 +353,7 @@ public class VentanaCaminos extends JFrame {
 		String[] columnNames = {"Id", "Origen", "Destino", "Tiempo en transito", "Capacidad Maxima","Estado"};
 		String[][] caminoFila = {{String.valueOf(camino.getId()), camino.getOrigen().getNombre(),
 					camino.getDestino().getNombre(), String.valueOf(camino.getTiempoTransito()),
-					String.valueOf(camino.getCapacidadMaxima()), String.valueOf(camino.isEstado())}};
+					String.valueOf(camino.getCapacidadMaxima()), String.valueOf(camino.getEstado())}};
 
 		JTable resultado = new JTable(new DefaultTableModel(caminoFila, columnNames));
 		JScrollPane contenedorTabla = new JScrollPane(resultado); //Sin esto no se muestra el nombre de las columnas
@@ -419,12 +420,13 @@ public class VentanaCaminos extends JFrame {
 
 	}
 	public void showModificarEstadoDialog(Camino camino){
-		String msg="¿Desea definir el estado del camino como "+!camino.isEstado()+"?";
+		String msg="Actualmente el camino se encuentra "+String.valueOf(camino.getEstado())+
+				"¿Desea modificarlo?";
 		int opcion =JOptionPane.showConfirmDialog(this,msg,"Confirmacion",JOptionPane.YES_NO_OPTION);
-		if(opcion == JOptionPane.YES_OPTION && camino.isEstado()){
+		if(opcion == JOptionPane.YES_OPTION && camino.getEstado()==Estado.OPERATIVO){
 			caminoServicios.caminoNoOperativo(camino);
 		}
-		if(opcion == JOptionPane.YES_OPTION && !camino.isEstado()){
+		if(opcion == JOptionPane.YES_OPTION && camino.getEstado()==Estado.NO_OPERATIVO){
 			//caminoServicios.caminoOperativo(camino);
 		}
 	}
@@ -439,7 +441,7 @@ public class VentanaCaminos extends JFrame {
 
 	}
 
-	private void darAlta(Sucursal origen, Sucursal destino, float tiempo, float capacidad, boolean estado){
+	private void darAlta(Sucursal origen, Sucursal destino, float tiempo, float capacidad, Estado estado){
 		Camino camino = new Camino(origen,destino,tiempo,capacidad,estado);
 		caminoServicios.altaCamino(camino);
 	}

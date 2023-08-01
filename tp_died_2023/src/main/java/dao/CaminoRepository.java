@@ -1,6 +1,7 @@
 package dao;
 
 import clases.Camino;
+import clases.Estado;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,6 +25,15 @@ public class CaminoRepository {
         PreparedStatement pstm=null;
         try{
             conn.abrir();
+
+            boolean estado;
+            if(camino.getEstado()==Estado.OPERATIVO){
+                estado=true;
+            }
+            else {
+                estado =false;
+            }
+
             pstm = conn.conexion.prepareStatement("INSERT INTO tp_tablas.\"CAMINO\"" +
                     "(\"SUCURSAL_ORIGEN\", \"SUCURSAL_DESTINO\", \"TIEMPO_TRANSITO\", " +
                     "\"CAPACIDAD_MAXIMA\", \"ESTADO\") values (?,?,?,?,?)");
@@ -31,7 +41,7 @@ public class CaminoRepository {
             pstm.setInt(2,camino.getDestino().getId());
             pstm.setFloat(3,camino.getTiempoTransito());
             pstm.setFloat(4,camino.getCapacidadMaxima());
-            pstm.setBoolean(5,camino.isEstado());
+            pstm.setBoolean(5,estado);
             pstm.executeQuery();
 
         }catch (SQLException e){
@@ -189,13 +199,17 @@ public class CaminoRepository {
     private Camino getCamino(ResultSet rs) throws SQLException {
         Camino camino = new Camino();
         camino.setId(rs.getInt("ID"));
-        //VA A TENER QUE HABER CONTROL DE QUE LAS SUCURSALES EXISTAN CREO!
         SucursalRepository sucursalRepository = SucursalRepository.getInstance();
         camino.setOrigen(sucursalRepository.buscarSucursal(rs.getInt("SUCURSAL_ORIGEN")));
         camino.setDestino(sucursalRepository.buscarSucursal(rs.getInt("SUCURSAL_DESTINO")));
         camino.setTiempoTransito(rs.getFloat("TIEMPO_TRANSITO"));
         camino.setCapacidadMaxima(rs.getFloat("CAPACIDAD_MAXIMA"));
-        camino.setEstado(rs.getBoolean("ESTADO"));
+        if(rs.getBoolean("ESTADO")){
+            camino.setEstado(Estado.OPERATIVO);
+        }
+        else{
+            camino.setEstado(Estado.NO_OPERATIVO);
+        }
         return camino;
     }
 }

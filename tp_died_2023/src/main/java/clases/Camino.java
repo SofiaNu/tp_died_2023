@@ -2,7 +2,7 @@ package clases;
 
 public class Camino {
 	public Camino(Sucursal origen, Sucursal destino, float tiempoTransito, float capacidadMaxima,
-			boolean estado) {
+			Estado estado) {
 		super();
 		this.origen = origen;
 		this.destino = destino;
@@ -19,7 +19,7 @@ public class Camino {
 	Sucursal destino;
 	float tiempoTransito;
 	float capacidadMaxima;
-	boolean estado;
+	Estado  estado;
 	public int getId() {
 		return id;
 	}
@@ -50,10 +50,10 @@ public class Camino {
 	public void setCapacidadMaxima(float capacidadMaxima) {
 		this.capacidadMaxima = capacidadMaxima;
 	}
-	public boolean isEstado() {
+	public Estado getEstado() {
 		return estado;
 	}
-	public void setEstado(boolean estado) {
+	public void setEstado(Estado estado) {
 		this.estado = estado;
 	}
 }
