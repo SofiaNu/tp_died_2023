@@ -10,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.sql.SQLException;
 
 public class Inicio extends JFrame implements ActionListener{
 
@@ -52,7 +53,12 @@ public class Inicio extends JFrame implements ActionListener{
 		JButton btnCaminos = new JButton("Caminos");
 		btnCaminos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				VentanaCaminos ventanaCaminos= new VentanaCaminos();
+				VentanaCaminos ventanaCaminos= null;
+				try {
+					ventanaCaminos = new VentanaCaminos();
+				} catch (SQLException ex) {
+					throw new RuntimeException(ex);
+				}
 				ventanaCaminos.setVisible(true);
 			}
 		});

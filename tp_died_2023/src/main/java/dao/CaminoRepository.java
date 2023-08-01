@@ -122,8 +122,8 @@ public class CaminoRepository {
     }
 
     public void editarCamino(Camino camino){
-        String query= "UPDATE tp_tablas.\"CAMINO\" SET \"SUCURSAL_ORIGEN\"=? SET \"SUCURSAL_DESTINO\"=?" +
-                "SET \"TIEMPO_TRANSITO\"=? SET \"CAPACIDAD_MAXIMA\"=? "+
+        String query= "UPDATE tp_tablas.\"CAMINO\" SET \"SUCURSAL_ORIGEN\"=? , \"SUCURSAL_DESTINO\"=? ," +
+                " \"TIEMPO_TRANSITO\"=? , \"CAPACIDAD_MAXIMA\"=? "+
                 "WHERE \"ID\"="+camino.getId();
         Conexion conn = Conexion.getInstance();
         PreparedStatement pstm= null;
@@ -190,9 +190,9 @@ public class CaminoRepository {
         Camino camino = new Camino();
         camino.setId(rs.getInt("ID"));
         //VA A TENER QUE HABER CONTROL DE QUE LAS SUCURSALES EXISTAN CREO!
-        /*SucursalRepository sucursalRepository = SucursalRepository.getInstance();
+        SucursalRepository sucursalRepository = SucursalRepository.getInstance();
         camino.setOrigen(sucursalRepository.buscarSucursal(rs.getInt("SUCURSAL_ORIGEN")));
-        camino.setDestino(sucursalRepository.buscarSucursal(rs.getInt("SUCURSAL_DESTINO")));*/
+        camino.setDestino(sucursalRepository.buscarSucursal(rs.getInt("SUCURSAL_DESTINO")));
         camino.setTiempoTransito(rs.getFloat("TIEMPO_TRANSITO"));
         camino.setCapacidadMaxima(rs.getFloat("CAPACIDAD_MAXIMA"));
         camino.setEstado(rs.getBoolean("ESTADO"));

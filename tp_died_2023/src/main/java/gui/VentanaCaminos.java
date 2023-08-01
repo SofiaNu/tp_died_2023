@@ -18,6 +18,7 @@ import javax.swing.table.DefaultTableModel;
 public class VentanaCaminos extends JFrame {
 	CaminoServicios caminoServicios = new CaminoServicios();
 	SucursalServicios sucursalServicios = new SucursalServicios();
+	List<Sucursal> sucursales = sucursalServicios.listarSucursales();
 	private JPanel contentPane;
 
 	/**
@@ -39,7 +40,7 @@ public class VentanaCaminos extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public VentanaCaminos() {
+	public VentanaCaminos() throws SQLException {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		setTitle("Gestion de Caminos");
@@ -66,11 +67,8 @@ public class VentanaCaminos extends JFrame {
 		altabtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
 					showAltaCaminoPanel();
-				} catch (SQLException ex) {
-					throw new RuntimeException(ex);
-				}
+
 			}
 		});
 
@@ -114,7 +112,7 @@ public class VentanaCaminos extends JFrame {
 		contentPane.setVisible(true);
 	}
 
-	public void showAltaCaminoPanel() throws SQLException {
+	public void showAltaCaminoPanel()  {
 		JFrame altaFrame = new JFrame("Dar Alta");
 		altaFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		altaFrame.setLayout(new BorderLayout());
@@ -132,7 +130,6 @@ public class VentanaCaminos extends JFrame {
 		JTextField tiempotxt = new JTextField(10);
 		JTextField capacidadtxt = new JTextField(10);
 
-		List<Sucursal> sucursales = listaSucursales();
 		DefaultComboBoxModel<Sucursal> origenModel = new DefaultComboBoxModel<>(sucursales.toArray(new Sucursal[0]));
 		DefaultComboBoxModel<Sucursal> destinoModel = new DefaultComboBoxModel<>(sucursales.toArray(new Sucursal[0]));
 
@@ -202,7 +199,7 @@ public class VentanaCaminos extends JFrame {
 		JLabel label3 = new JLabel("Destino:");
 		JTextField idtxt = new JTextField();
 
-		List<Sucursal> sucursales = listaSucursales();
+
 
 		DefaultComboBoxModel<Sucursal> origenModel = new DefaultComboBoxModel<>(sucursales.toArray(new Sucursal[0]));
 		DefaultComboBoxModel<Sucursal> destinoModel = new DefaultComboBoxModel<>(sucursales.toArray(new Sucursal[0]));
@@ -252,6 +249,7 @@ public class VentanaCaminos extends JFrame {
 					int destino = ((Sucursal)destinoCombo.getSelectedItem()).getId();
 					buscar(origen,destino);
 				}
+				frame.dispose();
 			}
 		});
 
@@ -269,25 +267,77 @@ public class VentanaCaminos extends JFrame {
 
 	}
 
-	private void buscar(int id){
-		Camino camino = caminoServicios.buscarCamino(id);
-		if(camino !=null){
-			showResultadoBusqueda(camino);
-		}
-		else{
-			showCaminoNoEncontradoDialog();
-		}
+	public void showEditarPanel(Camino camino) throws SQLException {
+		JFrame frameEditar = new JFrame("Resultado Busqueda:");
+		frameEditar.setSize(500, 200);
+		frameEditar.setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+		JPanel panelAtributos = new JPanel(new GridLayout(6, 2 ));
+
+
+		JLabel label1 = new JLabel("Origen:");
+		JLabel label2 = new JLabel("Destino:");
+		JLabel label3 = new JLabel("Tiempo en Transito:");
+		JLabel label4 = new JLabel("Capacidad Maxima:");
+		JLabel label5 = new JLabel("Estado:");
+
+
+		JTextField tiempotxt = new JTextField(10);
+		JTextField capacidadtxt = new JTextField(10);
+
+		DefaultComboBoxModel<Sucursal> origenModel = new DefaultComboBoxModel<>(sucursales.toArray(new Sucursal[0]));
+		DefaultComboBoxModel<Sucursal> destinoModel = new DefaultComboBoxModel<>(sucursales.toArray(new Sucursal[0]));
+
+		JComboBox<Sucursal> origenCombo = new JComboBox<Sucursal>(origenModel);
+		JComboBox<Sucursal> destinoCombo = new JComboBox<Sucursal>(destinoModel);
+		JComboBox<String> estadoCombo = new JComboBox<>(new String[]{"Operativo", "No operativo"});
+
+		JButton guardarbtn = new JButton("Guardar cambios");
+		JButton cancelarbtn = new JButton("Cancelar");
+
+		panelAtributos.add(label1);
+		panelAtributos.add(origenCombo);
+		panelAtributos.add(label2);
+		panelAtributos.add(destinoCombo);
+		panelAtributos.add(label3);
+		panelAtributos.add(tiempotxt);
+		panelAtributos.add(label4);
+		panelAtributos.add(capacidadtxt);
+		panelAtributos.add(label5);
+		panelAtributos.add(estadoCombo);
+		panelAtributos.add(guardarbtn);
+		panelAtributos.add(cancelarbtn);
+
+		cancelarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frameEditar.dispose();
+			}
+		});
+
+		guardarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				camino.setOrigen((Sucursal) origenCombo.getSelectedItem());
+				camino.setDestino((Sucursal) destinoCombo.getSelectedItem());
+				if(!tiempotxt.getText().isEmpty()){
+					camino.setTiempoTransito(Float.parseFloat(tiempotxt.getText()));}
+
+				if(!capacidadtxt.getText().isEmpty()){
+					camino.setCapacidadMaxima(Float.parseFloat(capacidadtxt.getText()));}
+				boolean estado;
+				if(estadoCombo.getSelectedItem() == "Operativo"){estado = true;}
+				else{estado =false;}
+
+				caminoServicios.editarCamino(camino);
+				frameEditar.dispose();
+			}
+		});
+		frameEditar.add(panelAtributos);
+		frameEditar.setVisible(true);
 	}
-	private void buscar(int origen, int destino){
-		Camino camino =caminoServicios.buscarCamino(origen,destino);
-		if(camino!=null){
-			showResultadoBusqueda(camino);
-		}
-		else{
-			showCaminoNoEncontradoDialog();
-		}
-	};
+
 
 	public void showCaminoNoEncontradoDialog(){
 		JOptionPane.showMessageDialog(this,"Camino no encontrado","Error",JOptionPane.OK_OPTION);
@@ -300,15 +350,15 @@ public class VentanaCaminos extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		String[] columnNames = {"Id", "Origen", "Destino", "Tiempo en transito", "Capacidad Maxima","Estado"};
-		String[][] prod ={{String.valueOf(camino.getId()),camino.getOrigen().getNombre(),
-				camino.getDestino().getNombre(),String.valueOf(camino.getTiempoTransito()),
-				String.valueOf(camino.getCapacidadMaxima()), String.valueOf(camino.isEstado())}};
+		String[][] caminoFila = {{String.valueOf(camino.getId()), camino.getOrigen().getNombre(),
+					camino.getDestino().getNombre(), String.valueOf(camino.getTiempoTransito()),
+					String.valueOf(camino.getCapacidadMaxima()), String.valueOf(camino.isEstado())}};
 
-		JTable resultado = new JTable(new DefaultTableModel(prod, columnNames));
+		JTable resultado = new JTable(new DefaultTableModel(caminoFila, columnNames));
 		JScrollPane contenedorTabla = new JScrollPane(resultado); //Sin esto no se muestra el nombre de las columnas
 
 		//controla el tamaño (si no no se ven los botones)
-		int maxVisibleRows = 3;
+		int maxVisibleRows = 1;
 		int rowHeight = resultado.getRowHeight();
 		int headerHeight = resultado.getTableHeader().getPreferredSize().height;
 		Dimension preferredSize = new Dimension(contenedorTabla.getPreferredSize().width,
@@ -322,6 +372,8 @@ public class VentanaCaminos extends JFrame {
 		JButton modificarEstadoButton = new JButton("Modificar Estado");
 		JButton cerrarButton = new JButton("Cerrar");
 
+
+
 		editarButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -330,9 +382,10 @@ public class VentanaCaminos extends JFrame {
 				} catch (SQLException ex) {
 					throw new RuntimeException(ex);
 				}
-				resultadoFrame.dispose();
 			}
 		});
+
+
 		darDeBajaButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -360,7 +413,6 @@ public class VentanaCaminos extends JFrame {
 		panel.add(darDeBajaButton);
 		panel.add(modificarEstadoButton);
 		panel.add(cerrarButton);
-
 		resultadoFrame.add(panel);
 		resultadoFrame.setVisible(true);
 
@@ -377,16 +429,6 @@ public class VentanaCaminos extends JFrame {
 		}
 	}
 
-	public void showEditarPanel(Camino camino) throws SQLException {
-		JFrame frameEditar = new JFrame("Resultado Busqueda:");
-		frameEditar.setSize(500, 200);
-		frameEditar.setLocationRelativeTo(null);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		JPanel panelEdicion =setPanelAltaEdicion();
-
-
-	}
 
 	public void showBajaDialog(Camino camino){
 		int opcion = JOptionPane.showConfirmDialog(this,"Esta opcion eliminará para siempre el camino" +
@@ -402,11 +444,27 @@ public class VentanaCaminos extends JFrame {
 		caminoServicios.altaCamino(camino);
 	}
 
+	private void buscar(int id){
+		Camino camino = caminoServicios.buscarCamino(id);
+		if(camino !=null){
+			showResultadoBusqueda(camino);
+		}
+		else{
+			showCaminoNoEncontradoDialog();
+		}
+
+	}
+	private void buscar(int origen, int destino){
+		Camino camino =caminoServicios.buscarCamino(origen,destino);
+		if(camino!=null){
+			showResultadoBusqueda(camino);
+		}
+		else{
+			showCaminoNoEncontradoDialog();
+		}
+	};
 	private Sucursal getSucursal(String nombre) throws SQLException {
 		return sucursalServicios.buscarSucursal(nombre);
-	}
-	private List<Sucursal> listaSucursales() throws SQLException {
-		return sucursalServicios.listarSucursales();
 	}
 
 	public JPanel setPanelAltaEdicion() throws SQLException {
@@ -423,7 +481,6 @@ public class VentanaCaminos extends JFrame {
 		JTextField tiempotxt = new JTextField(10);
 		JTextField capacidadtxt = new JTextField(10);
 
-		List<Sucursal> sucursales = listaSucursales();
 		DefaultComboBoxModel<Sucursal> origenModel = new DefaultComboBoxModel<>(sucursales.toArray(new Sucursal[0]));
 		DefaultComboBoxModel<Sucursal> destinoModel = new DefaultComboBoxModel<>(sucursales.toArray(new Sucursal[0]));
 
