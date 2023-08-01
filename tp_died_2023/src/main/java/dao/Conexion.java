@@ -3,6 +3,7 @@ package dao;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import DbSettings.DiedDbSettings;
 
 public class Conexion {
     public Connection conexion=null;
@@ -12,18 +13,23 @@ public class Conexion {
     }
 
     private static Conexion _INSTANCE;
+    private static DiedDbSettings _dbSettings;
 
     public static Conexion getInstance(){
         if(_INSTANCE == null){
             _INSTANCE = new Conexion();
         }
+        if(_dbSettings == null){
+            _dbSettings = DiedDbSettings.GetDefaultDbSettings();
+        }
+
         return _INSTANCE;
 
     }
     public void abrir() throws SQLException {
-        String serverUrl= "jdbc:postgresql://164.152.54.0:5432/died_psql";
-        String user="died_dev";
-        String password="misterdatabasepeasant";
+        String serverUrl= _dbSettings.getServerUri();
+        String user= _dbSettings.getServerUser();
+        String password= _dbSettings.getServerPassword();
         if(conexion == null || conexion.isClosed()){
         try{
             Class.forName("org.postgresql.Driver"); //aparentemente innecesario
@@ -45,6 +51,7 @@ public class Conexion {
             System.out.println("error al intentar cerrar la conexion");
         }
     }
+
 
 }
 
