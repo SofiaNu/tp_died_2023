@@ -79,8 +79,7 @@ public class VentanaSucursales extends JFrame {
 		bajabtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
-
+				showBuscarPanel();
 			}
 		});
 
@@ -88,15 +87,12 @@ public class VentanaSucursales extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-
 			}
 		});
 
 		ordenbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
-
 			}
 		});
 
@@ -274,7 +270,7 @@ public class VentanaSucursales extends JFrame {
 				}
 				if(nombrebtn.isSelected()){
 					try {
-						buscar(idtxt.getText());
+						buscar(nombretxt.getText());
 					} catch (SQLException ex) {
 						throw new RuntimeException(ex);
 					}
@@ -460,8 +456,11 @@ public class VentanaSucursales extends JFrame {
 			//sucursalServicios.modificarEstado(sucursal);
 		}
 	}
-	public void showEditarPanel(Sucursal sucursal){}
-	public void showStockPanel(Sucursal sucursal){}
+	public void showEditarPanel(Sucursal sucursal){
+	}
+	public void showStockPanel(Sucursal sucursal){
+
+	}
 	public void showOrden(Sucursal sucursal){}
 
 }

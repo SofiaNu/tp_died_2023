@@ -108,7 +108,7 @@ public class SucursalRepository {
         return sucursal;
     }
     public Sucursal buscarSucursal(String n){
-        Sucursal sucursal= null;
+        Sucursal sucursal= new Sucursal();
         Conexion conn =Conexion.getInstance();
         PreparedStatement pstm =null;
         ResultSet rs= null;
