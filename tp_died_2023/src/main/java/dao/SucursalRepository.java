@@ -227,8 +227,41 @@ public class SucursalRepository {
 
         return sucursal;
     }
+    public void modificarEstado(int id, Estado estado){
+        String query;
+        if(estado == Estado.OPERATIVO){
+            query="UPDATE tp_tablas.\"SUCURSAL\" SET \"ESTADO\"=false "+
+                    "WHERE \"ID\"="+id;
+        }
+        else{
+            query="UPDATE tp_tablas.\"SUCURSAL\" SET \"ESTADO\"= true"+
+                    "WHERE \"ID\"="+id;
+        }
+        ejecutarQuery(query);
+    }
 
-
+    private void ejecutarQuery(String query){
+        Conexion conn = Conexion.getInstance();
+        PreparedStatement pstm=null;
+        try{
+            conn.abrir();
+            pstm = conn.conexion.prepareStatement(query);
+            pstm.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            if (pstm != null) try {
+                pstm.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) try {
+                conn.cerrar();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public void editarSucursal(Sucursal sucursal) {
     }

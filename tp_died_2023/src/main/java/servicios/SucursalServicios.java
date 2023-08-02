@@ -1,5 +1,6 @@
 package servicios;
 
+import clases.Camino;
 import clases.Estado;
 import clases.Sucursal;
 import dao.SucursalRepository;
@@ -45,6 +46,7 @@ public class SucursalServicios {
     public List<Sucursal> listarSucursales() throws SQLException {
         return sucursalRepository.listarSucursal();
     }
+    public void modificarEstado(Sucursal sucursal){ sucursalRepository.modificarEstado(sucursal.getId(),sucursal.getEstado());}
     public void editarSucursal(Sucursal sucursal){
         sucursalRepository.editarSucursal(sucursal);
     }
