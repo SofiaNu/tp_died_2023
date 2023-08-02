@@ -41,6 +41,7 @@ public class SucursalServicios {
         sucursalRepository.bajaSucursal(sucursal);
     }
 
+    public List<Sucursal> buscarSucursales(Estado estado) throws SQLException{ return null;}
     public List<Sucursal> listarSucursales() throws SQLException {
         return sucursalRepository.listarSucursal();
     }

@@ -83,6 +83,7 @@ public class SucursalRepository {
                 System.out.println(aux);
             }
             else{
+                sucursal = null;
                 System.out.print("No existe el producto");
             }
         }catch(SQLException e){
@@ -122,6 +123,7 @@ public class SucursalRepository {
                 System.out.println(aux);
             }
             else{
+                sucursal = null;
                 System.out.print("No existe el producto");
             }
         }catch(SQLException e){
