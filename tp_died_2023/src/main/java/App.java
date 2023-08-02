@@ -1,6 +1,8 @@
 import clases.Producto;
+import clases.StockProducto;
 import clases.Sucursal;
 import dao.ProductoRepository;
+import dao.StockProductoRepository;
 import dao.SucursalRepository;
 import gui.*;
 
@@ -21,6 +23,9 @@ public class App {
 		sucursalRepository.altaSucursal(sucursal);
 		sucursalRepository.buscarSucursal("Cordoba");
 		sucursalRepository.listarSucursal();*/
+		StockProductoRepository stockProductoRepository = StockProductoRepository.getInstance();
+
+		stockProductoRepository.altaStockProducto(1,1,1);
 	}
 
 

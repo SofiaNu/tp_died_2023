@@ -7,6 +7,7 @@ public class StockProducto {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
 	public Producto getProducto() {
 		return producto;
 	}
