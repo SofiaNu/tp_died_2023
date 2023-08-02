@@ -92,7 +92,7 @@ public class CaminoRepository {
                     "WHERE \"ID\"="+id;
         }
         else{
-            query="UPDATE tp_tablas.\"CAMINO\" SET \"ESTADO\"= true"+
+            query="UPDATE tp_tablas.\"CAMINO\" SET \"ESTADO\"=true "+
                     "WHERE \"ID\"="+id;
         }
         ejecutarQuery(query);

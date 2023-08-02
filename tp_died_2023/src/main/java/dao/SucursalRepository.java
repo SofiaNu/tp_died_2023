@@ -234,7 +234,7 @@ public class SucursalRepository {
                     "WHERE \"ID\"="+id;
         }
         else{
-            query="UPDATE tp_tablas.\"SUCURSAL\" SET \"ESTADO\"= true"+
+            query="UPDATE tp_tablas.\"SUCURSAL\" SET \"ESTADO\"=true "+
                     "WHERE \"ID\"="+id;
         }
         ejecutarQuery(query);

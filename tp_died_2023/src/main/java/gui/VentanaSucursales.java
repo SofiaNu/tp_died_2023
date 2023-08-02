@@ -453,7 +453,7 @@ public class VentanaSucursales extends JFrame {
 				"¿Desea modificarlo?";
 		int opcion =JOptionPane.showConfirmDialog(this,msg,"Confirmacion",JOptionPane.YES_NO_OPTION);
 		if(opcion == JOptionPane.YES_OPTION){
-			//sucursalServicios.modificarEstado(sucursal);
+			sucursalServicios.modificarEstado(sucursal);
 		}
 	}
 	public void showEditarPanel(Sucursal sucursal){
