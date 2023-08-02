@@ -1,5 +1,6 @@
 package dao;
 
+import clases.Estado;
 import clases.Sucursal;
 
 import java.sql.PreparedStatement;
@@ -24,6 +25,15 @@ public class SucursalRepository {
         Conexion conn = Conexion.getInstance();
         PreparedStatement pstm =null;
         ResultSet rs=null;
+
+        boolean estado;
+        if(sucursal.getEstado()==Estado.OPERATIVO){
+            estado =true;
+        }
+        else{
+            estado=false;
+        }
+
         try {
             conn.abrir();
             pstm = conn.conexion.prepareStatement("INSERT INTO tp_tablas.\"SUCURSAL\" " +
@@ -32,10 +42,11 @@ public class SucursalRepository {
             pstm.setString(1, sucursal.getNombre());
             pstm.setTime(2, Time.valueOf(sucursal.getHoraApertura()));
             pstm.setTime(3, Time.valueOf(sucursal.getHoraCierre()));
-            pstm.setBoolean(4, sucursal.isEstado());
+
+            pstm.setBoolean(4, estado);
             pstm.setFloat(5, sucursal.getCapacidad());
             pstm.executeQuery();
-                                        System.out.println(rs.getString(2));
+            System.out.println(rs.getString(2));
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {
@@ -204,7 +215,11 @@ public class SucursalRepository {
         sucursal.setNombre(rs.getString("NOMBRE"));
         sucursal.setHoraApertura(rs.getTime("HORA_APERTURA").toLocalTime());
         sucursal.setHoraCierre(rs.getTime("HORA_CIERRE").toLocalTime());
-        sucursal.setEstado(rs.getBoolean("ESTADO"));
+        if(rs.getBoolean("ESTADO")){
+        sucursal.setEstado(Estado.OPERATIVO);}
+        else{
+            sucursal.setEstado(Estado.NO_OPERATIVO);
+            }
         sucursal.setCapacidad(rs.getFloat("CAPACIDAD"));
         sucursal.setId(rs.getInt("ID"));
 

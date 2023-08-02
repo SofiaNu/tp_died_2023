@@ -15,12 +15,12 @@ public class App {
 		inicio.setVisible(true);
 		/*ProductoRepository productoRepository = ProductoRepository.getInstance();
 		Producto producto = new Producto("Computadora",500.0, 2.0F);
-		productoRepository.altaProducto(producto); */
+		productoRepository.altaProducto(producto);
 		SucursalRepository sucursalRepository = SucursalRepository.getInstance();
 		Sucursal sucursal = new Sucursal("Cordoba", LocalTime.now(),LocalTime.now(),true ,25500);
 		sucursalRepository.altaSucursal(sucursal);
 		sucursalRepository.buscarSucursal("Cordoba");
-		sucursalRepository.listarSucursal();
+		sucursalRepository.listarSucursal();*/
 	}
 
 

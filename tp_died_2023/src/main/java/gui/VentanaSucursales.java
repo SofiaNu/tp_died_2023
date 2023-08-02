@@ -2,8 +2,7 @@ package gui;
 
 import java.awt.EventQueue;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 public class VentanaSucursales extends JFrame {
@@ -36,7 +35,18 @@ public class VentanaSucursales extends JFrame {
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
+		JButton altabtn = new JButton("Agregar Sucursal");
+		JButton buscarbtn = new JButton("Buscar Sucursal");
+		JButton bajabtn = new JButton("Dar de Baja Sucursal");
+		JButton stockbtn = new JButton("Manejo de Stock");
+		JButton ordenbtn = new JButton("Generar Orden de Provision");
+
 		setContentPane(contentPane);
+
+
+
+
 	}
+
 
 }

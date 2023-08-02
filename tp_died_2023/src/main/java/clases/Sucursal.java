@@ -8,7 +8,7 @@ public class Sucursal {
 	String nombre;
 	LocalTime horaApertura;
 	LocalTime horaCierre;
-	boolean estado;
+	Estado estado;
 	float capacidad;
 	List<StockProducto> stock;
 	public int getId() {
@@ -35,10 +35,10 @@ public class Sucursal {
 	public void setHoraCierre(LocalTime horaCierre) {
 		this.horaCierre = horaCierre;
 	}
-	public boolean isEstado() {
+	public Estado getEstado() {
 		return estado;
 	}
-	public void setEstado(boolean estado) {
+	public void setEstado(Estado estado) {
 		this.estado = estado;
 	}
 	public float getCapacidad() {
@@ -53,7 +53,7 @@ public class Sucursal {
 	public void setStock(List<StockProducto> stock) {
 		this.stock = stock;
 	}
-	public Sucursal( String nombre, LocalTime horaApertura, LocalTime horaCierre, boolean estado, float capacidad) {
+	public Sucursal( String nombre, LocalTime horaApertura, LocalTime horaCierre, Estado estado, float capacidad) {
 		super();
 		this.nombre = nombre;
 		this.horaApertura = horaApertura;

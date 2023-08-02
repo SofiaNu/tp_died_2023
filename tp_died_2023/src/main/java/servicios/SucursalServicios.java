@@ -1,5 +1,6 @@
 package servicios;
 
+import clases.Estado;
 import clases.Sucursal;
 import dao.SucursalRepository;
 
@@ -21,6 +22,18 @@ public class SucursalServicios {
     public Sucursal buscarSucursal(String nombre ) throws SQLException {
         return sucursalRepository.buscarSucursal(nombre);
     }
+
+    public List<Sucursal> buscarSucursal(Estado estado) throws SQLException {
+        boolean e;
+        if(estado == Estado.OPERATIVO){
+            e=true;
+        }
+        else{
+            e=false;
+        }
+        return null;
+    }
+
     public void agregarSucursal(Sucursal sucursal) throws SQLException {
         sucursalRepository.altaSucursal(sucursal);
     }
