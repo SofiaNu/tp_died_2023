@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,8 +64,7 @@ public class VentanaSucursales extends JFrame {
 		altabtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
-
+				showAltaPanel();
 			}
 		});
 
@@ -112,7 +112,81 @@ public class VentanaSucursales extends JFrame {
 
 	}
 
-	public void showAltaPanel(){}
+	public void showAltaPanel(){
+		JFrame frameAlta = new JFrame("Nueva Sucursal");
+		frameAlta.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frameAlta.setLayout(new BorderLayout());
+
+		JPanel mainPanel = new JPanel(new GridLayout(6, 2));
+		JLabel nombrelbl = new JLabel("Nombre: ");
+		JLabel horaAperturalbl = new JLabel("Hora Apertura: ");
+		JLabel horaCierrelbl = new JLabel("Hora Cierre: ");
+		JLabel estadolbl = new JLabel("Estado: ");
+		JLabel capacidadlbl = new JLabel("Capacidad de Recepcion: ");
+
+		JTextField nombretxt = new JTextField();
+		JTextField capacidadtxt = new JTextField();
+		JComboBox estadoComboBox = new JComboBox<>(Estado.values());
+
+		JPanel panelHoras1 =new JPanel(new GridLayout(1,2));
+		JPanel panelHoras2 =new JPanel(new GridLayout(1,2));
+		JSpinner horaApertura = new JSpinner(new SpinnerNumberModel(00, 00, 23, 1));
+		JSpinner horaCierre = new JSpinner(new SpinnerNumberModel(0, 00, 23, 1));
+		JSpinner minApertura = new JSpinner(new SpinnerNumberModel(00, 00, 59, 15));
+		JSpinner minCierre = new JSpinner(new SpinnerNumberModel(0, 00, 59, 15));
+
+		panelHoras1.add(horaApertura);
+		panelHoras1.add(minApertura);
+		panelHoras2.add(horaCierre);
+		panelHoras2.add(minCierre);
+
+		JButton guardarbtn = new JButton("Guardar");
+		JButton cancelarbtn = new JButton("Cancelar");
+
+		mainPanel.add(nombrelbl);
+		mainPanel.add(nombretxt);
+		mainPanel.add(horaAperturalbl);
+		mainPanel.add(panelHoras1);
+		mainPanel.add(horaCierrelbl);
+		mainPanel.add(panelHoras2);
+		mainPanel.add(estadolbl);
+		mainPanel.add(estadoComboBox);
+		mainPanel.add(capacidadlbl);
+		mainPanel.add(capacidadtxt);
+		mainPanel.add(guardarbtn);
+		mainPanel.add(cancelarbtn);
+
+		guardarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Sucursal sucursal = new Sucursal();
+				sucursal.setNombre(nombretxt.getText());
+				sucursal.setHoraApertura(LocalTime.of((int)horaApertura.getValue(), (int)minApertura.getValue()));
+				sucursal.setHoraCierre(LocalTime.of((int)horaCierre.getValue(), (int)minCierre.getValue()));
+				sucursal.setEstado((Estado) estadoComboBox.getSelectedItem());
+				sucursal.setCapacidad(Float.valueOf(capacidadtxt.getText()));
+				try {
+					sucursalServicios.agregarSucursal(sucursal);
+				} catch (SQLException ex) {
+					throw new RuntimeException(ex);
+				}
+				frameAlta.dispose();
+			}
+		});
+
+		cancelarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frameAlta.dispose();
+
+			}
+		});
+
+		frameAlta.add(mainPanel);
+		frameAlta.pack();
+		frameAlta.setLocationRelativeTo(null);
+		frameAlta.setVisible(true);
+	}
 	public void showBuscarPanel(){
 		JFrame frame = new JFrame("Busqueda");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -275,7 +349,7 @@ public class VentanaSucursales extends JFrame {
 
 	public void showResultadoBusquedaPanel(List<Sucursal> sucursales){
 		JFrame resultadoFrame = new JFrame("Resultado Busqueda:");
-		resultadoFrame.setSize(500, 200);
+		resultadoFrame.setSize(500, 300);
 		resultadoFrame.setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -327,31 +401,41 @@ public class VentanaSucursales extends JFrame {
 		editarbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				int index = tablaResultados.getSelectedRow();
+				showEditarPanel(sucursales.get(index));
 
 			}
 		});
 		darBajabtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				int index = tablaResultados.getSelectedRow();
+				try {
+					showBajaDialog(sucursales.get(index));
+				} catch (SQLException ex) {
+					throw new RuntimeException(ex);
+				}
 			}
 		});
 		estadobtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				int index = tablaResultados.getSelectedRow();
+				showModificarEstadoDialog(sucursales.get(index));
 			}
 		});
 		stockbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				int index = tablaResultados.getSelectedRow();
+				showStockPanel(sucursales.get(index));
 			}
 		});
 		ordenbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				int index = tablaResultados.getSelectedRow();
+				showOrden(sucursales.get(index));
 			}
 		});
 
@@ -360,10 +444,24 @@ public class VentanaSucursales extends JFrame {
 
 	}
 
-	public void showBajaDialog(){}
+	public void showBajaDialog(Sucursal sucursal) throws SQLException {
+		int option = JOptionPane.showConfirmDialog(this,"¿Seguro desea dar de baja permanentemente la sucusal",
+				"Dar de baja",JOptionPane.YES_NO_OPTION);
+		if(option== JOptionPane.YES_OPTION){
+			sucursalServicios.borrarSucursal(sucursal);
+		}
+	}
 
-	public void showEditarPanel(){}
-	public void showStockPanel(){}
-	public void showOrden(){}
+	public void  showModificarEstadoDialog(Sucursal sucursal){
+		String msg="Actualmente el camino se encuentra "+String.valueOf(sucursal.getEstado())+
+				"¿Desea modificarlo?";
+		int opcion =JOptionPane.showConfirmDialog(this,msg,"Confirmacion",JOptionPane.YES_NO_OPTION);
+		if(opcion == JOptionPane.YES_OPTION){
+			//sucursalServicios.modificarEstado(sucursal);
+		}
+	}
+	public void showEditarPanel(Sucursal sucursal){}
+	public void showStockPanel(Sucursal sucursal){}
+	public void showOrden(Sucursal sucursal){}
 
 }
