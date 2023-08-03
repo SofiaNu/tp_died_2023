@@ -23,9 +23,12 @@ public class App {
 		sucursalRepository.altaSucursal(sucursal);
 		sucursalRepository.buscarSucursal("Cordoba");
 		sucursalRepository.listarSucursal();*/
+		/*
 		StockProductoRepository stockProductoRepository = StockProductoRepository.getInstance();
 
-		stockProductoRepository.altaStockProducto(1,1,1);
+		 stockProductoRepository.editarStockProductoEnSucursal(3,5,8);
+		 stockProductoRepository.listarStockProductosEnSucursal(5);
+		 stockProductoRepository.buscarEnSucursal(3,3);*/
 	}
 
 
