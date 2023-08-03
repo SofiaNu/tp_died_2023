@@ -21,7 +21,10 @@ public class App {
 		productoRepository.altaProducto(producto);*/
 		SucursalRepository sucursalRepository = SucursalRepository.getInstance();
 		Sucursal sucursal = new Sucursal("Pepe", LocalTime.now(),LocalTime.now(), Estado.OPERATIVO ,25500);
-		sucursalRepository.altaSucursal(sucursal);
+		Sucursal mod = sucursalRepository.buscarSucursal(5);
+		mod.setNombre("San Luis");
+		sucursalRepository.editarSucursal(mod);
+
 		//sucursalRepository.bajaSucursal(sucursalRepository.buscarSucursal(6));
 		//sucursalRepository.buscarSucursal(1);
 		//sucursalRepository.listarSucursal();

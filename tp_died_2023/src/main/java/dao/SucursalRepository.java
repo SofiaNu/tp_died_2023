@@ -189,7 +189,7 @@ public class SucursalRepository {
         else{
             estado=false;
         }
-        String query = "UPDATE INTO tp_tablas.\"SUCURSAL\" SET \"NOMBRE\"= "+sucursal.getNombre()+",\"HORA_APERTURA\"= "+Time.valueOf(sucursal.getHoraApertura())+
+        String query = "UPDATE tp_tablas.\"SUCURSAL\" SET \"NOMBRE\"= '"+sucursal.getNombre()+"',\"HORA_APERTURA\"= "+Time.valueOf(sucursal.getHoraApertura())+
                 ",\"HORA_CIERRE\"= "+Time.valueOf(sucursal.getHoraCierre())+",\"ESTADO\"= "+estado+ " WHERE \"SUCURSAL\"= "+sucursal.getId();
         ejecutarQuery(query);
 
