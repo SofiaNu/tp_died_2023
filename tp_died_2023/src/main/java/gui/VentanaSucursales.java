@@ -352,7 +352,7 @@ public class VentanaSucursales extends JFrame {
 		JButton estadobtn = new JButton("Modificar Estado");
 		JButton ordenbtn = new JButton("Generar Orden");
 		JButton cerrarbtn = new JButton("Cerrar");
-
+		//hel´l
 		panel.add(contenedorTabla);
 		panel.add(editarbtn);
 		panel.add(darBajabtn);
