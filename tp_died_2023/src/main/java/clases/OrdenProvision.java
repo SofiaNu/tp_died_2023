@@ -4,12 +4,21 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class OrdenProvision {
+
+	int id;
 	LocalDate fecha;
 	Sucursal destino;
 	float tiempoLimite;
 	float peso;
 	boolean estado; //tiene pendiente y en proceso (no hay listo aclarado pero asumo que deberia ir y ahi seria enum)
-	List<StockProducto> listaProductos;
+	List<ProvisionProducto> listaProductos;
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 	public LocalDate getFecha() {
 		return fecha;
 	}
@@ -40,10 +49,10 @@ public class OrdenProvision {
 	public void setEstado(boolean estado) {
 		this.estado = estado;
 	}
-	public List<StockProducto> getListaProductos() {
+	public List<ProvisionProducto> getListaProductos() {
 		return listaProductos;
 	}
-	public void setListaProductos(List<StockProducto> listaProductos) {
+	public void setListaProductos(List<ProvisionProducto> listaProductos) {
 		this.listaProductos = listaProductos;
 	}
 	public OrdenProvision() {
@@ -51,7 +60,7 @@ public class OrdenProvision {
 		// TODO Auto-generated constructor stub
 	}
 	public OrdenProvision(LocalDate fecha, Sucursal destino, float tiempoLimite, float peso, boolean estado,
-			List<StockProducto> listaProductos) {
+			List<ProvisionProducto> listaProductos) {
 		super();
 		this.fecha = fecha;
 		this.destino = destino;
