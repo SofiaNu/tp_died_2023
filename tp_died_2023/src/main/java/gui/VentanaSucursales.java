@@ -328,7 +328,7 @@ public class VentanaSucursales extends JFrame {
 		}
 	}
 	private void buscar(Estado estado) throws SQLException {
-		List<Sucursal> sucursales= sucursalServicios.buscarSucursales(estado);
+		List<Sucursal> sucursales= sucursalServicios.buscarSucursalesEstado(estado);
 		if(sucursales == null || sucursales.isEmpty()){
 			showSinResultadosDialog();
 		}

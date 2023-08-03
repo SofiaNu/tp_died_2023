@@ -1,12 +1,10 @@
 package dao;
 
 import clases.Estado;
+import clases.StockProducto;
 import clases.Sucursal;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,9 +20,6 @@ public class SucursalRepository {
         return _INSTANCE;
     }
     public void altaSucursal(Sucursal sucursal){
-        Conexion conn = Conexion.getInstance();
-        PreparedStatement pstm =null;
-        ResultSet rs=null;
 
         boolean estado;
         if(sucursal.getEstado()==Estado.OPERATIVO){
@@ -33,97 +28,42 @@ public class SucursalRepository {
         else{
             estado=false;
         }
+        //String query = "INSERT INTO tp_tablas.\"STOCK_PRODUCTO\" (\"PRODUCTO\",\"SUCURSAL\",\"CANTIDAD\") VALUES ("+producto+","+sucursal+","+cantidad+")";
 
-        try {
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("INSERT INTO tp_tablas.\"SUCURSAL\" " +
-                    "(\"NOMBRE\",\"HORA_APERTURA\",\"HORA_CIERRE\",\"ESTADO\",\"CAPACIDAD\") values (?,?,?,?,?)");
-            //pstm.setInt(1,producto.getId());
-            pstm.setString(1, sucursal.getNombre());
-            pstm.setTime(2, Time.valueOf(sucursal.getHoraApertura()));
-            pstm.setTime(3, Time.valueOf(sucursal.getHoraCierre()));
+        String query = "INSERT INTO tp_tablas.\"SUCURSAL\" (\"NOMBRE\",\"HORA_APERTURA\",\"HORA_CIERRE\",\"ESTADO\",\"CAPACIDAD\") "+
+                "VALUES ("+sucursal.getNombre()+","+Time.valueOf(sucursal.getHoraApertura())+","+Time.valueOf(sucursal.getHoraCierre())+","
+                +estado+","+sucursal.getCapacidad()+")";
+        ejecutarQuery(query);
 
-            pstm.setBoolean(4, estado);
-            pstm.setFloat(5, sucursal.getCapacidad());
-            pstm.executeQuery();
-            System.out.println(rs.getString(2));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }finally {
-            if (rs != null) try {
-                rs.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (pstm != null) try {
-                pstm.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     public Sucursal buscarSucursal(int n){
-        Sucursal sucursal= new Sucursal();
-        Conexion conn =Conexion.getInstance();
-        PreparedStatement pstm =null;
-        ResultSet rs= null;
-        try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"SUCURSAL\" WHERE \"ID\"="+n);
-            rs= pstm.executeQuery();
-            if(rs.next()){
-                sucursal = getSucursal(rs);
-                String aux= rs.getString("NOMBRE");
-                System.out.println(aux);
-            }
-            else{
-                sucursal = null;
-                System.out.print("No existe el producto");
-            }
-        }catch(SQLException e){
-            e.printStackTrace();
-        }finally {
-            if (rs != null) try {
-                rs.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (pstm != null) try {
-                pstm.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return sucursal;
+        String query="SELECT * FROM tp_tablas.\"SUCURSAL\" WHERE \"ID\"= "+n;
+        return busqueda(query);
     }
     public Sucursal buscarSucursal(String n){
-        Sucursal sucursal= new Sucursal();
+        String query="SELECT * FROM tp_tablas.\"SUCURSAL\" WHERE \"NOMBRE\"= "+n;
+        return busqueda(query);
+
+    }
+    public List<Sucursal> buscarSucursal(boolean estado){
+
+        List<Sucursal> sucursales =new ArrayList<Sucursal>();
         Conexion conn =Conexion.getInstance();
         PreparedStatement pstm =null;
         ResultSet rs= null;
         try{
             conn.abrir();
-            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"SUCURSAL\" WHERE \"NOMBRE\"=?");
-            pstm.setString(1,n);
+            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"SUCURSAL\" WHERE \"ESTADO\"=?");
+            pstm.setBoolean(1, estado);
             rs= pstm.executeQuery();
             if(rs.next()){
-                sucursal = getSucursal(rs);
+                sucursales.add(getSucursal(rs));
                 String aux= rs.getString("NOMBRE");
                 System.out.println(aux);
             }
             else{
-                sucursal = null;
+                sucursales = null;
                 System.out.print("No existe el producto");
             }
         }catch(SQLException e){
@@ -145,36 +85,11 @@ public class SucursalRepository {
                 e.printStackTrace();
             }
         }
-        return sucursal;
+        return sucursales;
     }
-    public void bajaSucursal(Sucursal sucursal) throws SQLException { //MANEJAR POSIBLE ERROR DE NO ENCONTRAR LA FILA
-        Conexion conn = Conexion.getInstance();
-        PreparedStatement pstm = null;
-        ResultSet rs = null;
-        try {
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("DELETE FROM tp_tablas.\"SUCURSAL\" WHERE \"ID\"=" + sucursal.getId());
-            pstm.executeQuery();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (rs != null) try {
-                rs.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (pstm != null) try {
-                pstm.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
+    public boolean bajaSucursal(Sucursal sucursal) throws SQLException {
+        String query ="DELETE FROM tp_tablas.\"SUCURSAL\" WHERE \"ID\"=" + sucursal.getId();
+        return ejecutarQuery(query);
 
     }
     public List<Sucursal> listarSucursal() throws SQLException {
@@ -240,13 +155,15 @@ public class SucursalRepository {
         ejecutarQuery(query);
     }
 
-    private void ejecutarQuery(String query){
+    private boolean ejecutarQuery(String query){
         Conexion conn = Conexion.getInstance();
         PreparedStatement pstm=null;
+        boolean r=false;
         try{
             conn.abrir();
-            pstm = conn.conexion.prepareStatement(query);
-            pstm.executeQuery();
+            Statement statement = conn.conexion.createStatement();
+            statement.execute(query);
+            r=true;
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {
@@ -261,8 +178,58 @@ public class SucursalRepository {
                 e.printStackTrace();
             }
         }
+        return r;
     }
 
     public void editarSucursal(Sucursal sucursal) {
+        boolean estado;
+        if(sucursal.getEstado()==Estado.OPERATIVO){
+            estado =true;
+        }
+        else{
+            estado=false;
+        }
+        String query = "UPDATE INTO tp_tablas.\"SUCURSAL\" SET \"NOMBRE\"= "+sucursal.getNombre()+",\"HORA_APERTURA\"= "+Time.valueOf(sucursal.getHoraApertura())+
+                ",\"HORA_CIERRE\"= "+Time.valueOf(sucursal.getHoraCierre())+",\"ESTADO\"= "+estado+ " WHERE \"SUCURSAL\"= "+sucursal.getId();
+        ejecutarQuery(query);
+
     }
+    private Sucursal busqueda(String query){
+        Conexion conn = Conexion.getInstance();
+        Sucursal sucursal = new Sucursal();
+        PreparedStatement pstm= null;
+        ResultSet rs = null;
+
+        try{
+            conn.abrir();
+            pstm = conn.conexion.prepareStatement(query);
+            rs = pstm.executeQuery();
+            if(rs.next()) {
+                sucursal = getSucursal(rs);
+            }
+            else{
+                sucursal = null;
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            if (rs != null) try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (pstm != null) try {
+                pstm.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) try {
+                conn.cerrar();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return sucursal;
+    };
+
 }

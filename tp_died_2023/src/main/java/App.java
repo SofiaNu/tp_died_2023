@@ -1,3 +1,4 @@
+import clases.Estado;
 import clases.Producto;
 import clases.StockProducto;
 import clases.Sucursal;
@@ -17,18 +18,21 @@ public class App {
 		inicio.setVisible(true);
 		/*ProductoRepository productoRepository = ProductoRepository.getInstance();
 		Producto producto = new Producto("Computadora",500.0, 2.0F);
-		productoRepository.altaProducto(producto);
+		productoRepository.altaProducto(producto);*/
 		SucursalRepository sucursalRepository = SucursalRepository.getInstance();
-		Sucursal sucursal = new Sucursal("Cordoba", LocalTime.now(),LocalTime.now(),true ,25500);
+		Sucursal sucursal = new Sucursal("Pepe", LocalTime.now(),LocalTime.now(), Estado.OPERATIVO ,25500);
 		sucursalRepository.altaSucursal(sucursal);
-		sucursalRepository.buscarSucursal("Cordoba");
-		sucursalRepository.listarSucursal();*/
-		/*
+		//sucursalRepository.bajaSucursal(sucursalRepository.buscarSucursal(6));
+		//sucursalRepository.buscarSucursal(1);
+		//sucursalRepository.listarSucursal();
+
 		StockProductoRepository stockProductoRepository = StockProductoRepository.getInstance();
 
-		 stockProductoRepository.editarStockProductoEnSucursal(3,5,8);
-		 stockProductoRepository.listarStockProductosEnSucursal(5);
-		 stockProductoRepository.buscarEnSucursal(3,3);*/
+		//stockProductoRepository.altaStockProducto(7,5,20);
+		//stockProductoRepository.editarStockProductoEnSucursal(4,5,10);
+		//stockProductoRepository.bajaStockProductoEnSucursal(3,5);
+		//stockProductoRepository.listarStockProductosEnSucursal(5);
+		//stockProductoRepository.buscarEnSucursal(3,3);
 	}
 
 

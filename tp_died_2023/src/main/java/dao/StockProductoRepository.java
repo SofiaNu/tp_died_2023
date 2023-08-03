@@ -23,67 +23,19 @@ public class StockProductoRepository {
         return _INSTANCE;
     }
 
-    public void altaStockProducto(int producto, int sucursal, int cantidad) throws SQLException {
-        Conexion conn = Conexion.getInstance();
-        PreparedStatement pstm = null;
-        ResultSet rs = null;
-        try {
-            conn.abrir();
-            String insertQuery = "INSERT INTO tp_tablas.\"STOCK_PRODUCTO\" (\"PRODUCTO\",\"SUCURSAL\",\"CANTIDAD\") VALUES ("+producto+","+sucursal+","+cantidad+")";
-            Statement statement = conn.conexion.createStatement();
-            boolean rowsAffected = statement.execute(insertQuery);
+    public boolean altaStockProducto(int producto, int sucursal, int cantidad) throws SQLException {
+        String query = "INSERT INTO tp_tablas.\"STOCK_PRODUCTO\" (\"PRODUCTO\",\"SUCURSAL\",\"CANTIDAD\") VALUES ("+producto+","+sucursal+","+cantidad+")";
+        return ejecutarQuery(query);
 
-            //System.out.println("Filas afectadas: " + rowsAffected);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (rs != null) try {
-                rs.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (pstm != null) try {
-                pstm.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
     }
-    public void editarStockProductoEnSucursal(int producto,int sucursal,int cantidad){
-        String query= "UPDATE tp_tablas.\"STOCK_PRODUCTO\" SET \"PRODUCTO\"=? , \"SUCURSAL\"=? ," +
-                " \"CANTIDAD\"=? "+ "WHERE \"PRODUCTO\"="+producto+" AND \"SUCURSAL\"="+sucursal;
-        Conexion conn = Conexion.getInstance();
-        PreparedStatement pstm= null;
-        try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement(query);
-            pstm.setInt(1,producto);
-            pstm.setInt(2,sucursal);
-            pstm.setInt(3,cantidad);
-            pstm.executeQuery();
-        }catch(SQLException e){
-            e.printStackTrace();
-        }finally {
-            if (pstm != null) try {
-                pstm.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+    public boolean editarStockProductoEnSucursal(int producto,int sucursal,int cantidad){
+        String query= "UPDATE tp_tablas.\"STOCK_PRODUCTO\" SET \"PRODUCTO\"= "+producto+ ", \"SUCURSAL\"= "+sucursal+ " ," +
+                " \"CANTIDAD\"= "+cantidad+ "WHERE \"PRODUCTO\"= "+producto+" AND \"SUCURSAL\"= "+sucursal;
+        return ejecutarQuery(query);
     }
-    public void bajaStockProductoEnSucursal(int producto, int sucursal){
+    public boolean bajaStockProductoEnSucursal(int producto, int sucursal){
         String query ="DELETE FROM tp_tablas.\"STOCK_PRODUCTO\" WHERE \"PRODUCTO\" ="+ producto+" AND \"SUCURSAL\" =" + sucursal;
-        ejecutarQuery(query);
+        return ejecutarQuery(query);
     }
     public List<StockProducto> listarStockProductosEnSucursal(int sucursal){
         List<StockProducto> stockProductos =new ArrayList<StockProducto>();
@@ -127,13 +79,15 @@ public class StockProductoRepository {
         return busqueda(query);
     }
 
-    private void ejecutarQuery(String query){
+    private boolean ejecutarQuery(String query){
         Conexion conn = Conexion.getInstance();
         PreparedStatement pstm=null;
+        boolean r=false;
         try{
             conn.abrir();
-            pstm = conn.conexion.prepareStatement(query);
-            pstm.executeQuery();
+            Statement statement = conn.conexion.createStatement();
+            statement.execute(query);
+            r=true;
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {
@@ -148,6 +102,7 @@ public class StockProductoRepository {
                 e.printStackTrace();
             }
         }
+        return r;
     }
 
     private StockProducto busqueda(String query){
