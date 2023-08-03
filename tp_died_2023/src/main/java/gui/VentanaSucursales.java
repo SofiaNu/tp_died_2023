@@ -116,54 +116,23 @@ public class VentanaSucursales extends JFrame {
 		frameAlta.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frameAlta.setLayout(new BorderLayout());
 
-		JPanel mainPanel = new JPanel(new GridLayout(6, 2));
-		JLabel nombrelbl = new JLabel("Nombre: ");
-		JLabel horaAperturalbl = new JLabel("Hora Apertura: ");
-		JLabel horaCierrelbl = new JLabel("Hora Cierre: ");
-		JLabel estadolbl = new JLabel("Estado: ");
-		JLabel capacidadlbl = new JLabel("Capacidad de Recepcion: ");
+		AtributosSucursalesPanel panel = new AtributosSucursalesPanel(new GridLayout(6,2));
 
-		JTextField nombretxt = new JTextField();
-		JTextField capacidadtxt = new JTextField();
-		JComboBox estadoComboBox = new JComboBox<>(Estado.values());
-
-		JPanel panelHoras1 =new JPanel(new GridLayout(1,2));
-		JPanel panelHoras2 =new JPanel(new GridLayout(1,2));
-		JSpinner horaApertura = new JSpinner(new SpinnerNumberModel(00, 00, 23, 1));
-		JSpinner horaCierre = new JSpinner(new SpinnerNumberModel(0, 00, 23, 1));
-		JSpinner minApertura = new JSpinner(new SpinnerNumberModel(00, 00, 59, 15));
-		JSpinner minCierre = new JSpinner(new SpinnerNumberModel(0, 00, 59, 15));
-
-		panelHoras1.add(horaApertura);
-		panelHoras1.add(minApertura);
-		panelHoras2.add(horaCierre);
-		panelHoras2.add(minCierre);
-
-		JButton guardarbtn = new JButton("Guardar");
+		JButton guardarbtn = new JButton("Agregar Sucursal");
 		JButton cancelarbtn = new JButton("Cancelar");
 
-		mainPanel.add(nombrelbl);
-		mainPanel.add(nombretxt);
-		mainPanel.add(horaAperturalbl);
-		mainPanel.add(panelHoras1);
-		mainPanel.add(horaCierrelbl);
-		mainPanel.add(panelHoras2);
-		mainPanel.add(estadolbl);
-		mainPanel.add(estadoComboBox);
-		mainPanel.add(capacidadlbl);
-		mainPanel.add(capacidadtxt);
-		mainPanel.add(guardarbtn);
-		mainPanel.add(cancelarbtn);
+		panel.add(guardarbtn);
+		panel.add(cancelarbtn);
 
 		guardarbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Sucursal sucursal = new Sucursal();
-				sucursal.setNombre(nombretxt.getText());
-				sucursal.setHoraApertura(LocalTime.of((int)horaApertura.getValue(), (int)minApertura.getValue()));
-				sucursal.setHoraCierre(LocalTime.of((int)horaCierre.getValue(), (int)minCierre.getValue()));
-				sucursal.setEstado((Estado) estadoComboBox.getSelectedItem());
-				sucursal.setCapacidad(Float.valueOf(capacidadtxt.getText()));
+				sucursal.setNombre(panel.nombretxt.getText());
+				sucursal.setHoraApertura(LocalTime.of((int)panel.horaApertura.getValue(), (int)panel.minApertura.getValue()));
+				sucursal.setHoraCierre(LocalTime.of((int)panel.horaCierre.getValue(), (int)panel.minCierre.getValue()));
+				sucursal.setEstado((Estado) panel.estadoComboBox.getSelectedItem());
+				sucursal.setCapacidad(Float.valueOf(panel.capacidadtxt.getText()));
 				try {
 					sucursalServicios.agregarSucursal(sucursal);
 				} catch (SQLException ex) {
@@ -181,11 +150,13 @@ public class VentanaSucursales extends JFrame {
 			}
 		});
 
-		frameAlta.add(mainPanel);
+		frameAlta.add(panel);
 		frameAlta.pack();
 		frameAlta.setLocationRelativeTo(null);
 		frameAlta.setVisible(true);
+
 	}
+
 	public void showBuscarPanel(){
 		JFrame frame = new JFrame("Busqueda");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -464,6 +435,51 @@ public class VentanaSucursales extends JFrame {
 		}
 	}
 	public void showEditarPanel(Sucursal sucursal){
+
+		JFrame frameEditar = new JFrame("Editar Informacion sobre: "+sucursal.getNombre());
+		frameEditar.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frameEditar.setLayout(new BorderLayout());
+
+		AtributosSucursalesPanel panel = new AtributosSucursalesPanel(new GridLayout(6,2));
+
+		JButton guardarbtn = new JButton("Guardar Cambios");
+		JButton cancelarbtn = new JButton("Cancelar");
+
+		panel.horaApertura.setValue(sucursal.getHoraApertura().getHour());
+		panel.minApertura.setValue(sucursal.getHoraApertura().getMinute());
+		panel.horaCierre.setValue(sucursal.getHoraCierre().getHour());
+		panel.minCierre.setValue(sucursal.getHoraCierre().getMinute());
+		panel.estadoComboBox.setSelectedItem(sucursal.getEstado());
+		panel.add(guardarbtn);
+		panel.add(cancelarbtn);
+
+		guardarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!panel.nombretxt.getText().isEmpty()){
+				sucursal.setNombre(panel.nombretxt.getText());}
+				sucursal.setHoraApertura(LocalTime.of((int)panel.horaApertura.getValue(), (int)panel.minApertura.getValue()));
+				sucursal.setHoraCierre(LocalTime.of((int)panel.horaCierre.getValue(), (int)panel.minCierre.getValue()));
+				sucursal.setEstado((Estado) panel.estadoComboBox.getSelectedItem());
+				if(!panel.capacidadtxt.getText().isEmpty()){
+				sucursal.setCapacidad(Float.valueOf(panel.capacidadtxt.getText()));}
+				sucursalServicios.editarSucursal(sucursal);
+				frameEditar.dispose();
+			}
+		});
+
+		cancelarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frameEditar.dispose();
+
+			}
+		});
+
+		frameEditar.add(panel);
+		frameEditar.pack();
+		frameEditar.setLocationRelativeTo(null);
+		frameEditar.setVisible(true);
 	}
 	public void showStockPanel(Sucursal sucursal){
 		JFrame stockFrame = new JFrame("Resultado Busqueda:");
