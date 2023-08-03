@@ -19,8 +19,9 @@ public class App {
 		/*ProductoRepository productoRepository = ProductoRepository.getInstance();
 		Producto producto = new Producto("Computadora",500.0, 2.0F);
 		productoRepository.altaProducto(producto);*/
-		SucursalRepository sucursalRepository = SucursalRepository.getInstance();
+		/*SucursalRepository sucursalRepository = SucursalRepository.getInstance();
 		Sucursal sucursal = new Sucursal("Pepe", LocalTime.now(),LocalTime.now(), Estado.OPERATIVO ,25500);
+		sucursalRepository.altaSucursal(sucursal);
 		Sucursal mod = sucursalRepository.buscarSucursal(5);
 		mod.setNombre("San Luis");
 		sucursalRepository.editarSucursal(mod);
@@ -30,7 +31,7 @@ public class App {
 		//sucursalRepository.listarSucursal();
 
 		StockProductoRepository stockProductoRepository = StockProductoRepository.getInstance();
-
+*/
 		//stockProductoRepository.altaStockProducto(7,5,20);
 		//stockProductoRepository.editarStockProductoEnSucursal(4,5,10);
 		//stockProductoRepository.bajaStockProductoEnSucursal(3,5);

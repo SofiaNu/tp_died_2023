@@ -31,7 +31,7 @@ public class SucursalRepository {
         //String query = "INSERT INTO tp_tablas.\"STOCK_PRODUCTO\" (\"PRODUCTO\",\"SUCURSAL\",\"CANTIDAD\") VALUES ("+producto+","+sucursal+","+cantidad+")";
 
         String query = "INSERT INTO tp_tablas.\"SUCURSAL\" (\"NOMBRE\",\"HORA_APERTURA\",\"HORA_CIERRE\",\"ESTADO\",\"CAPACIDAD\") "+
-                "VALUES ("+sucursal.getNombre()+","+Time.valueOf(sucursal.getHoraApertura())+","+Time.valueOf(sucursal.getHoraCierre())+","
+                "VALUES ('"+sucursal.getNombre()+"','"+Time.valueOf(sucursal.getHoraApertura())+"','"+Time.valueOf(sucursal.getHoraCierre())+"',"
                 +estado+","+sucursal.getCapacidad()+")";
         ejecutarQuery(query);
 
@@ -189,8 +189,8 @@ public class SucursalRepository {
         else{
             estado=false;
         }
-        String query = "UPDATE tp_tablas.\"SUCURSAL\" SET \"NOMBRE\"= '"+sucursal.getNombre()+"',\"HORA_APERTURA\"= "+Time.valueOf(sucursal.getHoraApertura())+
-                ",\"HORA_CIERRE\"= "+Time.valueOf(sucursal.getHoraCierre())+",\"ESTADO\"= "+estado+ " WHERE \"SUCURSAL\"= "+sucursal.getId();
+        String query = "UPDATE tp_tablas.\"SUCURSAL\" SET \"NOMBRE\"= '"+sucursal.getNombre()+"',\"HORA_APERTURA\"= '"+Time.valueOf(sucursal.getHoraApertura())+
+                "',\"HORA_CIERRE\"= '"+Time.valueOf(sucursal.getHoraCierre())+"',\"ESTADO\"= "+estado+ " WHERE \"ID\"= "+sucursal.getId();
         ejecutarQuery(query);
 
     }
