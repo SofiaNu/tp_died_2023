@@ -42,13 +42,13 @@ public class SucursalRepository {
         return busqueda(query);
     }
     public Sucursal buscarSucursal(String n){
-        String query="SELECT * FROM tp_tablas.\"SUCURSAL\" WHERE \"NOMBRE\"= "+n;
+        String query="SELECT * FROM tp_tablas.\"SUCURSAL\" WHERE \"NOMBRE\"='"+n+"'";
         return busqueda(query);
 
     }
     public List<Sucursal> buscarSucursal(boolean estado){
 
-        List<Sucursal> sucursales =new ArrayList<Sucursal>();
+        List<Sucursal> sucursales = new ArrayList<Sucursal>();
         Conexion conn =Conexion.getInstance();
         PreparedStatement pstm =null;
         ResultSet rs= null;
@@ -57,14 +57,10 @@ public class SucursalRepository {
             pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"SUCURSAL\" WHERE \"ESTADO\"=?");
             pstm.setBoolean(1, estado);
             rs= pstm.executeQuery();
-            if(rs.next()){
+            while(rs.next()){
                 sucursales.add(getSucursal(rs));
                 String aux= rs.getString("NOMBRE");
                 System.out.println(aux);
-            }
-            else{
-                sucursales = null;
-                System.out.print("No existe el producto");
             }
         }catch(SQLException e){
             e.printStackTrace();
@@ -139,7 +135,6 @@ public class SucursalRepository {
             }
         sucursal.setCapacidad(rs.getFloat("CAPACIDAD"));
         sucursal.setId(rs.getInt("ID"));
-
         return sucursal;
     }
     public void modificarEstado(int id, Estado estado){

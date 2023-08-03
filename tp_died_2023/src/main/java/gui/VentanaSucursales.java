@@ -61,7 +61,6 @@ public class VentanaSucursales extends JFrame {
 		contentPane.add(bajabtn);
 		contentPane.add(stockbtn);
 		contentPane.add(ordenbtn);
-		contentPane.add(cerrarbtn);
 		setContentPane(contentPane);
 
 		altabtn.addActionListener(new ActionListener() {
@@ -96,14 +95,6 @@ public class VentanaSucursales extends JFrame {
 		ordenbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-			}
-		});
-
-		cerrarbtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-
 			}
 		});
 
@@ -502,7 +493,6 @@ public class VentanaSucursales extends JFrame {
 				model.addRow(fila);
 			}
 		}
-		model.addRow(new String[]{"Prodc","3"});
 
 		JScrollPane contenedorTabla = new JScrollPane(tablaResultados);
 		int maxVisibleRows = 7;
@@ -515,6 +505,7 @@ public class VentanaSucursales extends JFrame {
 		JButton agregarbtn = new JButton("Añadir Producto");
 		JButton borrarbtn = new JButton("Eliminar Producto");
 		JButton actualizarbtn = new JButton("Actualizar Stock");
+		JButton cerrarbtn = new JButton("Cerrar");
 
 		actualizarbtn.addActionListener(new ActionListener() {
 			@Override
@@ -557,10 +548,19 @@ public class VentanaSucursales extends JFrame {
 				}
 			}
 		});
+		cerrarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stockFrame.dispose();
+
+			}
+		});
+
 		panel.add(contenedorTabla);
 		panel.add(agregarbtn);
 		panel.add(borrarbtn);
 		panel.add(actualizarbtn);
+		panel.add(cerrarbtn);
 		stockFrame.add(panel);
 		stockFrame.setVisible(true);
 
