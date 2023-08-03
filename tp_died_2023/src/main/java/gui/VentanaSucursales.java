@@ -1,6 +1,8 @@
 package gui;
 
 import clases.Estado;
+import clases.Producto;
+import clases.StockProducto;
 import clases.Sucursal;
 import servicios.SucursalServicios;
 
@@ -49,7 +51,7 @@ public class VentanaSucursales extends JFrame {
 		JButton altabtn = new JButton("Agregar Sucursal");
 		JButton buscarbtn = new JButton("Buscar Sucursal");
 		JButton bajabtn = new JButton("Dar de Baja Sucursal");
-		JButton stockbtn = new JButton("Manejo de Stock");
+		JButton stockbtn = new JButton("Gestion de Stock");
 		JButton ordenbtn = new JButton("Generar Orden de Provision");
 		JButton cerrarbtn = new JButton("Cerrar");
 
@@ -459,7 +461,62 @@ public class VentanaSucursales extends JFrame {
 	public void showEditarPanel(Sucursal sucursal){
 	}
 	public void showStockPanel(Sucursal sucursal){
+		JFrame stockFrame = new JFrame("Resultado Busqueda:");
+		stockFrame.setSize(500, 300);
+		stockFrame.setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+		JPanel panel = new JPanel(new FlowLayout());
+
+
+		String[] columnNames = {"Producto","Cantidad"};
+
+		JTable tablaResultados = new JTable(new DefaultTableModel());
+
+		DefaultTableModel model = (DefaultTableModel) tablaResultados.getModel();
+		model.setColumnIdentifiers(columnNames);
+
+		for(StockProducto s:sucursal.getStock()){
+			String[] fila = {s.getProducto().getNombre(),String.valueOf(s.getCantidad())};
+			model.addRow(fila);
+		}
+
+		JScrollPane contenedorTabla = new JScrollPane(tablaResultados); //Sin esto no se muestra el nombre de las columnas
+		int maxVisibleRows = 7;
+		int rowHeight = tablaResultados.getRowHeight();
+		int headerHeight = tablaResultados.getTableHeader().getPreferredSize().height;
+		Dimension preferredSize = new Dimension(contenedorTabla.getPreferredSize().width,
+				maxVisibleRows * rowHeight + headerHeight);
+		contenedorTabla.setPreferredSize(preferredSize);
+
+		JButton agregarbtn = new JButton("Añadir Producto");
+		JButton borrarbtn = new JButton("Eliminar Producto");
+		JButton actualizarbtn = new JButton("Actualizar Stock");
+
+		actualizarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				tablaResultados.setEnabled(true);
+				int row =tablaResultados.getSelectedRow();
+				if (row!=-1){
+					Producto prod= sucursal.getStock().get(row).getProducto();
+					String cantidadAct = showActualizarDialog(prod, sucursal.getId(),row);
+					tablaResultados.setValueAt(cantidadAct,row,1);
+				}
+
+			}
+		});
+
+	}
+
+	public String showActualizarDialog(Producto prod,int sucursal, int fila){
+		String msj = "Ingrese la nueva cantidad de stock para el producto "+prod.getNombre();
+		String cant = JOptionPane.showInputDialog(null,
+				msj,JOptionPane.PLAIN_MESSAGE);
+		if(cant!=null){
+			//sucursalServicios.actualizarStock(prod.getId(),sucursal,Integer.valueOf(cant));
+		}
+		return cant;
 	}
 	public void showOrden(Sucursal sucursal){}
 
