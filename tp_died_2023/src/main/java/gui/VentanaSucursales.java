@@ -4,6 +4,7 @@ import clases.Estado;
 import clases.Producto;
 import clases.StockProducto;
 import clases.Sucursal;
+import servicios.ProductoServicios;
 import servicios.SucursalServicios;
 
 import java.awt.*;
@@ -496,27 +497,88 @@ public class VentanaSucursales extends JFrame {
 		actualizarbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				tablaResultados.setEnabled(true);
 				int row =tablaResultados.getSelectedRow();
 				if (row!=-1){
 					Producto prod= sucursal.getStock().get(row).getProducto();
-					String cantidadAct = showActualizarDialog(prod, sucursal.getId(),row);
+					String cantidadAct = showActualizarDialog(prod, sucursal,row);
 					tablaResultados.setValueAt(cantidadAct,row,1);
 				}
 
 			}
 		});
 
+		borrarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int row =tablaResultados.getSelectedRow();
+				if (row!=-1){
+					Producto prod= sucursal.getStock().get(row).getProducto();
+					boolean confirm = showBorrarProdStockDialog(prod,sucursal);
+					if(confirm){
+						model.removeRow(row);
+					}
+				}
+
+			}
+		});
+
+		agregarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				StockProducto nuevoStock = null;
+				try {
+					nuevoStock = showAgregarStockDialog(sucursal);
+				} catch (SQLException ex) {
+					throw new RuntimeException(ex);
+				}
+				model.addRow(new String[]{nuevoStock.getProducto().getNombre(), String.valueOf(nuevoStock.getCantidad())});
+
+			}
+		});
+
+
 	}
 
-	public String showActualizarDialog(Producto prod,int sucursal, int fila){
+	public StockProducto showAgregarStockDialog(Sucursal sucursal) throws SQLException {
+		StockProducto stock = new StockProducto();
+		JPanel panel = new JPanel();
+		JLabel lbl= new JLabel("Seleccione el producto y la cantidad");
+		JComboBox productosComboBox = new JComboBox<>(listaProductos().toArray());
+		JTextField cantidadtxt = new JTextField();
+		panel.add(lbl);
+		panel.add(productosComboBox);
+		panel.add(cantidadtxt);
+		int opcion =JOptionPane.showOptionDialog(null,panel,"Agregar Stock",JOptionPane.OK_OPTION,
+				JOptionPane.OK_OPTION,null,null,null);
+		if(opcion==JOptionPane.OK_OPTION){
+			//agregar;
+		}
+		return stock;
+	}
+	public boolean showBorrarProdStockDialog(Producto prod,Sucursal sucursal){
+		int opcion = JOptionPane.showConfirmDialog(null, "¿Seguro desea eliminar el stock del" +
+				"producto"+prod.getNombre(),"Eliminar Stock",JOptionPane.YES_NO_OPTION);
+		if(opcion==JOptionPane.YES_OPTION){
+			//sucursalServicios.removerStock(prod,sucursal);
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	public String showActualizarDialog(Producto prod,Sucursal sucursal, int fila){
 		String msj = "Ingrese la nueva cantidad de stock para el producto "+prod.getNombre();
 		String cant = JOptionPane.showInputDialog(null,
 				msj,JOptionPane.PLAIN_MESSAGE);
 		if(cant!=null){
-			//sucursalServicios.actualizarStock(prod.getId(),sucursal,Integer.valueOf(cant));
+			//sucursalServicios.actualizarStock(prod,sucursal,Integer.valueOf(cant));
 		}
 		return cant;
+	}
+
+	private List<Producto> listaProductos() throws SQLException {
+		ProductoServicios productoServicios = new ProductoServicios();
+		return productoServicios.listarProductos();
 	}
 	public void showOrden(Sucursal sucursal){}
 

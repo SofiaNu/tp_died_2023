@@ -2,6 +2,7 @@ package servicios;
 
 import clases.Camino;
 import clases.Estado;
+import clases.StockProducto;
 import clases.Sucursal;
 import dao.SucursalRepository;
 
@@ -50,6 +51,7 @@ public class SucursalServicios {
     public void editarSucursal(Sucursal sucursal){
         sucursalRepository.editarSucursal(sucursal);
     }
+
 
 }
 
