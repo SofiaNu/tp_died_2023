@@ -133,10 +133,10 @@ public class SucursalRepository {
         sucursal.setHoraApertura(rs.getTime("HORA_APERTURA").toLocalTime());
         sucursal.setHoraCierre(rs.getTime("HORA_CIERRE").toLocalTime());
         if(rs.getBoolean("ESTADO")){
-            sucursal.setEstado(Estado.OPERATIVO);}
+        sucursal.setEstado(Estado.OPERATIVO);}
         else{
             sucursal.setEstado(Estado.NO_OPERATIVO);
-        }
+            }
         sucursal.setCapacidad(rs.getFloat("CAPACIDAD"));
         sucursal.setId(rs.getInt("ID"));
 
