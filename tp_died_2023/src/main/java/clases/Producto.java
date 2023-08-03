@@ -50,6 +50,9 @@ public class Producto {
 	public void setPeso(float peso) {
 		this.peso = peso;
 	}
-	
+
+	public String toString(){
+		return nombre;
+	}
 
 }

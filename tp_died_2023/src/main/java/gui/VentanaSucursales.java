@@ -411,6 +411,7 @@ public class VentanaSucursales extends JFrame {
 				int index = tablaResultados.getSelectedRow();
 				try {
 					showBajaDialog(sucursales.get(index));
+					resultadoFrame.dispose();
 				} catch (SQLException ex) {
 					throw new RuntimeException(ex);
 				}
@@ -421,6 +422,7 @@ public class VentanaSucursales extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int index = tablaResultados.getSelectedRow();
 				showModificarEstadoDialog(sucursales.get(index));
+				resultadoFrame.dispose();
 			}
 		});
 		stockbtn.addActionListener(new ActionListener() {
@@ -428,6 +430,7 @@ public class VentanaSucursales extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int index = tablaResultados.getSelectedRow();
 				showStockPanel(sucursales.get(index));
+				resultadoFrame.dispose();
 			}
 		});
 		ordenbtn.addActionListener(new ActionListener() {
@@ -435,6 +438,7 @@ public class VentanaSucursales extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int index = tablaResultados.getSelectedRow();
 				showOrden(sucursales.get(index));
+				resultadoFrame.dispose();
 			}
 		});
 
@@ -476,13 +480,15 @@ public class VentanaSucursales extends JFrame {
 
 		DefaultTableModel model = (DefaultTableModel) tablaResultados.getModel();
 		model.setColumnIdentifiers(columnNames);
-
-		for(StockProducto s:sucursal.getStock()){
-			String[] fila = {s.getProducto().getNombre(),String.valueOf(s.getCantidad())};
-			model.addRow(fila);
+		if(sucursal.getStock()!=null) {
+			for (StockProducto s : sucursal.getStock()) {
+				String[] fila = {s.getProducto().getNombre(), String.valueOf(s.getCantidad())};
+				model.addRow(fila);
+			}
 		}
+		model.addRow(new String[]{"Prodc","3"});
 
-		JScrollPane contenedorTabla = new JScrollPane(tablaResultados); //Sin esto no se muestra el nombre de las columnas
+		JScrollPane contenedorTabla = new JScrollPane(tablaResultados);
 		int maxVisibleRows = 7;
 		int rowHeight = tablaResultados.getRowHeight();
 		int headerHeight = tablaResultados.getTableHeader().getPreferredSize().height;
@@ -498,12 +504,11 @@ public class VentanaSucursales extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int row =tablaResultados.getSelectedRow();
-				if (row!=-1){
+				if (row!=-1 && sucursal.getStock()!=null){
 					Producto prod= sucursal.getStock().get(row).getProducto();
 					String cantidadAct = showActualizarDialog(prod, sucursal,row);
 					tablaResultados.setValueAt(cantidadAct,row,1);
 				}
-
 			}
 		});
 
@@ -531,27 +536,43 @@ public class VentanaSucursales extends JFrame {
 				} catch (SQLException ex) {
 					throw new RuntimeException(ex);
 				}
-				model.addRow(new String[]{nuevoStock.getProducto().getNombre(), String.valueOf(nuevoStock.getCantidad())});
-
+				if(nuevoStock!=null) {
+					model.addRow(new String[]{nuevoStock.getProducto().getNombre(), String.valueOf(nuevoStock.getCantidad())});
+				}
 			}
 		});
-
+		panel.add(contenedorTabla);
+		panel.add(agregarbtn);
+		panel.add(borrarbtn);
+		panel.add(actualizarbtn);
+		stockFrame.add(panel);
+		stockFrame.setVisible(true);
 
 	}
 
 	public StockProducto showAgregarStockDialog(Sucursal sucursal) throws SQLException {
 		StockProducto stock = new StockProducto();
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new GridLayout(3,1));
 		JLabel lbl= new JLabel("Seleccione el producto y la cantidad");
-		JComboBox productosComboBox = new JComboBox<>(listaProductos().toArray());
-		JTextField cantidadtxt = new JTextField();
+		List<Producto> productos= listaProductos();
+		DefaultComboBoxModel<Producto> comboBoxModel = new DefaultComboBoxModel<>(productos.toArray(new Producto[0]));
+		JComboBox<Producto> productosComboBox = new JComboBox<>(comboBoxModel);
+		JTextField cantidadtxt = new JTextField(3);
+
 		panel.add(lbl);
 		panel.add(productosComboBox);
 		panel.add(cantidadtxt);
-		int opcion =JOptionPane.showOptionDialog(null,panel,"Agregar Stock",JOptionPane.OK_OPTION,
-				JOptionPane.OK_OPTION,null,null,null);
+		int opcion =JOptionPane.showOptionDialog(this,panel,"Nuevo Stock",
+				JOptionPane.OK_OPTION,JOptionPane.PLAIN_MESSAGE,null,null,null);
 		if(opcion==JOptionPane.OK_OPTION){
 			//agregar;
+			stock.setProducto((Producto) productosComboBox.getSelectedItem());
+			stock.setCantidad(Integer.valueOf(cantidadtxt.getText()));
+			//sucursal.getStock().add(stock);,
+			//sucursalServicios.agregarStock(sucursal,stock);
+		}
+		else{
+			stock = null;
 		}
 		return stock;
 	}
