@@ -52,14 +52,12 @@ public class VentanaSucursales extends JFrame {
 		JButton altabtn = new JButton("Agregar Sucursal");
 		JButton buscarbtn = new JButton("Buscar Sucursal");
 		JButton bajabtn = new JButton("Dar de Baja Sucursal");
-		JButton stockbtn = new JButton("Gestion de Stock");
-		JButton ordenbtn = new JButton("Generar Orden de Provision");
+		JButton ordenbtn = new JButton("Gestion Ordenes de Provision");
 		JButton cerrarbtn = new JButton("Cerrar");
 
 		contentPane.add(altabtn);
 		contentPane.add(buscarbtn);
 		contentPane.add(bajabtn);
-		contentPane.add(stockbtn);
 		contentPane.add(ordenbtn);
 		contentPane.add(cerrarbtn);
 		setContentPane(contentPane);
@@ -92,19 +90,12 @@ public class VentanaSucursales extends JFrame {
 			}
 		});
 
-		stockbtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-			}
-		});
-
 		ordenbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CrearOrdenProvisionUI crearOrderProvisionUI = new CrearOrdenProvisionUI();
-				crearOrderProvisionUI.init();
-				crearOrderProvisionUI.show();
+				VentanaOrden ventanaOrden = new VentanaOrden();
+				ventanaOrden.setVisible(true);
+				dispose();
 			}
 		});
 

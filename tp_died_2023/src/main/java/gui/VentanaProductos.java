@@ -45,13 +45,21 @@ public class VentanaProductos extends JFrame {
 		// Create buttons
 		JButton altaProductobtn = new JButton("Alta Producto");
 		JButton busquedabtn = new JButton("Busqueda");
+		JButton cerrarbtn = new JButton("Cerrar");
 
 		// Add buttons to the main frame
 		setLayout(new FlowLayout());
 		add(altaProductobtn);
 		add(busquedabtn);
+		add(cerrarbtn);
 
-		// Action listeners for buttons
+		cerrarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
+
 		altaProductobtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -130,7 +138,7 @@ public class VentanaProductos extends JFrame {
 		altaProductoFrame.setSize(400, 200);
 		altaProductoFrame.setLocationRelativeTo(null);
 
-		// Create labels and text fields
+
 		JLabel nombrelbl = new JLabel("Nombre:");
 		JTextField nombretxt = new JTextField();
 		JLabel descripcionlbl = new JLabel("Descripcion:");
@@ -140,11 +148,9 @@ public class VentanaProductos extends JFrame {
 		JLabel pesolbl = new JLabel("Peso en KG:");
 		JTextField pesotxt = new JTextField();
 
-
-		// Create "Guardar" button
 		JButton guardarbtn = new JButton("Guardar Cambios");
+		JButton cerrarbtn = new JButton("Cerrar");
 
-		// Add components to the panel
 		JPanel altaProductoPanel = new JPanel();
 		altaProductoPanel.setLayout(new GridLayout(5, 2));
 		altaProductoPanel.add(nombrelbl);
@@ -156,8 +162,8 @@ public class VentanaProductos extends JFrame {
 		altaProductoPanel.add(pesolbl);
 		altaProductoPanel.add(pesotxt);
 		altaProductoPanel.add(guardarbtn);
+		altaProductoPanel.add(cerrarbtn);
 
-		// Action listener for "Guardar" button
 		guardarbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -178,6 +184,13 @@ public class VentanaProductos extends JFrame {
 					throw new RuntimeException(ex);
 				}
 				altaProductoFrame.dispose(); // Close the Alta Producto frame after saving
+			}
+		});
+
+		cerrarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				altaProductoFrame.dispose();
 			}
 		});
 
@@ -280,7 +293,6 @@ public class VentanaProductos extends JFrame {
 		frame.setVisible(true);
 	}
 
-
 	private void showResultadoPanel(Producto producto) {
 		JFrame resultadoProductoFrame = new JFrame("Editar Producto");
 		resultadoProductoFrame.setSize(500, 200);
@@ -352,7 +364,7 @@ public class VentanaProductos extends JFrame {
 			servicio.borrarProducto(producto.getId());
 			}
 	}
-		private void buscar(String prodNombre) throws SQLException {
+	private void buscar(String prodNombre) throws SQLException {
 			Producto producto =servicio.buscarProducto(prodNombre);
 			if(producto != null){
 				showResultadoPanel(producto);
@@ -361,7 +373,7 @@ public class VentanaProductos extends JFrame {
 				JOptionPane.showMessageDialog(this,"Producto no encontrado","Error",JOptionPane.OK_OPTION);
 			}
 		}
-		private void buscar(int id) throws SQLException {
+	private void buscar(int id) throws SQLException {
 		Producto producto =servicio.buscarProducto(id);
 		if(producto != null){
 			showResultadoPanel(producto);

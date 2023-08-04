@@ -53,14 +53,14 @@ public class VentanaCaminos extends JFrame {
 		JButton altabtn = new JButton("Agregar camino");
 		JButton bajabtn = new JButton("Inhabilitar camino");
 		JButton busquedabtn = new JButton("Buscar camino");
-		JButton editarbtn = new JButton("editar caminos");
+		JButton cerrarbtn = new JButton("Cerrar");
 
 		// Add buttons to the main frame
 		contentPane.setLayout(new FlowLayout());
 		contentPane.add(altabtn);
 		contentPane.add(bajabtn);
 		contentPane.add(busquedabtn);
-		contentPane.add(editarbtn);
+		contentPane.add(cerrarbtn);
 		setContentPane(contentPane);
 
 		altabtn.addActionListener(new ActionListener() {
@@ -82,14 +82,10 @@ public class VentanaCaminos extends JFrame {
 			}
 		});
 
-		editarbtn.addActionListener(new ActionListener() {
+		cerrarbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					showBusquedaPanel();
-				} catch (SQLException ex) {
-					throw new RuntimeException(ex);
-				}
+				dispose();
 			}
 		});
 		busquedabtn.addActionListener(new ActionListener() {
