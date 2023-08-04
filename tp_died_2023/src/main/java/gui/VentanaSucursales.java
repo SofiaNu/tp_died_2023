@@ -513,7 +513,12 @@ public class VentanaSucursales extends JFrame {
 				int row =tablaResultados.getSelectedRow();
 				if (row!=-1 && sucursal.getStock()!=null){
 					Producto prod= sucursal.getStock().get(row).getProducto();
-					String cantidadAct = showActualizarDialog(prod, sucursal,row);
+					String cantidadAct = null;
+					try {
+						cantidadAct = showActualizarDialog(prod, sucursal,row);
+					} catch (SQLException ex) {
+						throw new RuntimeException(ex);
+					}
 					tablaResultados.setValueAt(cantidadAct,row,1);
 				}
 			}
@@ -525,7 +530,12 @@ public class VentanaSucursales extends JFrame {
 				int row =tablaResultados.getSelectedRow();
 				if (row!=-1){
 					Producto prod= sucursal.getStock().get(row).getProducto();
-					boolean confirm = showBorrarProdStockDialog(prod,sucursal);
+					boolean confirm = false;
+					try {
+						confirm = showBorrarProdStockDialog(prod,sucursal);
+					} catch (SQLException ex) {
+						throw new RuntimeException(ex);
+					}
 					if(confirm){
 						model.removeRow(row);
 					}
@@ -584,31 +594,31 @@ public class VentanaSucursales extends JFrame {
 			//agregar;
 			stock.setProducto((Producto) productosComboBox.getSelectedItem());
 			stock.setCantidad(Integer.valueOf(cantidadtxt.getText()));
-			//sucursal.getStock().add(stock);,
-			//sucursalServicios.agregarStock(sucursal,stock);
+			sucursal.addStock(stock);
+			sucursalServicios.altaStockProducto(stock.getProducto(),sucursal,stock.getCantidad());
 		}
 		else{
 			stock = null;
 		}
 		return stock;
 	}
-	public boolean showBorrarProdStockDialog(Producto prod,Sucursal sucursal){
+	public boolean showBorrarProdStockDialog(Producto prod,Sucursal sucursal) throws SQLException {
 		int opcion = JOptionPane.showConfirmDialog(null, "¿Seguro desea eliminar el stock del" +
 				"producto"+prod.getNombre(),"Eliminar Stock",JOptionPane.YES_NO_OPTION);
 		if(opcion==JOptionPane.YES_OPTION){
-			//sucursalServicios.removerStock(prod,sucursal);
+			sucursalServicios.borrarStockProducto(prod,sucursal);
 			return true;
 		}
 		else{
 			return false;
 		}
 	}
-	public String showActualizarDialog(Producto prod,Sucursal sucursal, int fila){
+	public String showActualizarDialog(Producto prod,Sucursal sucursal, int fila) throws SQLException {
 		String msj = "Ingrese la nueva cantidad de stock para el producto "+prod.getNombre();
 		String cant = JOptionPane.showInputDialog(null,
 				msj,JOptionPane.PLAIN_MESSAGE);
 		if(cant!=null){
-			//sucursalServicios.actualizarStock(prod,sucursal,Integer.valueOf(cant));
+			sucursalServicios.editarStockProducto(prod,sucursal, Integer.parseInt(cant));
 		}
 		return cant;
 	}

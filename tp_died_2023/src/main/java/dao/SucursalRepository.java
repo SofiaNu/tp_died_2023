@@ -135,8 +135,15 @@ public class SucursalRepository {
             }
         sucursal.setCapacidad(rs.getFloat("CAPACIDAD"));
         sucursal.setId(rs.getInt("ID"));
+        sucursal.setStock(getStockSucursal(rs.getInt("ID")));
         return sucursal;
     }
+
+    private List<StockProducto> getStockSucursal(int id){
+        StockProductoRepository stockProductoRepository = StockProductoRepository.getInstance();
+        return stockProductoRepository.listarStockProductosEnSucursal(id);
+    }
+
     public void modificarEstado(int id, Estado estado){
         String query;
         if(estado == Estado.OPERATIVO){

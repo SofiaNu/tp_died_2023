@@ -13,7 +13,7 @@ public class SucursalServicios {
     public SucursalServicios(){
         super();
         sucursalRepository = SucursalRepository.getInstance();
-
+        stockProductoRepository = StockProductoRepository.getInstance();
     }
 
     public Sucursal buscarSucursal(int id ) throws SQLException {
