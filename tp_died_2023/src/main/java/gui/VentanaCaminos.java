@@ -105,68 +105,47 @@ public class VentanaCaminos extends JFrame {
 		contentPane.setVisible(true);
 	}
 
-	public void showAltaCaminoPanel()  {
+	public void showAltaCaminoPanel(){
 		JFrame altaFrame = new JFrame("Dar Alta");
 		altaFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		altaFrame.setLayout(new BorderLayout());
 
-		JPanel panelAlta = new JPanel(new GridLayout(6, 2 ));
-
-
-		JLabel label1 = new JLabel("Origen:");
-		JLabel label2 = new JLabel("Destino:");
-		JLabel label3 = new JLabel("Tiempo en Transito:");
-		JLabel label4 = new JLabel("Capacidad Maxima:");
-		JLabel label5 = new JLabel("Estado:");
-
-
-		JTextField tiempotxt = new JTextField(10);
-		JTextField capacidadtxt = new JTextField(10);
-
-		DefaultComboBoxModel<Sucursal> origenModel = new DefaultComboBoxModel<>(sucursales.toArray(new Sucursal[0]));
-		DefaultComboBoxModel<Sucursal> destinoModel = new DefaultComboBoxModel<>(sucursales.toArray(new Sucursal[0]));
-
-		JComboBox<Sucursal> origenCombo = new JComboBox<Sucursal>(origenModel);
-		JComboBox<Sucursal> destinoCombo = new JComboBox<Sucursal>(destinoModel);
-		JComboBox<String> estadoCombo = new JComboBox<>(new String[]{"Operativo", "No operativo"});
+		CaminoAuxPanel panelAlta = new CaminoAuxPanel(sucursales,new GridLayout(6, 2 ));
 
 		JButton agregar = new JButton("Agregar");
+		JButton cancelar = new JButton("Cancelar");
 		agregar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Sucursal origen = (Sucursal) origenCombo.getSelectedItem();
-				Sucursal destino =  (Sucursal) destinoCombo.getSelectedItem();
+				Sucursal origen = (Sucursal) panelAlta.origenCombo.getSelectedItem();
+				Sucursal destino =  (Sucursal) panelAlta.destinoCombo.getSelectedItem();
 				float tiempo= 0;
 				float capacidad=0;
-				if(!tiempotxt.getText().isEmpty()){tiempo = Float.parseFloat(tiempotxt.getText());}
-				if(!capacidadtxt.getText().isEmpty()){capacidad = Float.parseFloat(capacidadtxt.getText());}
-				Estado estado;
-				if(estadoCombo.getSelectedItem() == "Operativo"){estado = Estado.OPERATIVO;}
-				else{estado =Estado.NO_OPERATIVO;}
-				darAlta(origen,destino,tiempo,capacidad,estado);
+				if(!panelAlta.tiempotxt.getText().isEmpty()){
+					tiempo = Float.parseFloat(panelAlta.tiempotxt.getText());
+				}
+				if(!panelAlta.capacidadtxt.getText().isEmpty()){
+					capacidad = Float.parseFloat(panelAlta.capacidadtxt.getText());
+				}
+				darAlta(origen,destino,tiempo,capacidad,(Estado) panelAlta.estadoComboBox.getSelectedItem());
+
+				altaFrame.dispose();
 			}
 		});
 
-
-		panelAlta.add(label1);
-		panelAlta.add(origenCombo);
-		panelAlta.add(label2);
-		panelAlta.add(destinoCombo);
-		panelAlta.add(label3);
-		panelAlta.add(tiempotxt);
-		panelAlta.add(label4);
-		panelAlta.add(capacidadtxt);
-		panelAlta.add(label5);
-		panelAlta.add(estadoCombo);
+		cancelar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				altaFrame.dispose();
+			}
+		});
 		panelAlta.add(agregar);
-
-		altaFrame.add(panelAlta, BorderLayout.CENTER);
+		panelAlta.add(cancelar);
+		altaFrame.add(panelAlta);
 		altaFrame.pack();
 		altaFrame.setLocationRelativeTo(null);
 		altaFrame.setVisible(true);
 	}
-
-
 
 	public void showBusquedaPanel() throws SQLException {
 		JFrame frame = new JFrame("Búsqueda");
@@ -295,77 +274,6 @@ public class VentanaCaminos extends JFrame {
 		frameEditar.add(panelAtributos);
 		frameEditar.setVisible(true);
 	}
-
-	public void showEditarPanel2(Camino camino) throws SQLException {
-		JFrame frameEditar = new JFrame("Resultado Busqueda:");
-		frameEditar.setSize(500, 200);
-		frameEditar.setLocationRelativeTo(null);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		JPanel panelAtributos = new JPanel(new GridLayout(6, 2 ));
-
-
-		JLabel label1 = new JLabel("Origen:");
-		JLabel label2 = new JLabel("Destino:");
-		JLabel label3 = new JLabel("Tiempo en Transito:");
-		JLabel label4 = new JLabel("Capacidad Maxima:");
-
-
-		JTextField tiempotxt = new JTextField(10);
-		JTextField capacidadtxt = new JTextField(10);
-
-		DefaultComboBoxModel<Sucursal> origenModel = new DefaultComboBoxModel<>(sucursales.toArray(new Sucursal[0]));
-		DefaultComboBoxModel<Sucursal> destinoModel = new DefaultComboBoxModel<>(sucursales.toArray(new Sucursal[0]));
-
-		JComboBox<Sucursal> origenCombo = new JComboBox<Sucursal>(origenModel);
-		JComboBox<Sucursal> destinoCombo = new JComboBox<Sucursal>(destinoModel);
-		JComboBox<String> estadoCombo = new JComboBox<>(new String[]{"Operativo", "No operativo"});
-
-		JButton guardarbtn = new JButton("Guardar cambios");
-		JButton cancelarbtn = new JButton("Cancelar");
-
-		panelAtributos.add(label1);
-		panelAtributos.add(origenCombo);
-		panelAtributos.add(label2);
-		panelAtributos.add(destinoCombo);
-		panelAtributos.add(label3);
-		panelAtributos.add(tiempotxt);
-		panelAtributos.add(label4);
-		panelAtributos.add(capacidadtxt);
-
-		panelAtributos.add(estadoCombo);
-		panelAtributos.add(guardarbtn);
-		panelAtributos.add(cancelarbtn);
-
-		cancelarbtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				frameEditar.dispose();
-			}
-		});
-
-		guardarbtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				camino.setOrigen((Sucursal) origenCombo.getSelectedItem());
-				camino.setDestino((Sucursal) destinoCombo.getSelectedItem());
-				if(!tiempotxt.getText().isEmpty()){
-					camino.setTiempoTransito(Float.parseFloat(tiempotxt.getText()));}
-
-				if(!capacidadtxt.getText().isEmpty()){
-					camino.setCapacidadMaxima(Float.parseFloat(capacidadtxt.getText()));}
-				boolean estado;
-				if(estadoCombo.getSelectedItem() == "Operativo"){estado = true;}
-				else{estado =false;}
-
-				caminoServicios.editarCamino(camino);
-				frameEditar.dispose();
-			}
-		});
-		frameEditar.add(panelAtributos);
-		frameEditar.setVisible(true);
-	}
-
 
 	public void showCaminoNoEncontradoDialog(){
 		JOptionPane.showMessageDialog(this,"Camino no encontrado","Error",JOptionPane.OK_OPTION);
