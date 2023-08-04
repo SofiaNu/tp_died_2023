@@ -630,6 +630,8 @@ public class VentanaSucursales extends JFrame {
 		ProductoServicios productoServicios = new ProductoServicios();
 		return productoServicios.listarProductos();
 	}
-	public void showOrden(Sucursal sucursal){}
+	public void showOrden(Sucursal sucursal){
+
+	}
 
 }

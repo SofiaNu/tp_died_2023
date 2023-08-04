@@ -10,7 +10,7 @@ public class OrdenProvision {
 	Sucursal destino;
 	float tiempoLimite;
 	float peso;
-	boolean estado; //tiene pendiente y en proceso (no hay listo aclarado pero asumo que deberia ir y ahi seria enum)
+	EstadoOrden estado;
 	List<ProductoProvisto> listaProductos;
 	public int getId() {
 		return id;
@@ -43,10 +43,10 @@ public class OrdenProvision {
 	public void setPeso(float peso) {
 		this.peso = peso;
 	}
-	public boolean isEstado() {
+	public EstadoOrden getEstado() {
 		return estado;
 	}
-	public void setEstado(boolean estado) {
+	public void setEstado(EstadoOrden estado) {
 		this.estado = estado;
 	}
 	public List<ProductoProvisto> getListaProductos() {
@@ -59,7 +59,7 @@ public class OrdenProvision {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public OrdenProvision(LocalDate fecha, Sucursal destino, float tiempoLimite, float peso, boolean estado,
+	public OrdenProvision(LocalDate fecha, Sucursal destino, float tiempoLimite, float peso, EstadoOrden estado,
 			List<ProductoProvisto> listaProductos) {
 		super();
 		this.fecha = fecha;
