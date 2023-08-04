@@ -1,13 +1,10 @@
 package dao;
 
-import clases.Estado;
-import clases.OrdenProvision;
-import clases.ProductoProvisto;
-import clases.Sucursal;
+import clases.*;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Date;
+import java.util.*;
 
 public class OrdenProvisionRepository {
     private static OrdenProvisionRepository  _INSTANCE;
@@ -114,93 +111,16 @@ public class OrdenProvisionRepository {
         }
     }
 
-    public Sucursal buscarSucursal(int n){
-        Sucursal sucursal= new Sucursal();
-        Conexion conn =Conexion.getInstance();
-        PreparedStatement pstm =null;
-        ResultSet rs= null;
-        try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"SUCURSAL\" WHERE \"ID\"="+n);
-            rs= pstm.executeQuery();
-            if(rs.next()){
-                sucursal = getSucursal(rs);
-                String aux= rs.getString("NOMBRE");
-                System.out.println(aux);
-            }
-            else{
-                sucursal = null;
-                System.out.print("No existe el producto");
-            }
-        }catch(SQLException e){
-            e.printStackTrace();
-        }finally {
-            if (rs != null) try {
-                rs.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (pstm != null) try {
-                pstm.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return sucursal;
-    }
-    public Sucursal buscarSucursal(String n){
-        Sucursal sucursal= new Sucursal();
-        Conexion conn =Conexion.getInstance();
-        PreparedStatement pstm =null;
-        ResultSet rs= null;
-        try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"SUCURSAL\" WHERE \"NOMBRE\"=?");
-            pstm.setString(1,n);
-            rs= pstm.executeQuery();
-            if(rs.next()){
-                sucursal = getSucursal(rs);
-                String aux= rs.getString("NOMBRE");
-                System.out.println(aux);
-            }
-            else{
-                sucursal = null;
-                System.out.print("No existe el producto");
-            }
-        }catch(SQLException e){
-            e.printStackTrace();
-        }finally {
-            if (rs != null) try {
-                rs.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (pstm != null) try {
-                pstm.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return sucursal;
-    }
-    public void bajaSucursal(Sucursal sucursal) throws SQLException { //MANEJAR POSIBLE ERROR DE NO ENCONTRAR LA FILA
+    public void bajaOrden(OrdenProvision ordenProvision){
+        if(ordenProvision == null || ordenProvision.getId() <= 0) return;
         Conexion conn = Conexion.getInstance();
         PreparedStatement pstm = null;
         ResultSet rs = null;
         try {
             conn.abrir();
-            pstm = conn.conexion.prepareStatement("DELETE FROM tp_tablas.\"SUCURSAL\" WHERE \"ID\"=" + sucursal.getId());
-            pstm.executeQuery();
+            pstm = conn.conexion.prepareStatement("DELETE FROM tp_tablas.\"ORDEN_PROVISION\" WHERE \"ID\"= ?");
+            pstm.setInt(1, ordenProvision.getId());
+            pstm.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -220,22 +140,139 @@ public class OrdenProvisionRepository {
                 e.printStackTrace();
             }
         }
-
-
     }
-    public List<Sucursal> listarSucursal() throws SQLException {
-        List<Sucursal> sucursales= new ArrayList<Sucursal>();
-        Conexion conn =Conexion.getInstance();
+
+    public List<OrdenProvision> ordenesDeSucursal(Sucursal sucursal){
+            List<OrdenProvision> ordenes = new ArrayList<OrdenProvision>();
+            if(sucursal == null || sucursal.getId() <= 0){
+                return ordenes;
+            }
+            Conexion conn = Conexion.getInstance();
+            PreparedStatement pstm =null;
+            ResultSet rs= null;
+            try{
+                conn.abrir();
+                pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"ORDEN_PROVISION\" WHERE \"SUCURSAL_DESTINO\" = ?");
+                pstm.setInt(1, sucursal.getId());
+                rs= pstm.executeQuery();
+                while(rs.next()){
+                    OrdenProvision op = buildOPFromRs(rs);
+                    op.setDestino(sucursal);
+                    ordenes.add(op);
+                }
+            }catch(SQLException e){
+                e.printStackTrace();
+            }finally {
+                if (rs != null) try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                if (pstm != null) try {
+                    pstm.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                if (conn != null) try {
+                    conn.cerrar();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            return ordenes;
+    }
+
+    public List<ProductoProvisto> productosProvistosDeOrden(OrdenProvision op){
+        List<ProductoProvisto> productosProvistos = new ArrayList<ProductoProvisto>();
+        if(op == null || op.getId() <= 0){
+            return productosProvistos;
+        }
+        Conexion conn = Conexion.getInstance();
         PreparedStatement pstm =null;
+        PreparedStatement pstmProd = null;
+        ResultSet rsProd = null;
         ResultSet rs= null;
         try{
             conn.abrir();
-            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"SUCURSAL\"");
+            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"PRODUCTO_PROVISTO\" WHERE \"ORDEN_PROVISION\" = ?");
+            pstm.setInt(1, op.getId());
             rs= pstm.executeQuery();
             while(rs.next()){
-                sucursales.add(getSucursal(rs));
-                String aux= rs.getString("NOMBRE");
-                System.out.println(aux);
+                ProductoProvisto pp = buildPPFromRs(rs);
+                pp.setOrdenProvision(op);
+                productosProvistos.add(pp);
+            }
+
+            HashSet<Integer> idProductos = new HashSet<Integer>();
+            for(ProductoProvisto pp : productosProvistos){
+                Producto p = pp.getProducto();
+                if(p != null){
+                    idProductos.add(p.getId());
+                }
+            }
+            List<Integer> idProductosList = idProductos.stream().toList();
+            String sqlStm = "SELECT * FROM tp_tablas.\"PRODUCTO\" WHERE ";
+            for(int i = 0; i<idProductosList.size(); i++){
+                Integer prodId = idProductosList.get(i);
+                sqlStm = sqlStm += " ID = " + prodId;
+                if(i < (idProductosList.size() - 1)){
+                    sqlStm += " OR ";
+                }
+            }
+
+            pstmProd = conn.conexion.prepareStatement(sqlStm);
+            rsProd = pstmProd.executeQuery();
+
+            HashMap hashMapProductos = new HashMap<Integer, Producto>();
+            while(rsProd.next()){
+                Producto prod = getProducto(rs);
+                hashMapProductos.put(prod.getId(), prod);
+            }
+
+            for(ProductoProvisto productoProvisto : productosProvistos){
+                Integer idProd = Integer.valueOf(productoProvisto.getProducto().getId());
+                Producto prod = (Producto)hashMapProductos.get(idProd);
+                productoProvisto.setProducto(prod);
+            }
+
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            if (rs != null) try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (pstm != null) try {
+                pstm.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) try {
+                conn.cerrar();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return productosProvistos;
+    }
+    public OrdenProvision buscar(int id) {
+        OrdenProvision ordenProvision = null;
+        Conexion conn = Conexion.getInstance();
+        PreparedStatement pstm = null;
+        ResultSet rs = null;
+        try{
+            conn.abrir();
+            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"ORDEN_PROVISION\" WHERE \"ID\"=?");
+            pstm.setInt(1, id);
+            rs= pstm.executeQuery();
+            if(rs.next()){
+                ordenProvision = buildOPFromRs(rs);
+                //String aux= rs.getString("NOMBRE");
+                //System.out.println(aux);
+            }
+            else{
+                System.out.print("No existe la orden");
             }
         }catch(SQLException e){
             e.printStackTrace();
@@ -256,59 +293,56 @@ public class OrdenProvisionRepository {
                 e.printStackTrace();
             }
         }
-        return sucursales;
-    }
-    private Sucursal  getSucursal(ResultSet rs) throws SQLException {
-        Sucursal sucursal = new Sucursal();
-        sucursal.setNombre(rs.getString("NOMBRE"));
-        sucursal.setHoraApertura(rs.getTime("HORA_APERTURA").toLocalTime());
-        sucursal.setHoraCierre(rs.getTime("HORA_CIERRE").toLocalTime());
-        if(rs.getBoolean("ESTADO")){
-            sucursal.setEstado(Estado.OPERATIVO);}
-        else{
-            sucursal.setEstado(Estado.NO_OPERATIVO);
-        }
-        sucursal.setCapacidad(rs.getFloat("CAPACIDAD"));
-        sucursal.setId(rs.getInt("ID"));
-
-        return sucursal;
-    }
-    public void modificarEstado(int id, Estado estado){
-        String query;
-        if(estado == Estado.OPERATIVO){
-            query="UPDATE tp_tablas.\"SUCURSAL\" SET \"ESTADO\"=false "+
-                    "WHERE \"ID\"="+id;
-        }
-        else{
-            query="UPDATE tp_tablas.\"SUCURSAL\" SET \"ESTADO\"=true "+
-                    "WHERE \"ID\"="+id;
-        }
-        ejecutarQuery(query);
+        return ordenProvision;
     }
 
-    private void ejecutarQuery(String query){
-        Conexion conn = Conexion.getInstance();
-        PreparedStatement pstm=null;
+    private OrdenProvision buildOPFromRs(ResultSet rs){
         try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement(query);
-            pstm.executeQuery();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }finally {
-            if (pstm != null) try {
-                pstm.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            Sucursal destino = new Sucursal();
+            OrdenProvision ordenProvision = new OrdenProvision();
+
+            destino.setId(rs.getInt("SUCURSAL_DESTINO"));
+
+            ordenProvision.setId(rs.getInt("ID"));
+            ordenProvision.setFecha(rs.getDate("FECHA").toLocalDate());
+            ordenProvision.setDestino(destino);
+            ordenProvision.setTiempoLimite(rs.getFloat("TIEMPO_LIMITE"));
+
+            return ordenProvision;
+        } catch (SQLException sqlException) {
+            return null;
         }
+
     }
 
-    public void editarSucursal(Sucursal sucursal) {
+    private ProductoProvisto buildPPFromRs(ResultSet rs){
+        try{
+            OrdenProvision ordenProvision = new OrdenProvision();
+            Producto producto = new Producto();
+            ProductoProvisto productoProvisto = new ProductoProvisto();
+
+            ordenProvision.setId(rs.getInt("ORDEN_PROVISION"));
+            producto.setId(rs.getInt("PRODUCTO"));
+            productoProvisto.setCantidad(rs.getInt("CANTIDAD"));
+
+            productoProvisto.setProducto(producto);
+            productoProvisto.setOrdenProvision(ordenProvision);
+            return productoProvisto;
+        } catch (SQLException sqlException) {
+            return null;
+        }
+
     }
+
+    private Producto getProducto(ResultSet rs) throws SQLException {
+        Producto producto = new Producto();
+        producto.setNombre(rs.getString("NOMBRE"));
+        producto.setPrecioUnitario(rs.getDouble("PRECIO_UNITARIO"));
+        producto.setPeso(rs.getFloat("PESO"));
+        producto.setDetalle(rs.getString("DETALLE"));
+        producto.setId(rs.getInt("ID"));
+
+        return producto;
+    }
+
 }

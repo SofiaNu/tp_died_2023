@@ -1,7 +1,5 @@
-import clases.Estado;
-import clases.Producto;
-import clases.StockProducto;
-import clases.Sucursal;
+import clases.*;
+import dao.OrdenProvisionRepository;
 import dao.ProductoRepository;
 import dao.StockProductoRepository;
 import dao.SucursalRepository;
@@ -9,6 +7,7 @@ import gui.*;
 
 import java.sql.SQLException;
 import java.time.LocalTime;
+import java.util.List;
 
 public class App {
 
@@ -37,6 +36,18 @@ public class App {
 		//stockProductoRepository.bajaStockProductoEnSucursal(3,5);
 		//stockProductoRepository.listarStockProductosEnSucursal(5);
 		//stockProductoRepository.buscarEnSucursal(3,3);
+
+		OrdenProvision op = OrdenProvisionRepository.getInstance().buscar(9);
+		if(op != null){
+			System.out.println("op: " + op.getId() + " " + op.getFecha() + " dest" + op.getDestino());
+		}
+		List<ProductoProvisto> prodsprs = OrdenProvisionRepository.getInstance().productosProvistosDeOrden(op);
+		//Sucursal mod = SucursalRepository.getInstance().buscarSucursal(100);
+		//List<OrdenProvision> ordenes = OrdenProvisionRepository.getInstance().ordenesDeSucursal(mod);
+		//OrdenProvisionRepository.getInstance().bajaOrden(op);
+		//OrdenProvision op2 = OrdenProvisionRepository.getInstance().buscar(8);
+		//System.out.println("op: " + op2.getId() + " " + op2.getFecha() + " dest" + op2.getDestino());
+		System.out.println("fin");
 	}
 
 
