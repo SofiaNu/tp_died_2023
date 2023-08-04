@@ -1,6 +1,7 @@
 package gui;
 
 import clases.Producto;
+import clases.Sucursal;
 import servicios.ProductoServicios;
 
 import java.awt.EventQueue;
@@ -62,7 +63,7 @@ public class VentanaProductos extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					showBusquedaDialog();
+					showBusquedaPanel();
 				} catch (SQLException ex) {
 					throw new RuntimeException(ex);
 				}
@@ -184,12 +185,101 @@ public class VentanaProductos extends JFrame {
 		altaProductoFrame.setVisible(true);
 	}
 
-	private void showBusquedaDialog() throws SQLException {
-		String searchTerm = JOptionPane.showInputDialog(this, "Buscar:");
-		if (searchTerm != null && !searchTerm.isEmpty()) {
-			buscar(searchTerm);
-		}
+	public void showBusquedaPanel() throws SQLException {
+		JFrame frame = new JFrame("Búsqueda");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLayout(new BorderLayout());
+
+		JPanel mainPanel = new JPanel(new GridLayout(4, 1));
+		JLabel mainLabel = new JLabel("¿Cómo desea realizar la búsqueda?");
+		mainPanel.add(mainLabel);
+
+		JPanel radioButtonPanel = new JPanel();
+		JRadioButton idRadiobtn = new JRadioButton("Id");
+		JRadioButton nombreRadiobtn = new JRadioButton("Nombre");
+		ButtonGroup radioButtonGroup = new ButtonGroup();
+		radioButtonGroup.add(idRadiobtn);
+		radioButtonGroup.add(nombreRadiobtn);
+		radioButtonPanel.add(idRadiobtn);
+		radioButtonPanel.add(nombreRadiobtn);
+
+		JPanel panelAtributos = new JPanel(new GridLayout(3, 2));
+		JLabel label1 = new JLabel("Id producto: ");
+		JLabel label2 = new JLabel("Nombre producto: ");
+
+		JTextField idtxt = new JTextField();
+		JTextField nombretxt = new JTextField();
+
+
+		JButton buscarbtn = new JButton("Buscar");
+		JButton cerrarbtn = new JButton("Cerrar");
+
+		panelAtributos.add(label1);
+		panelAtributos.add(idtxt);
+		panelAtributos.add(label2);
+		panelAtributos.add(nombretxt);
+
+		panelAtributos.add(buscarbtn);
+		panelAtributos.add(cerrarbtn);
+
+
+		idtxt.setEnabled(false);
+		nombretxt.setEnabled(false);
+
+		idRadiobtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				idtxt.setEnabled(true);
+				nombretxt.setEnabled(false);
+			}
+		});
+
+		nombreRadiobtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				idtxt.setEnabled(false);
+				nombretxt.setEnabled(true);
+			}
+		});
+
+		buscarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				if (idRadiobtn.isSelected()) {
+					try {
+						buscar(Integer.parseInt(idtxt.getText()));
+					} catch (SQLException ex) {
+						throw new RuntimeException(ex);
+					}
+				} else {
+
+					try {
+						buscar(nombretxt.getText());
+					} catch (SQLException ex) {
+						throw new RuntimeException(ex);
+					}
+				}
+				frame.dispose();
+			}
+		});
+
+		cerrarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose();
+			}
+		});
+
+		mainPanel.add(radioButtonPanel);
+		mainPanel.add(panelAtributos);
+
+		frame.add(mainPanel, BorderLayout.CENTER);
+		frame.pack();
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
 	}
+
 
 	private void showResultadoPanel(Producto producto) {
 		JFrame resultadoProductoFrame = new JFrame("Editar Producto");
@@ -263,7 +353,6 @@ public class VentanaProductos extends JFrame {
 			}
 	}
 		private void buscar(String prodNombre) throws SQLException {
-			//METODO QUE REALIZA LA BUSQUEDA
 			Producto producto =servicio.buscarProducto(prodNombre);
 			if(producto != null){
 				showResultadoPanel(producto);
@@ -272,5 +361,14 @@ public class VentanaProductos extends JFrame {
 				JOptionPane.showMessageDialog(this,"Producto no encontrado","Error",JOptionPane.OK_OPTION);
 			}
 		}
+		private void buscar(int id) throws SQLException {
+		Producto producto =servicio.buscarProducto(id);
+		if(producto != null){
+			showResultadoPanel(producto);
+		}
+		else{
+			JOptionPane.showMessageDialog(this,"Producto no encontrado","Error",JOptionPane.OK_OPTION);
+		}
+	}
 
 }
