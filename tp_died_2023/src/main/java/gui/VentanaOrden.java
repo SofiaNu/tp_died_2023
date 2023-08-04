@@ -1,6 +1,7 @@
 package gui;
 
 import clases.*;
+import servicios.OrdenProvisionServicios;
 import servicios.ProductoServicios;
 import servicios.SucursalServicios;
 
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 public class VentanaOrden extends JFrame{
     private JPanel contentPane;
     SucursalServicios sucursalServicios = new SucursalServicios();
+    OrdenProvisionServicios ordenProvisionServicios = new OrdenProvisionServicios();
     Sucursal sucursal = null;
 
     public VentanaOrden(Sucursal s) {
@@ -54,7 +56,11 @@ public class VentanaOrden extends JFrame{
         buscarbtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showBuscarDialog();
+                try {
+                    showBuscarDialog();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
 
             }
         });
@@ -63,7 +69,11 @@ public class VentanaOrden extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                showListarPorSucursalPanel();
+                try {
+                    showListarPorSucursalPanel();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -110,7 +120,11 @@ public class VentanaOrden extends JFrame{
         buscarbtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showBuscarDialog();
+                try {
+                    showBuscarDialog();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
 
             }
         });
@@ -201,7 +215,11 @@ public class VentanaOrden extends JFrame{
                 orden.setEstado(EstadoOrden.PENDIENTE);
                 if(productos!=null && !productos.isEmpty()){
                 orden.setListaProductos(productos);}
-                //ordenProvisionServicios.altaOrden(orden);
+                try {
+                    ordenProvisionServicios.altaOrden(orden);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
                 frame.dispose();
             }
         });
@@ -235,21 +253,21 @@ public class VentanaOrden extends JFrame{
         }
         return peso;
     }
-    public void showBuscarDialog(){
+    public void showBuscarDialog() throws SQLException {
         String id =JOptionPane.showInputDialog(this, "Id de la Orden: ");
         if(!id.isEmpty() || id!=null){
             buscarOrden(Integer.valueOf(id));
         }
 
     }
-    public void showListarPorSucursalPanel(){
+    public void showListarPorSucursalPanel() throws SQLException {
         JFrame listarFrame = new JFrame("Ordenes con Destino: "+sucursal.getNombre());
         listarFrame.setSize(500, 300);
         listarFrame.setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel panelListar = new JPanel();
 
-        List<OrdenProvision> listaOrdenes = null;
+        List<OrdenProvision> listaOrdenes = ordenProvisionServicios.listarOrdenes(sucursal);
 
         String[] columnNames = {"Id", "Fecha", "Tiempo Limite", "Peso", "Estado"};
         JTable tablaResultados = new JTable(new DefaultTableModel());
@@ -306,7 +324,11 @@ public class VentanaOrden extends JFrame{
                 if (row != -1) {
                     OrdenProvision orden = listaOrdenes.get(row);
                     boolean confirm = false;
-                    confirm = showBorrarOrdenDialog(orden);
+                    try {
+                        confirm = showBorrarOrdenDialog(orden);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
                     if (confirm) {
                         model.removeRow(row);
                     }
@@ -382,7 +404,11 @@ public class VentanaOrden extends JFrame{
                 if (row != -1) {
                     OrdenProvision orden = listaOrdenes.get(row);
                     boolean confirm = false;
-                    confirm = showBorrarOrdenDialog(orden);
+                    try {
+                        confirm = showBorrarOrdenDialog(orden);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
                     if (confirm) {
                         model.removeRow(row);
                     }
@@ -393,11 +419,11 @@ public class VentanaOrden extends JFrame{
         listarFrame.add(panelListar);
         listarFrame.setVisible(true);
     }
-    public boolean showBorrarOrdenDialog(OrdenProvision orden){
+    public boolean showBorrarOrdenDialog(OrdenProvision orden) throws Exception {
         int opcion = JOptionPane.showConfirmDialog(null, "¿Seguro desea eliminar la orden" +
                         "de provision?","Eliminar Orden",JOptionPane.YES_NO_OPTION);
         if(opcion==JOptionPane.YES_OPTION){
-            //ordenServicios.borrarOrden(orden);
+            ordenProvisionServicios.bajaOrden(orden);
             return true;
         }
         else{
@@ -409,7 +435,7 @@ public class VentanaOrden extends JFrame{
 
         JPanel panelListar = new JPanel();
 
-        List<ProductoProvisto> listaProductos = null;
+        List<ProductoProvisto> listaProductos = orden.getListaProductos();
 
         String[] columnNames = {"Producto", "Cantidad"};
         JTable tablaResultados = new JTable(new DefaultTableModel());
@@ -433,13 +459,13 @@ public class VentanaOrden extends JFrame{
 
         panelListar.add(contenedorTabla);
 
-        JOptionPane.showConfirmDialog(this,panelListar,"Productos en la Orden",JOptionPane.OK_OPTION);
+        JOptionPane.showMessageDialog(this,panelListar,"Productos en la Orden",JOptionPane.OK_OPTION,null);
 
     }
 
-    private void buscarOrden(int id){
-        //OrdenProvision orden = ordenProvisionServicios.buscarOrden(id);
-        OrdenProvision orden = null;
+    private void buscarOrden(int id) throws SQLException {
+        OrdenProvision orden = ordenProvisionServicios.buscarOrden(id);
+        //OrdenProvision orden = null;
         if(orden != null){
             showOrdenPanel(orden);
         }
@@ -485,7 +511,11 @@ public class VentanaOrden extends JFrame{
         bajabtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showBorrarOrdenDialog(o);
+                try {
+                    showBorrarOrdenDialog(o);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
