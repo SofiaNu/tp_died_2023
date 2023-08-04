@@ -1,8 +1,7 @@
 package gui;
 
-import clases.OrdenProvision;
-import clases.ProductoProvisto;
-import clases.Sucursal;
+import clases.*;
+import servicios.ProductoServicios;
 import servicios.SucursalServicios;
 
 import javax.swing.*;
@@ -11,7 +10,11 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VentanaOrden extends JFrame{
     private JPanel contentPane;
@@ -56,7 +59,11 @@ public class VentanaOrden extends JFrame{
         altabtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showAltaPanel();
+                try {
+                    showAltaPanel();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -85,8 +92,99 @@ public class VentanaOrden extends JFrame{
 
     }
 
-    public void showAltaPanel(){}
+    public void showAltaPanel() throws SQLException {
+        ProductoServicios productoServicios = new ProductoServicios();
+        List<Producto> listaProductos =productoServicios.listarProductos();
 
+        JFrame frame = new JFrame("Crear Orden con destino: "+sucursal.getNombre());
+        frame.setSize(500, 300);
+        frame.setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JPanel panel = new JPanel(new GridLayout(2,2));
+
+        JLabel tiempolbl = new JLabel("Tiempo minimo: ");
+        JTextField tiempotxt = new JTextField();
+
+        List<ProductoProvisto> productos = new ArrayList<>();
+
+        JButton agregarbtn = new JButton("Agregar Producto a la orden");
+        JButton guardarbtn = new JButton("Generar Orden");
+        JButton cerrarbtn = new JButton("Cancelar");
+
+        String[] columnNames = {"Producto", "Cantidad"};
+        JTable tablaResultados = new JTable(new DefaultTableModel());
+
+        DefaultTableModel model = (DefaultTableModel) tablaResultados.getModel();
+        model.setColumnIdentifiers(columnNames);
+
+
+        JScrollPane contenedorTabla = new JScrollPane(tablaResultados);
+        int maxVisibleRows = 7;
+        int rowHeight = tablaResultados.getRowHeight();
+        int headerHeight = tablaResultados.getTableHeader().getPreferredSize().height;
+        Dimension preferredSize = new Dimension(contenedorTabla.getPreferredSize().width,
+                maxVisibleRows * rowHeight + headerHeight);
+        contenedorTabla.setPreferredSize(preferredSize);
+
+        agregarbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ProductoProvisto producto = showAgregarProdDialog(listaProductos);
+                productos.add(producto);
+                model.addRow(new String[]{producto.getProducto().getNombre(),String.valueOf(producto.getCantidad())});
+            }
+        });
+
+        cerrarbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
+
+        guardarbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                OrdenProvision orden = new OrdenProvision();
+                orden.setDestino(sucursal);
+                orden.setFecha(LocalDate.now());
+                orden.setPeso(calcularPeso(productos));
+                orden.setTiempoLimite(Float.valueOf(tiempotxt.getText()));
+                orden.setEstado(EstadoOrden.PENDIENTE);
+                orden.setListaProductos(productos);
+                //ordenProvisionServicios.altaOrden(orden);
+            }
+        });
+
+
+
+    }
+
+    public ProductoProvisto showAgregarProdDialog(List<Producto> productos){
+        ProductoProvisto prod = new ProductoProvisto();
+        JPanel panel = new JPanel(new GridLayout(3,1));
+        JLabel lbl= new JLabel("Seleccione el producto y la cantidad");
+        DefaultComboBoxModel<Producto> comboBoxModel = new DefaultComboBoxModel<>(productos.toArray(new Producto[0]));
+        JComboBox<Producto> productosComboBox = new JComboBox<>(comboBoxModel);
+        JTextField cantidadtxt = new JTextField(3);
+
+        panel.add(lbl);
+        panel.add(productosComboBox);
+        panel.add(cantidadtxt);
+        JOptionPane.showInputDialog(this,panel,"Agregar Producto",JOptionPane.PLAIN_MESSAGE);
+        prod.setCantidad(Integer.valueOf(cantidadtxt.getText()));
+        prod.setProducto((Producto) productosComboBox.getSelectedItem());
+
+        return prod;
+    }
+    private float calcularPeso(List<ProductoProvisto> lista){
+        float peso = 0;
+        List<Producto> productos = lista.stream().map(produc-> produc.getProducto()).collect(Collectors.toList());
+        for(Producto p: productos){
+            peso = p.getPeso();
+        }
+        return peso;
+    }
     public void showBuscarDialog(){
         String id =JOptionPane.showInputDialog(this, "Id: ","Buscar Orden");
         if(!id.isEmpty() || id!=null){
@@ -232,6 +330,7 @@ public class VentanaOrden extends JFrame{
         }
     }
 
+    public void agregarProductos(){}
     public void showOrdenPanel(OrdenProvision o){
         JFrame frame = new JFrame("Resultado Busqueda:");
         frame.setSize(500, 300);
