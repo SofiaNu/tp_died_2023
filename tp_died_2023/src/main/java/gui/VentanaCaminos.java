@@ -255,8 +255,48 @@ public class VentanaCaminos extends JFrame {
 		frame.setVisible(true);
 	}
 
+	public void showEditarPanel(Camino camino) throws SQLException{
+		JFrame frameEditar = new JFrame("Resultado Busqueda:");
+		frameEditar.setSize(500, 200);
+		frameEditar.setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		CaminoAuxPanel panelAtributos = new CaminoAuxPanel(sucursales,new GridLayout(6, 2 ));
+		JButton guardarbtn = new JButton("Guardar: ");
+		JButton cancelarbtn = new JButton("Cancelar: ");
+		panelAtributos.add(guardarbtn);
+		panelAtributos.add(cancelarbtn);
 
-	public void showEditarPanel(Camino camino) throws SQLException {
+
+		panelAtributos.estadoComboBox.setSelectedItem(camino.getEstado());
+		panelAtributos.origenCombo.setSelectedItem(camino.getOrigen());
+		panelAtributos.destinoCombo.setSelectedItem(camino.getDestino());
+		cancelarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frameEditar.dispose();
+			}
+		});
+
+		guardarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				camino.setOrigen((Sucursal) panelAtributos.origenCombo.getSelectedItem());
+				camino.setDestino((Sucursal) panelAtributos.destinoCombo.getSelectedItem());
+				if(!panelAtributos.tiempotxt.getText().isEmpty()){
+					camino.setTiempoTransito(Float.parseFloat(panelAtributos.tiempotxt.getText()));}
+
+				if(!panelAtributos.capacidadtxt.getText().isEmpty()){
+					camino.setCapacidadMaxima(Float.parseFloat(panelAtributos.capacidadtxt.getText()));}
+					camino.setEstado((Estado) panelAtributos.estadoComboBox.getSelectedItem());
+				caminoServicios.editarCamino(camino);
+				frameEditar.dispose();
+			}
+		});
+		frameEditar.add(panelAtributos);
+		frameEditar.setVisible(true);
+	}
+
+	public void showEditarPanel2(Camino camino) throws SQLException {
 		JFrame frameEditar = new JFrame("Resultado Busqueda:");
 		frameEditar.setSize(500, 200);
 		frameEditar.setLocationRelativeTo(null);
@@ -269,7 +309,6 @@ public class VentanaCaminos extends JFrame {
 		JLabel label2 = new JLabel("Destino:");
 		JLabel label3 = new JLabel("Tiempo en Transito:");
 		JLabel label4 = new JLabel("Capacidad Maxima:");
-		JLabel label5 = new JLabel("Estado:");
 
 
 		JTextField tiempotxt = new JTextField(10);
@@ -293,7 +332,7 @@ public class VentanaCaminos extends JFrame {
 		panelAtributos.add(tiempotxt);
 		panelAtributos.add(label4);
 		panelAtributos.add(capacidadtxt);
-		panelAtributos.add(label5);
+
 		panelAtributos.add(estadoCombo);
 		panelAtributos.add(guardarbtn);
 		panelAtributos.add(cancelarbtn);
@@ -368,6 +407,7 @@ public class VentanaCaminos extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					showEditarPanel(camino);
+					resultadoFrame.dispose();
 				} catch (SQLException ex) {
 					throw new RuntimeException(ex);
 				}

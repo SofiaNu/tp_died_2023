@@ -145,17 +145,26 @@ public class CaminoRepository {
 
     public void editarCamino(Camino camino){
         String query= "UPDATE tp_tablas.\"CAMINO\" SET \"SUCURSAL_ORIGEN\"=? , \"SUCURSAL_DESTINO\"=? ," +
-                " \"TIEMPO_TRANSITO\"=? , \"CAPACIDAD_MAXIMA\"=? "+
+                " \"TIEMPO_TRANSITO\"=? , \"CAPACIDAD_MAXIMA\"=? , \"ESTADO\"=? "+
                 "WHERE \"ID\"="+camino.getId();
         Conexion conn = Conexion.getInstance();
         PreparedStatement pstm= null;
         try{
             conn.abrir();
+            boolean estado;
+            if(camino.getEstado()==Estado.OPERATIVO){
+                estado=true;
+            }
+            else {
+                estado =false;
+            }
             pstm = conn.conexion.prepareStatement(query);
             pstm.setInt(1,camino.getOrigen().getId());
             pstm.setInt(2,camino.getDestino().getId());
             pstm.setFloat(3,camino.getTiempoTransito());
             pstm.setFloat(4,camino.getCapacidadMaxima());
+            pstm.setBoolean(5,estado);
+
             pstm.executeQuery();
         }catch(SQLException e){
             e.printStackTrace();
