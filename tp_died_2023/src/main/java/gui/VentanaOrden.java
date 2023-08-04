@@ -193,7 +193,11 @@ public class VentanaOrden extends JFrame{
                 orden.setDestino(sucursal);
                 orden.setFecha(LocalDate.now());
                 orden.setPeso(calcularPeso(productos));
-                orden.setTiempoLimite(Float.valueOf(tiempotxt.getText()));
+                float tiempoLimite = 0;
+                if(tiempotxt.getText() != null && !tiempotxt.getText().isEmpty()){
+                    tiempoLimite = Float.valueOf(tiempotxt.getText());
+                }
+                orden.setTiempoLimite(tiempoLimite);
                 orden.setEstado(EstadoOrden.PENDIENTE);
                 if(productos!=null && !productos.isEmpty()){
                 orden.setListaProductos(productos);}
