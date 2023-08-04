@@ -1,10 +1,10 @@
 package clases;
 
-public class ProvisionProducto {
+public class ProductoProvisto {
     Producto producto;
     OrdenProvision ordenProvision;
     int cantidad;
-    public ProvisionProducto() {
+    public ProductoProvisto() {
         super();
     }
     public OrdenProvision getOrdenProvision() {
@@ -27,7 +27,7 @@ public class ProvisionProducto {
     public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
     }
-    public ProvisionProducto(Producto producto, int cantidad) {
+    public ProductoProvisto(Producto producto, int cantidad) {
         super();
         this.producto = producto;
         this.cantidad = cantidad;

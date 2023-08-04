@@ -2,12 +2,10 @@ package dao;
 
 import clases.Estado;
 import clases.OrdenProvision;
+import clases.ProductoProvisto;
 import clases.Sucursal;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,70 +20,82 @@ public class OrdenProvisionRepository {
         }
         return _INSTANCE;
     }
-    public void altaOrdenProvision(OrdenProvision ordenProvision) throws Exception{
+    public void altaOrdenProvision(OrdenProvision ordenProvision){
         Conexion conn = Conexion.getInstance();
-        //PreparedStatement pstm =null;
-        //ResultSet rs= null;
         PreparedStatement ordenInsertStatement = null;
         PreparedStatement stockProductoInsertStatement = null;
 
         //ordenProvision should not be empty?
-        if(ordenProvision.getListaProductos() == null || ordenProvision.getListaProductos().size() == 0){
-            throw new Exception("Lista de productos no debe estar vacia");
-        }
-
+//        if(ordenProvision.getListaProductos() == null || ordenProvision.getListaProductos().size() == 0){
+//            throw new Exception("Lista de productos no debe estar vacia");
+//        }
+//
         if(ordenProvision.getDestino() == null){
-            throw new Exception("El destino de la orden debe estar definido");
+            Sucursal d = new Sucursal();
+            d.setId(2);
+            ordenProvision.setDestino(d);
+//            throw new Exception("El destino de la orden debe estar definido");
         }
-
-        // ordenProvisionRepository 'alta' validations :: or in its service
 
         try {
             conn.abrir();
-            conn.conexion.setAutoCommit(false);
-            String ordenProvisionInsertSql =
+//            conn.conexion.setAutoCommit(false);
+            String ordenProvisionInsertSqlStr =
                             """
-                            INSERT INTO tp_tablas."ORDEN_PROVISION"
-                            ("FECHA","SUCURSAL_DESTINO","TIEMPO_LIMITE") 
+                            INSERT INTO tp_tablas."ORDEN_PROVISION"\
+                            ("FECHA","SUCURSAL_DESTINO","TIEMPO_LIMITE")\
                             values (?,?,?)
                             """;
 
-            //PreparedStatement insertOrden = conn.conexion.prepareStatement("INSERT INTO tp_tablas.\"ORDEN_PROVISION\" " +
-                    //"(\"FECHA\",\"SUCURSAL_DESTINO\",\"TIEMPO_LIMITE\") values (?,?,?)");
-            ordenInsertStatement = conn.conexion.prepareStatement(ordenProvisionInsertSql);
+            ordenInsertStatement = conn.conexion.prepareStatement(ordenProvisionInsertSqlStr, Statement.RETURN_GENERATED_KEYS);
 
             ordenInsertStatement.setDate(1, java.sql.Date.valueOf(ordenProvision.getFecha()));
             ordenInsertStatement.setInt(2, ordenProvision.getDestino().getId());
             ordenInsertStatement.setFloat(3, ordenProvision.getTiempoLimite());
 
-            ordenInsertStatement.executeQuery();
+            try{
+                ordenInsertStatement.execute();
+            } catch(Exception e){
+                e.printStackTrace();
+            }
 
-            try(ResultSet generatedKeys = ordenInsertStatement.getGeneratedKeys()) {
+            try {
+                ResultSet generatedKeys = ordenInsertStatement.getGeneratedKeys();
+
                 if(generatedKeys.next()){
                     ordenProvision.setId(generatedKeys.getInt(1));
+                    System.out.println(ordenProvision.getId());
                 }else{
                     throw new SQLException("Not orderProvision created");
                 }
+            } catch(Exception e){
+                e.printStackTrace();
             }
 
-            String stockProductoInsertSql =
+            String productoProvistoInsertSqlStr =
                     """
-                    INSERT INTO tp_tablas."STOCK_PRODUCTO"
-                    ("ID","SUCURSAL_DESTINO","TIEMPO_LIMITE") 
+                    INSERT INTO tp_tablas."PRODUCTO_PROVISTO"
+                    ("ORDEN_PROVISION","PRODUCTO","CANTIDAD")
                     values (?,?,?)
                     """;
-            stockProductoInsertStatement = conn.conexion.prepareStatement(ordenProvisionInsertSql);
+            stockProductoInsertStatement = conn.conexion.prepareStatement(productoProvistoInsertSqlStr);
+
+            if(ordenProvision.getListaProductos() != null && ordenProvision.getListaProductos().size() > 0){
+                for(ProductoProvisto pp : ordenProvision.getListaProductos()){
+                    stockProductoInsertStatement.setInt(1, ordenProvision.getId());
+                    stockProductoInsertStatement.setInt(2, pp.getProducto().getId());
+                    stockProductoInsertStatement.setInt(3, pp.getCantidad());
+                    stockProductoInsertStatement.addBatch();
+                }
+            }
+
             conn.conexion.commit();
-            conn.cerrar();
+            ordenInsertStatement.close();
+            stockProductoInsertStatement.close();
             //System.out.println(rs.getString(2));
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {
-//            if (rs != null) try {
-//                rs.close();
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
             if (stockProductoInsertStatement != null) try {
                 stockProductoInsertStatement.close();
             } catch (SQLException e) {

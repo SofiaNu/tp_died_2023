@@ -95,6 +95,9 @@ public class VentanaSucursales extends JFrame {
 		ordenbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				CrearOrdenProvisionUI crearOrderProvisionUI = new CrearOrdenProvisionUI();
+				crearOrderProvisionUI.init();
+				crearOrderProvisionUI.show();
 			}
 		});
 
