@@ -195,7 +195,8 @@ public class VentanaOrden extends JFrame{
                 orden.setPeso(calcularPeso(productos));
                 orden.setTiempoLimite(Float.valueOf(tiempotxt.getText()));
                 orden.setEstado(EstadoOrden.PENDIENTE);
-                orden.setListaProductos(productos);
+                if(productos!=null && !productos.isEmpty()){
+                orden.setListaProductos(productos);}
                 //ordenProvisionServicios.altaOrden(orden);
                 frame.dispose();
             }
@@ -252,11 +253,12 @@ public class VentanaOrden extends JFrame{
         DefaultTableModel model = (DefaultTableModel) tablaResultados.getModel();
         model.setColumnIdentifiers(columnNames);
 
+        if(listaOrdenes !=null){
         for(OrdenProvision o: listaOrdenes){
             String[] fila = {String.valueOf(o.getId()),String.valueOf(o.getFecha()),
                     String.valueOf(o.getTiempoLimite()),String.valueOf(o.getPeso()),String.valueOf(o.getEstado())};
             model.addRow(fila);
-        }
+        }}
 
         JScrollPane contenedorTabla = new JScrollPane(tablaResultados); //Sin esto no se muestra el nombre de las columnas
         int maxVisibleRows = 7;
@@ -327,11 +329,12 @@ public class VentanaOrden extends JFrame{
         DefaultTableModel model = (DefaultTableModel) tablaResultados.getModel();
         model.setColumnIdentifiers(columnNames);
 
+        if(listaOrdenes!=null){
         for(OrdenProvision o: listaOrdenes){
             String[] fila = {String.valueOf(o.getId()),o.getDestino().getNombre(),String.valueOf(o.getFecha()),
                     String.valueOf(o.getTiempoLimite()),String.valueOf(o.getPeso()),String.valueOf(o.getEstado())};
             model.addRow(fila);
-        }
+        }}
 
         JScrollPane contenedorTabla = new JScrollPane(tablaResultados);
         int maxVisibleRows = 7;
@@ -410,10 +413,11 @@ public class VentanaOrden extends JFrame{
         DefaultTableModel model = (DefaultTableModel) tablaResultados.getModel();
         model.setColumnIdentifiers(columnNames);
 
+        if(listaProductos != null){
         for (ProductoProvisto p : listaProductos) {
             String[] fila = {p.getProducto().getNombre(), String.valueOf(p.getCantidad())};
             model.addRow(fila);
-        }
+        }}
 
         JScrollPane contenedorTabla = new JScrollPane(tablaResultados); //Sin esto no se muestra el nombre de las columnas
         int maxVisibleRows = 7;
