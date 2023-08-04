@@ -25,4 +25,5 @@ public class StockProducto {
 		this.producto = producto;
 		this.cantidad = cantidad;
 	}
+
 }

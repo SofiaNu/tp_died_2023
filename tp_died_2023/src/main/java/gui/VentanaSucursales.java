@@ -1,7 +1,10 @@
 package gui;
 
 import clases.Estado;
+import clases.Producto;
+import clases.StockProducto;
 import clases.Sucursal;
+import servicios.ProductoServicios;
 import servicios.SucursalServicios;
 
 import java.awt.*;
@@ -49,7 +52,7 @@ public class VentanaSucursales extends JFrame {
 		JButton altabtn = new JButton("Agregar Sucursal");
 		JButton buscarbtn = new JButton("Buscar Sucursal");
 		JButton bajabtn = new JButton("Dar de Baja Sucursal");
-		JButton stockbtn = new JButton("Manejo de Stock");
+		JButton stockbtn = new JButton("Gestion de Stock");
 		JButton ordenbtn = new JButton("Generar Orden de Provision");
 		JButton cerrarbtn = new JButton("Cerrar");
 
@@ -58,7 +61,6 @@ public class VentanaSucursales extends JFrame {
 		contentPane.add(bajabtn);
 		contentPane.add(stockbtn);
 		contentPane.add(ordenbtn);
-		contentPane.add(cerrarbtn);
 		setContentPane(contentPane);
 
 		altabtn.addActionListener(new ActionListener() {
@@ -96,14 +98,6 @@ public class VentanaSucursales extends JFrame {
 			}
 		});
 
-		cerrarbtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-
-			}
-		});
-
 		contentPane.setVisible(true);
 
 	}
@@ -113,54 +107,23 @@ public class VentanaSucursales extends JFrame {
 		frameAlta.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frameAlta.setLayout(new BorderLayout());
 
-		JPanel mainPanel = new JPanel(new GridLayout(6, 2));
-		JLabel nombrelbl = new JLabel("Nombre: ");
-		JLabel horaAperturalbl = new JLabel("Hora Apertura: ");
-		JLabel horaCierrelbl = new JLabel("Hora Cierre: ");
-		JLabel estadolbl = new JLabel("Estado: ");
-		JLabel capacidadlbl = new JLabel("Capacidad de Recepcion: ");
+		AtributosSucursalesPanel panel = new AtributosSucursalesPanel(new GridLayout(6,2));
 
-		JTextField nombretxt = new JTextField();
-		JTextField capacidadtxt = new JTextField();
-		JComboBox estadoComboBox = new JComboBox<>(Estado.values());
-
-		JPanel panelHoras1 =new JPanel(new GridLayout(1,2));
-		JPanel panelHoras2 =new JPanel(new GridLayout(1,2));
-		JSpinner horaApertura = new JSpinner(new SpinnerNumberModel(00, 00, 23, 1));
-		JSpinner horaCierre = new JSpinner(new SpinnerNumberModel(0, 00, 23, 1));
-		JSpinner minApertura = new JSpinner(new SpinnerNumberModel(00, 00, 59, 15));
-		JSpinner minCierre = new JSpinner(new SpinnerNumberModel(0, 00, 59, 15));
-
-		panelHoras1.add(horaApertura);
-		panelHoras1.add(minApertura);
-		panelHoras2.add(horaCierre);
-		panelHoras2.add(minCierre);
-
-		JButton guardarbtn = new JButton("Guardar");
+		JButton guardarbtn = new JButton("Agregar Sucursal");
 		JButton cancelarbtn = new JButton("Cancelar");
 
-		mainPanel.add(nombrelbl);
-		mainPanel.add(nombretxt);
-		mainPanel.add(horaAperturalbl);
-		mainPanel.add(panelHoras1);
-		mainPanel.add(horaCierrelbl);
-		mainPanel.add(panelHoras2);
-		mainPanel.add(estadolbl);
-		mainPanel.add(estadoComboBox);
-		mainPanel.add(capacidadlbl);
-		mainPanel.add(capacidadtxt);
-		mainPanel.add(guardarbtn);
-		mainPanel.add(cancelarbtn);
+		panel.add(guardarbtn);
+		panel.add(cancelarbtn);
 
 		guardarbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Sucursal sucursal = new Sucursal();
-				sucursal.setNombre(nombretxt.getText());
-				sucursal.setHoraApertura(LocalTime.of((int)horaApertura.getValue(), (int)minApertura.getValue()));
-				sucursal.setHoraCierre(LocalTime.of((int)horaCierre.getValue(), (int)minCierre.getValue()));
-				sucursal.setEstado((Estado) estadoComboBox.getSelectedItem());
-				sucursal.setCapacidad(Float.valueOf(capacidadtxt.getText()));
+				sucursal.setNombre(panel.nombretxt.getText());
+				sucursal.setHoraApertura(LocalTime.of((int)panel.horaApertura.getValue(), (int)panel.minApertura.getValue()));
+				sucursal.setHoraCierre(LocalTime.of((int)panel.horaCierre.getValue(), (int)panel.minCierre.getValue()));
+				sucursal.setEstado((Estado) panel.estadoComboBox.getSelectedItem());
+				sucursal.setCapacidad(Float.valueOf(panel.capacidadtxt.getText()));
 				try {
 					sucursalServicios.agregarSucursal(sucursal);
 				} catch (SQLException ex) {
@@ -178,11 +141,13 @@ public class VentanaSucursales extends JFrame {
 			}
 		});
 
-		frameAlta.add(mainPanel);
+		frameAlta.add(panel);
 		frameAlta.pack();
 		frameAlta.setLocationRelativeTo(null);
 		frameAlta.setVisible(true);
+
 	}
+
 	public void showBuscarPanel(){
 		JFrame frame = new JFrame("Busqueda");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -328,7 +293,7 @@ public class VentanaSucursales extends JFrame {
 		}
 	}
 	private void buscar(Estado estado) throws SQLException {
-		List<Sucursal> sucursales= sucursalServicios.buscarSucursales(estado);
+		List<Sucursal> sucursales= sucursalServicios.buscarSucursalesEstado(estado);
 		if(sucursales == null || sucursales.isEmpty()){
 			showSinResultadosDialog();
 		}
@@ -378,7 +343,7 @@ public class VentanaSucursales extends JFrame {
 		JButton estadobtn = new JButton("Modificar Estado");
 		JButton ordenbtn = new JButton("Generar Orden");
 		JButton cerrarbtn = new JButton("Cerrar");
-
+		//hel´l
 		panel.add(contenedorTabla);
 		panel.add(editarbtn);
 		panel.add(darBajabtn);
@@ -408,6 +373,7 @@ public class VentanaSucursales extends JFrame {
 				int index = tablaResultados.getSelectedRow();
 				try {
 					showBajaDialog(sucursales.get(index));
+					resultadoFrame.dispose();
 				} catch (SQLException ex) {
 					throw new RuntimeException(ex);
 				}
@@ -418,6 +384,7 @@ public class VentanaSucursales extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int index = tablaResultados.getSelectedRow();
 				showModificarEstadoDialog(sucursales.get(index));
+				resultadoFrame.dispose();
 			}
 		});
 		stockbtn.addActionListener(new ActionListener() {
@@ -425,6 +392,7 @@ public class VentanaSucursales extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int index = tablaResultados.getSelectedRow();
 				showStockPanel(sucursales.get(index));
+				resultadoFrame.dispose();
 			}
 		});
 		ordenbtn.addActionListener(new ActionListener() {
@@ -432,6 +400,7 @@ public class VentanaSucursales extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int index = tablaResultados.getSelectedRow();
 				showOrden(sucursales.get(index));
+				resultadoFrame.dispose();
 			}
 		});
 
@@ -457,9 +426,206 @@ public class VentanaSucursales extends JFrame {
 		}
 	}
 	public void showEditarPanel(Sucursal sucursal){
+
+		JFrame frameEditar = new JFrame("Editar Informacion sobre: "+sucursal.getNombre());
+		frameEditar.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frameEditar.setLayout(new BorderLayout());
+
+		AtributosSucursalesPanel panel = new AtributosSucursalesPanel(new GridLayout(6,2));
+
+		JButton guardarbtn = new JButton("Guardar Cambios");
+		JButton cancelarbtn = new JButton("Cancelar");
+
+		panel.horaApertura.setValue(sucursal.getHoraApertura().getHour());
+		panel.minApertura.setValue(sucursal.getHoraApertura().getMinute());
+		panel.horaCierre.setValue(sucursal.getHoraCierre().getHour());
+		panel.minCierre.setValue(sucursal.getHoraCierre().getMinute());
+		panel.estadoComboBox.setSelectedItem(sucursal.getEstado());
+		panel.add(guardarbtn);
+		panel.add(cancelarbtn);
+
+		guardarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!panel.nombretxt.getText().isEmpty()){
+				sucursal.setNombre(panel.nombretxt.getText());}
+				sucursal.setHoraApertura(LocalTime.of((int)panel.horaApertura.getValue(), (int)panel.minApertura.getValue()));
+				sucursal.setHoraCierre(LocalTime.of((int)panel.horaCierre.getValue(), (int)panel.minCierre.getValue()));
+				sucursal.setEstado((Estado) panel.estadoComboBox.getSelectedItem());
+				if(!panel.capacidadtxt.getText().isEmpty()){
+				sucursal.setCapacidad(Float.valueOf(panel.capacidadtxt.getText()));}
+				sucursalServicios.editarSucursal(sucursal);
+				frameEditar.dispose();
+			}
+		});
+
+		cancelarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frameEditar.dispose();
+
+			}
+		});
+
+		frameEditar.add(panel);
+		frameEditar.pack();
+		frameEditar.setLocationRelativeTo(null);
+		frameEditar.setVisible(true);
 	}
 	public void showStockPanel(Sucursal sucursal){
+		JFrame stockFrame = new JFrame("Resultado Busqueda:");
+		stockFrame.setSize(500, 300);
+		stockFrame.setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+		JPanel panel = new JPanel(new FlowLayout());
+
+
+		String[] columnNames = {"Producto","Cantidad"};
+
+		JTable tablaResultados = new JTable(new DefaultTableModel());
+
+		DefaultTableModel model = (DefaultTableModel) tablaResultados.getModel();
+		model.setColumnIdentifiers(columnNames);
+		if(sucursal.getStock()!=null) {
+			for (StockProducto s : sucursal.getStock()) {
+				String[] fila = {s.getProducto().getNombre(), String.valueOf(s.getCantidad())};
+				model.addRow(fila);
+			}
+		}
+
+		JScrollPane contenedorTabla = new JScrollPane(tablaResultados);
+		int maxVisibleRows = 7;
+		int rowHeight = tablaResultados.getRowHeight();
+		int headerHeight = tablaResultados.getTableHeader().getPreferredSize().height;
+		Dimension preferredSize = new Dimension(contenedorTabla.getPreferredSize().width,
+				maxVisibleRows * rowHeight + headerHeight);
+		contenedorTabla.setPreferredSize(preferredSize);
+
+		JButton agregarbtn = new JButton("Añadir Producto");
+		JButton borrarbtn = new JButton("Eliminar Producto");
+		JButton actualizarbtn = new JButton("Actualizar Stock");
+		JButton cerrarbtn = new JButton("Cerrar");
+
+		actualizarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int row =tablaResultados.getSelectedRow();
+				if (row!=-1 && sucursal.getStock()!=null){
+					Producto prod= sucursal.getStock().get(row).getProducto();
+					String cantidadAct = null;
+					try {
+						cantidadAct = showActualizarDialog(prod, sucursal,row);
+					} catch (SQLException ex) {
+						throw new RuntimeException(ex);
+					}
+					tablaResultados.setValueAt(cantidadAct,row,1);
+				}
+			}
+		});
+
+		borrarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int row =tablaResultados.getSelectedRow();
+				if (row!=-1){
+					Producto prod= sucursal.getStock().get(row).getProducto();
+					boolean confirm = false;
+					try {
+						confirm = showBorrarProdStockDialog(prod,sucursal);
+					} catch (SQLException ex) {
+						throw new RuntimeException(ex);
+					}
+					if(confirm){
+						model.removeRow(row);
+					}
+				}
+
+			}
+		});
+
+		agregarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				StockProducto nuevoStock = null;
+				try {
+					nuevoStock = showAgregarStockDialog(sucursal);
+				} catch (SQLException ex) {
+					throw new RuntimeException(ex);
+				}
+				if(nuevoStock!=null) {
+					model.addRow(new String[]{nuevoStock.getProducto().getNombre(), String.valueOf(nuevoStock.getCantidad())});
+				}
+			}
+		});
+		cerrarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stockFrame.dispose();
+
+			}
+		});
+
+		panel.add(contenedorTabla);
+		panel.add(agregarbtn);
+		panel.add(borrarbtn);
+		panel.add(actualizarbtn);
+		panel.add(cerrarbtn);
+		stockFrame.add(panel);
+		stockFrame.setVisible(true);
+
+	}
+
+	public StockProducto showAgregarStockDialog(Sucursal sucursal) throws SQLException {
+		StockProducto stock = new StockProducto();
+		JPanel panel = new JPanel(new GridLayout(3,1));
+		JLabel lbl= new JLabel("Seleccione el producto y la cantidad");
+		List<Producto> productos= listaProductos();
+		DefaultComboBoxModel<Producto> comboBoxModel = new DefaultComboBoxModel<>(productos.toArray(new Producto[0]));
+		JComboBox<Producto> productosComboBox = new JComboBox<>(comboBoxModel);
+		JTextField cantidadtxt = new JTextField(3);
+
+		panel.add(lbl);
+		panel.add(productosComboBox);
+		panel.add(cantidadtxt);
+		int opcion =JOptionPane.showOptionDialog(this,panel,"Nuevo Stock",
+				JOptionPane.OK_OPTION,JOptionPane.PLAIN_MESSAGE,null,null,null);
+		if(opcion==JOptionPane.OK_OPTION){
+			//agregar;
+			stock.setProducto((Producto) productosComboBox.getSelectedItem());
+			stock.setCantidad(Integer.valueOf(cantidadtxt.getText()));
+			sucursal.addStock(stock);
+			sucursalServicios.altaStockProducto(stock.getProducto(),sucursal,stock.getCantidad());
+		}
+		else{
+			stock = null;
+		}
+		return stock;
+	}
+	public boolean showBorrarProdStockDialog(Producto prod,Sucursal sucursal) throws SQLException {
+		int opcion = JOptionPane.showConfirmDialog(null, "¿Seguro desea eliminar el stock del" +
+				"producto"+prod.getNombre(),"Eliminar Stock",JOptionPane.YES_NO_OPTION);
+		if(opcion==JOptionPane.YES_OPTION){
+			sucursalServicios.borrarStockProducto(prod,sucursal);
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	public String showActualizarDialog(Producto prod,Sucursal sucursal, int fila) throws SQLException {
+		String msj = "Ingrese la nueva cantidad de stock para el producto "+prod.getNombre();
+		String cant = JOptionPane.showInputDialog(null,
+				msj,JOptionPane.PLAIN_MESSAGE);
+		if(cant!=null){
+			sucursalServicios.editarStockProducto(prod,sucursal, Integer.parseInt(cant));
+		}
+		return cant;
+	}
+
+	private List<Producto> listaProductos() throws SQLException {
+		ProductoServicios productoServicios = new ProductoServicios();
+		return productoServicios.listarProductos();
 	}
 	public void showOrden(Sucursal sucursal){}
 

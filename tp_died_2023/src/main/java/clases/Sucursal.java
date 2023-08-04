@@ -53,6 +53,10 @@ public class Sucursal {
 	public void setStock(List<StockProducto> stock) {
 		this.stock = stock;
 	}
+
+	public void addStock(StockProducto prod){
+		stock.add(prod);
+	}
 	public Sucursal( String nombre, LocalTime horaApertura, LocalTime horaCierre, Estado estado, float capacidad) {
 		super();
 		this.nombre = nombre;

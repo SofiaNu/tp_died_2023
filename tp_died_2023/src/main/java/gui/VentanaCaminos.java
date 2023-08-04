@@ -54,7 +54,6 @@ public class VentanaCaminos extends JFrame {
 		JButton bajabtn = new JButton("Inhabilitar camino");
 		JButton busquedabtn = new JButton("Buscar camino");
 		JButton editarbtn = new JButton("editar caminos");
-		JButton listarbtn = new JButton("Listar caminos");
 
 		// Add buttons to the main frame
 		contentPane.setLayout(new FlowLayout());
@@ -62,7 +61,6 @@ public class VentanaCaminos extends JFrame {
 		contentPane.add(bajabtn);
 		contentPane.add(busquedabtn);
 		contentPane.add(editarbtn);
-		contentPane.add(listarbtn);
 		setContentPane(contentPane);
 
 		altabtn.addActionListener(new ActionListener() {
@@ -84,12 +82,6 @@ public class VentanaCaminos extends JFrame {
 			}
 		});
 
-		listarbtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showListarCaminosPanel();
-			}
-		});
 		editarbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -263,10 +255,6 @@ public class VentanaCaminos extends JFrame {
 		frame.setVisible(true);
 	}
 
-
-	public void showListarCaminosPanel(){
-
-	}
 
 	public void showEditarPanel(Camino camino) throws SQLException {
 		JFrame frameEditar = new JFrame("Resultado Busqueda:");
