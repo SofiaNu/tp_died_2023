@@ -36,7 +36,7 @@ public class OrdenProvisionRepository {
 
         try {
             conn.abrir();
-//            conn.conexion.setAutoCommit(false);
+//          conn.conexion.setAutoCommit(false);
             String ordenProvisionInsertSqlStr =
                             """
                             INSERT INTO tp_tablas."ORDEN_PROVISION"\
@@ -86,9 +86,11 @@ public class OrdenProvisionRepository {
                 }
             }
 
-            conn.conexion.commit();
+            //conn.conexion.commit();
             ordenInsertStatement.close();
-            stockProductoInsertStatement.close();
+            if(stockProductoInsertStatement != null ) stockProductoInsertStatement.close();
+
+
             //System.out.println(rs.getString(2));
         } catch (SQLException e) {
             e.printStackTrace();
