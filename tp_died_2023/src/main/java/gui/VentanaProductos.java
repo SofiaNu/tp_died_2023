@@ -17,37 +17,19 @@ public class VentanaProductos extends JFrame {
 
 	private JPanel contentPane;
 	ProductoServicios servicio = new ProductoServicios();
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VentanaProductos frame = new VentanaProductos();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
-	/**
-	 * Create the frame.
-	 */
 	public VentanaProductos() {
 		setTitle("Ventana Productos");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(400, 200);
 		setLocationRelativeTo(null);
 
-		// Create buttons
+
 		JButton altaProductobtn = new JButton("Alta Producto");
 		JButton busquedabtn = new JButton("Busqueda");
 		JButton cerrarbtn = new JButton("Cerrar");
 
-		// Add buttons to the main frame
+
 		setLayout(new FlowLayout());
 		add(altaProductobtn);
 		add(busquedabtn);
