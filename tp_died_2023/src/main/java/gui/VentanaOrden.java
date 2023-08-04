@@ -1,9 +1,8 @@
 package gui;
 
 import clases.OrdenProvision;
+import clases.ProductoProvisto;
 import clases.Sucursal;
-import dao.OrdenProvisionRepository;
-import dao.StockProductoRepository;
 import servicios.SucursalServicios;
 
 import javax.swing.*;
@@ -64,7 +63,7 @@ public class VentanaOrden extends JFrame{
         buscarbtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showBuscarPanel();
+                showBuscarDialog();
 
             }
         });
@@ -88,8 +87,18 @@ public class VentanaOrden extends JFrame{
 
     public void showAltaPanel(){}
 
-    public void showBuscarPanel(){}
+    public void showBuscarDialog(){
+        String id =JOptionPane.showInputDialog(this, "Id: ","Buscar Orden");
+        if(!id.isEmpty() || id!=null){
+            buscarOrden(Integer.valueOf(id));
+        }
+
+    }
     public void showListarPanel(){
+        JFrame listarFrame = new JFrame("Resultado Busqueda:");
+        listarFrame.setSize(500, 300);
+        listarFrame.setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel panelListar = new JPanel();
 
         List<OrdenProvision> listaOrdenes = null;
@@ -102,8 +111,181 @@ public class VentanaOrden extends JFrame{
 
         for(OrdenProvision o: listaOrdenes){
             String[] fila = {String.valueOf(o.getId()),String.valueOf(o.getFecha()),
-                    String.valueOf(o.getTiempoLimite())};
+                    String.valueOf(o.getTiempoLimite()),String.valueOf(o.getPeso()),String.valueOf(o.getEstado())};
+            model.addRow(fila);
         }
+
+        JScrollPane contenedorTabla = new JScrollPane(tablaResultados); //Sin esto no se muestra el nombre de las columnas
+        int maxVisibleRows = 7;
+        int rowHeight = tablaResultados.getRowHeight();
+        int headerHeight = tablaResultados.getTableHeader().getPreferredSize().height;
+        Dimension preferredSize = new Dimension(contenedorTabla.getPreferredSize().width,
+                maxVisibleRows * rowHeight + headerHeight);
+        contenedorTabla.setPreferredSize(preferredSize);
+
+        JButton verProductosbtn = new JButton("Ver Listado Productos");
+        JButton bajabtn = new JButton("Dar de Baja Orden");
+        JButton editarbtn = new JButton("Editar Orden");
+        JButton cerrarbtn = new JButton("Cerrar");
+
+        panelListar.add(contenedorTabla);
+        panelListar.add(verProductosbtn);
+        panelListar.add(bajabtn);
+        panelListar.add(editarbtn);
+        panelListar.add(cerrarbtn);
+
+        cerrarbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listarFrame.dispose();
+
+            }
+        });
+
+        verProductosbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = tablaResultados.getSelectedRow();
+                if(index != -1) {
+                    showListaProductos(listaOrdenes.get(index));
+                }
+            }
+        });
+
+        bajabtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = tablaResultados.getSelectedRow();
+                if (row != -1) {
+                    OrdenProvision orden = listaOrdenes.get(row);
+                    boolean confirm = false;
+                    confirm = showBorrarOrdenDialog(orden);
+                    if (confirm) {
+                        model.removeRow(row);
+                    }
+                }
+            }
+        });
+
+        editarbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listarFrame.dispose();
+
+            }
+        });
+        listarFrame.add(panelListar);
+        listarFrame.setVisible(true);
+    }
+
+    public boolean showBorrarOrdenDialog(OrdenProvision orden){
+        int opcion = JOptionPane.showConfirmDialog(null, "¿Seguro desea eliminar la orden" +
+                        "de provision?","Eliminar Orden",JOptionPane.YES_NO_OPTION);
+        if(opcion==JOptionPane.YES_OPTION){
+            //ordenServicios.borrarOrden(orden);
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public void showListaProductos(OrdenProvision orden) {
+
+        JPanel panelListar = new JPanel();
+
+        List<ProductoProvisto> listaProductos = null;
+
+        String[] columnNames = {"Producto", "Cantidad"};
+        JTable tablaResultados = new JTable(new DefaultTableModel());
+
+        DefaultTableModel model = (DefaultTableModel) tablaResultados.getModel();
+        model.setColumnIdentifiers(columnNames);
+
+        for (ProductoProvisto p : listaProductos) {
+            String[] fila = {p.getProducto().getNombre(), String.valueOf(p.getCantidad())};
+            model.addRow(fila);
+        }
+
+        JScrollPane contenedorTabla = new JScrollPane(tablaResultados); //Sin esto no se muestra el nombre de las columnas
+        int maxVisibleRows = 7;
+        int rowHeight = tablaResultados.getRowHeight();
+        int headerHeight = tablaResultados.getTableHeader().getPreferredSize().height;
+        Dimension preferredSize = new Dimension(contenedorTabla.getPreferredSize().width,
+                maxVisibleRows * rowHeight + headerHeight);
+        contenedorTabla.setPreferredSize(preferredSize);
+
+        panelListar.add(contenedorTabla);
+
+        JOptionPane.showConfirmDialog(this,panelListar,"Productos en la Orden",JOptionPane.OK_OPTION);
+
+    }
+
+    private void buscarOrden(int id){
+        //OrdenProvision orden = ordenProvisionServicios.buscarOrden(id);
+        OrdenProvision orden = null;
+        if(orden != null){
+            showOrdenPanel(orden);
+        }
+        else{
+            JOptionPane.showMessageDialog(this,"No se encontro una orden de provision con ese id");
+        }
+    }
+
+    public void showOrdenPanel(OrdenProvision o){
+        JFrame frame = new JFrame("Resultado Busqueda:");
+        frame.setSize(500, 300);
+        frame.setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JPanel resultadobusqueda = new JPanel();
+        String[] columnNames = {"Id", "Fecha", "Tiempo Limite", "Peso", "Estado"};
+        String[][] resultado ={{String.valueOf(o.getId()),String.valueOf(o.getFecha()),
+                String.valueOf(o.getTiempoLimite()),String.valueOf(o.getPeso()),String.valueOf(o.getEstado())}};
+
+        JTable tablaResultados = new JTable(resultado,columnNames);
+        JButton verProductosbtn = new JButton("Ver Listado Productos");
+        JButton bajabtn = new JButton("Dar de Baja Orden");
+        JButton editarbtn = new JButton("Editar Orden");
+        JButton cerrarbtn = new JButton("Cerrar");
+
+        resultadobusqueda.add(tablaResultados);
+        resultadobusqueda.add(verProductosbtn);
+        resultadobusqueda.add(bajabtn);
+        resultadobusqueda.add(editarbtn);
+        resultadobusqueda.add(cerrarbtn);
+
+        cerrarbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+
+            }
+        });
+
+        verProductosbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              showListaProductos(o);
+            }
+        });
+
+        bajabtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showBorrarOrdenDialog(o);
+            }
+        });
+
+        editarbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+
+            }
+        });
+
+        frame.add(resultadobusqueda);
+        frame.setVisible(true);
 
     }
 }
