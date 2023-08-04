@@ -61,8 +61,15 @@ public class VentanaSucursales extends JFrame {
 		contentPane.add(bajabtn);
 		contentPane.add(stockbtn);
 		contentPane.add(ordenbtn);
+		contentPane.add(cerrarbtn);
 		setContentPane(contentPane);
 
+		cerrarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
 		altabtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -133,6 +140,7 @@ public class VentanaSucursales extends JFrame {
 					throw new RuntimeException(ex);
 				}
 				frameAlta.dispose();
+				dispose();
 			}
 		});
 
@@ -402,7 +410,8 @@ public class VentanaSucursales extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int index = tablaResultados.getSelectedRow();
-				showOrden(sucursales.get(index));
+				VentanaOrden ventanaOrden = new VentanaOrden(sucursales.get(index));
+				ventanaOrden.setVisible(true);
 				resultadoFrame.dispose();
 			}
 		});
@@ -629,9 +638,6 @@ public class VentanaSucursales extends JFrame {
 	private List<Producto> listaProductos() throws SQLException {
 		ProductoServicios productoServicios = new ProductoServicios();
 		return productoServicios.listarProductos();
-	}
-	public void showOrden(Sucursal sucursal){
-
 	}
 
 }

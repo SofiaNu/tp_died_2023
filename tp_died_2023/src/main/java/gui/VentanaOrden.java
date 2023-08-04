@@ -19,34 +19,18 @@ import java.util.stream.Collectors;
 public class VentanaOrden extends JFrame{
     private JPanel contentPane;
     SucursalServicios sucursalServicios = new SucursalServicios();
-    Sucursal sucursal;
-    /**
-     * Launch the application.
-     */
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
+    Sucursal sucursal = null;
 
-    /**
-     * Create the frame.
-     */
     public VentanaOrden(Sucursal s) {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 450, 300);
-        setTitle("Gestion de Sucursales");
+        setTitle("Gestion de Ordenes");
         this.sucursal = s;
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         JButton altabtn = new JButton("Crear Orden Provision");
-        JButton listarbtn = new JButton("Listar Ordenes Pendientes");
+        JButton listarbtn = new JButton("Listar Ordenes de la Sucursal");
         JButton buscarbtn = new JButton("Buscar Orden");
         JButton cerrarbtn = new JButton("Cerrar");
 
@@ -78,7 +62,8 @@ public class VentanaOrden extends JFrame{
         listarbtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showListarPanel();
+
+                showListarPorSucursalPanel();
             }
         });
 
@@ -92,6 +77,60 @@ public class VentanaOrden extends JFrame{
 
     }
 
+    public VentanaOrden(){
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 450, 300);
+        setTitle("Gestion de Ordenes");
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+        JButton altabtn = new JButton("Crear Orden Provision");
+        JButton listarbtn = new JButton("Listar Ordenes Pendientes");
+        JButton buscarbtn = new JButton("Buscar Orden");
+        JButton cerrarbtn = new JButton("Cerrar");
+
+        contentPane.add(altabtn);
+        contentPane.add(listarbtn);
+        contentPane.add(buscarbtn);
+        contentPane.add(cerrarbtn);
+        setContentPane(contentPane);
+
+        altabtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    sucursal = getSucursalDestino();
+                    showAltaPanel();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        buscarbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showBuscarDialog();
+
+            }
+        });
+
+        listarbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                showListarPanel();
+            }
+        });
+
+        cerrarbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
+        contentPane.setVisible(true);
+    }
     public void showAltaPanel() throws SQLException {
         ProductoServicios productoServicios = new ProductoServicios();
         List<Producto> listaProductos =productoServicios.listarProductos();
@@ -100,7 +139,7 @@ public class VentanaOrden extends JFrame{
         frame.setSize(500, 300);
         frame.setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel panel = new JPanel(new GridLayout(2,2));
+        JPanel panel = new JPanel();
 
         JLabel tiempolbl = new JLabel("Tiempo minimo: ");
         JTextField tiempotxt = new JTextField();
@@ -117,7 +156,6 @@ public class VentanaOrden extends JFrame{
         DefaultTableModel model = (DefaultTableModel) tablaResultados.getModel();
         model.setColumnIdentifiers(columnNames);
 
-
         JScrollPane contenedorTabla = new JScrollPane(tablaResultados);
         int maxVisibleRows = 7;
         int rowHeight = tablaResultados.getRowHeight();
@@ -126,6 +164,12 @@ public class VentanaOrden extends JFrame{
                 maxVisibleRows * rowHeight + headerHeight);
         contenedorTabla.setPreferredSize(preferredSize);
 
+        panel.add(tiempolbl);
+        panel.add(tiempotxt);
+        panel.add(contenedorTabla);
+        panel.add(agregarbtn);
+        panel.add(guardarbtn);
+        panel.add(cerrarbtn);
         agregarbtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -138,7 +182,7 @@ public class VentanaOrden extends JFrame{
         cerrarbtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dispose();
+                frame.dispose();
             }
         });
 
@@ -153,10 +197,11 @@ public class VentanaOrden extends JFrame{
                 orden.setEstado(EstadoOrden.PENDIENTE);
                 orden.setListaProductos(productos);
                 //ordenProvisionServicios.altaOrden(orden);
+                frame.dispose();
             }
         });
-
-
+        frame.add(panel);
+        frame.setVisible(true);
 
     }
 
@@ -171,7 +216,7 @@ public class VentanaOrden extends JFrame{
         panel.add(lbl);
         panel.add(productosComboBox);
         panel.add(cantidadtxt);
-        JOptionPane.showInputDialog(this,panel,"Agregar Producto",JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showMessageDialog(this,panel,"Agregar Producto",JOptionPane.PLAIN_MESSAGE);
         prod.setCantidad(Integer.valueOf(cantidadtxt.getText()));
         prod.setProducto((Producto) productosComboBox.getSelectedItem());
 
@@ -186,14 +231,14 @@ public class VentanaOrden extends JFrame{
         return peso;
     }
     public void showBuscarDialog(){
-        String id =JOptionPane.showInputDialog(this, "Id: ","Buscar Orden");
+        String id =JOptionPane.showInputDialog(this, "Id de la Orden: ");
         if(!id.isEmpty() || id!=null){
             buscarOrden(Integer.valueOf(id));
         }
 
     }
-    public void showListarPanel(){
-        JFrame listarFrame = new JFrame("Resultado Busqueda:");
+    public void showListarPorSucursalPanel(){
+        JFrame listarFrame = new JFrame("Ordenes con Destino: "+sucursal.getNombre());
         listarFrame.setSize(500, 300);
         listarFrame.setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -223,13 +268,11 @@ public class VentanaOrden extends JFrame{
 
         JButton verProductosbtn = new JButton("Ver Listado Productos");
         JButton bajabtn = new JButton("Dar de Baja Orden");
-        JButton editarbtn = new JButton("Editar Orden");
         JButton cerrarbtn = new JButton("Cerrar");
 
         panelListar.add(contenedorTabla);
         panelListar.add(verProductosbtn);
         panelListar.add(bajabtn);
-        panelListar.add(editarbtn);
         panelListar.add(cerrarbtn);
 
         cerrarbtn.addActionListener(new ActionListener() {
@@ -265,17 +308,84 @@ public class VentanaOrden extends JFrame{
             }
         });
 
-        editarbtn.addActionListener(new ActionListener() {
+        listarFrame.add(panelListar);
+        listarFrame.setVisible(true);
+    }
+
+    public void showListarPanel(){
+        JFrame listarFrame = new JFrame("Lista de Ordenes");
+        listarFrame.setSize(500, 300);
+        listarFrame.setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JPanel panelListar = new JPanel();
+
+        List<OrdenProvision> listaOrdenes = null;
+
+        String[] columnNames = {"Id","Destino","Fecha", "Tiempo Limite", "Peso", "Estado"};
+        JTable tablaResultados = new JTable(new DefaultTableModel());
+
+        DefaultTableModel model = (DefaultTableModel) tablaResultados.getModel();
+        model.setColumnIdentifiers(columnNames);
+
+        for(OrdenProvision o: listaOrdenes){
+            String[] fila = {String.valueOf(o.getId()),o.getDestino().getNombre(),String.valueOf(o.getFecha()),
+                    String.valueOf(o.getTiempoLimite()),String.valueOf(o.getPeso()),String.valueOf(o.getEstado())};
+            model.addRow(fila);
+        }
+
+        JScrollPane contenedorTabla = new JScrollPane(tablaResultados);
+        int maxVisibleRows = 7;
+        int rowHeight = tablaResultados.getRowHeight();
+        int headerHeight = tablaResultados.getTableHeader().getPreferredSize().height;
+        Dimension preferredSize = new Dimension(contenedorTabla.getPreferredSize().width,
+                maxVisibleRows * rowHeight + headerHeight);
+        contenedorTabla.setPreferredSize(preferredSize);
+
+        JButton verProductosbtn = new JButton("Ver Listado Productos");
+        JButton bajabtn = new JButton("Dar de Baja Orden");
+        JButton cerrarbtn = new JButton("Cerrar");
+
+        panelListar.add(contenedorTabla);
+        panelListar.add(verProductosbtn);
+        panelListar.add(bajabtn);
+        panelListar.add(cerrarbtn);
+
+        cerrarbtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 listarFrame.dispose();
 
             }
         });
+
+        verProductosbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = tablaResultados.getSelectedRow();
+                if(index != -1) {
+                    showListaProductos(listaOrdenes.get(index));
+                }
+            }
+        });
+
+        bajabtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = tablaResultados.getSelectedRow();
+                if (row != -1) {
+                    OrdenProvision orden = listaOrdenes.get(row);
+                    boolean confirm = false;
+                    confirm = showBorrarOrdenDialog(orden);
+                    if (confirm) {
+                        model.removeRow(row);
+                    }
+                }
+            }
+        });
+
         listarFrame.add(panelListar);
         listarFrame.setVisible(true);
     }
-
     public boolean showBorrarOrdenDialog(OrdenProvision orden){
         int opcion = JOptionPane.showConfirmDialog(null, "¿Seguro desea eliminar la orden" +
                         "de provision?","Eliminar Orden",JOptionPane.YES_NO_OPTION);
@@ -329,8 +439,6 @@ public class VentanaOrden extends JFrame{
             JOptionPane.showMessageDialog(this,"No se encontro una orden de provision con ese id");
         }
     }
-
-    public void agregarProductos(){}
     public void showOrdenPanel(OrdenProvision o){
         JFrame frame = new JFrame("Resultado Busqueda:");
         frame.setSize(500, 300);
@@ -344,13 +452,11 @@ public class VentanaOrden extends JFrame{
         JTable tablaResultados = new JTable(resultado,columnNames);
         JButton verProductosbtn = new JButton("Ver Listado Productos");
         JButton bajabtn = new JButton("Dar de Baja Orden");
-        JButton editarbtn = new JButton("Editar Orden");
         JButton cerrarbtn = new JButton("Cerrar");
 
         resultadobusqueda.add(tablaResultados);
         resultadobusqueda.add(verProductosbtn);
         resultadobusqueda.add(bajabtn);
-        resultadobusqueda.add(editarbtn);
         resultadobusqueda.add(cerrarbtn);
 
         cerrarbtn.addActionListener(new ActionListener() {
@@ -375,16 +481,17 @@ public class VentanaOrden extends JFrame{
             }
         });
 
-        editarbtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-
-            }
-        });
-
         frame.add(resultadobusqueda);
         frame.setVisible(true);
 
     }
+    public Sucursal getSucursalDestino() throws SQLException {
+        Sucursal destino = null;
+        String id =JOptionPane.showInputDialog(this, "Id Sucursal destino: ");
+        if(!id.isEmpty() || id!=null){
+            destino = sucursalServicios.buscarSucursal(Integer.valueOf(id));
+        }
+        return destino;
+    }
+
 }

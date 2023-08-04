@@ -12,11 +12,22 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.sql.SQLException;
 
-public class Inicio extends JFrame implements ActionListener{
+public class Inicio extends JFrame{
 
 	private JPanel contentPane;
 
-
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Inicio frame = new Inicio();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 	/**
 	 * Create the frame.
 	 */
@@ -36,24 +47,21 @@ public class Inicio extends JFrame implements ActionListener{
 				ventanaSucursales.setVisible(true);
 			}
 		});
-		btnSucursales.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		contentPane.add(btnSucursales);
 		
 		JButton btnProductos = new JButton("Productos");
 		btnProductos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("botn productos");
 				VentanaProductos ventanaProductos= new VentanaProductos();
 				ventanaProductos.setVisible(true);
 			}
 		});
-		btnProductos.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		contentPane.add(btnProductos);
 		
 		JButton btnCaminos = new JButton("Caminos");
 		btnCaminos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				VentanaCaminos ventanaCaminos= null;
+				VentanaCaminos ventanaCaminos = null;
 				try {
 					ventanaCaminos = new VentanaCaminos();
 				} catch (SQLException ex) {
@@ -62,14 +70,17 @@ public class Inicio extends JFrame implements ActionListener{
 				ventanaCaminos.setVisible(true);
 			}
 		});
-		btnCaminos.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		contentPane.add(btnCaminos);
+
+		JButton btnOrdenes = new JButton("Gestion de Ordenes de Provision");
+		btnOrdenes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				VentanaOrden ventanaOrden = new VentanaOrden();
+				ventanaOrden.setVisible(true);
+			}
+		});
+		contentPane.add(btnOrdenes);
 	}
 
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-	}
 
 }
