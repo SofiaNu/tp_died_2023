@@ -305,11 +305,12 @@ public class VentanaSucursales extends JFrame {
 		DefaultTableModel model = (DefaultTableModel) tablaResultados.getModel();
 		model.setColumnIdentifiers(columnNames);
 
-		for(Sucursal s:sucursales){
-			String[] fila = {String.valueOf(s.getId()),s.getNombre(),String.valueOf(s.getHoraApertura()),
-					String.valueOf(s.getHoraCierre()),String.valueOf(s.getEstado())};
-			model.addRow(fila);
-
+		if(sucursales != null) {
+			for (Sucursal s : sucursales) {
+				String[] fila = {String.valueOf(s.getId()), s.getNombre(), String.valueOf(s.getHoraApertura()),
+						String.valueOf(s.getHoraCierre()), String.valueOf(s.getEstado())};
+				model.addRow(fila);
+			}
 		}
 
 		JScrollPane contenedorTabla = new JScrollPane(tablaResultados); //Sin esto no se muestra el nombre de las columnas

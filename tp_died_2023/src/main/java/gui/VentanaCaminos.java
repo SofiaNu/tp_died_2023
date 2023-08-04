@@ -379,38 +379,4 @@ public class VentanaCaminos extends JFrame {
 		return sucursalServicios.buscarSucursal(nombre);
 	}
 
-	public JPanel setPanelAltaEdicion() throws SQLException {
-		JPanel panelAtributos = new JPanel(new GridLayout(6, 2 ));
-
-
-		JLabel label1 = new JLabel("Origen:");
-		JLabel label2 = new JLabel("Destino:");
-		JLabel label3 = new JLabel("Tiempo en Transito:");
-		JLabel label4 = new JLabel("Capacidad Maxima:");
-		JLabel label5 = new JLabel("Estado:");
-
-
-		JTextField tiempotxt = new JTextField(10);
-		JTextField capacidadtxt = new JTextField(10);
-
-		DefaultComboBoxModel<Sucursal> origenModel = new DefaultComboBoxModel<>(sucursales.toArray(new Sucursal[0]));
-		DefaultComboBoxModel<Sucursal> destinoModel = new DefaultComboBoxModel<>(sucursales.toArray(new Sucursal[0]));
-
-		JComboBox<Sucursal> origenCombo = new JComboBox<Sucursal>(origenModel);
-		JComboBox<Sucursal> destinoCombo = new JComboBox<Sucursal>(destinoModel);
-		JComboBox<String> estadoCombo = new JComboBox<>(new String[]{"Operativo", "No operativo"});
-
-		panelAtributos.add(label1);
-		panelAtributos.add(origenCombo);
-		panelAtributos.add(label2);
-		panelAtributos.add(destinoCombo);
-		panelAtributos.add(label3);
-		panelAtributos.add(tiempotxt);
-		panelAtributos.add(label4);
-		panelAtributos.add(capacidadtxt);
-		panelAtributos.add(label5);
-		panelAtributos.add(estadoCombo);
-
-		return panelAtributos;
-	}
 }
