@@ -76,7 +76,7 @@ public class VentanaProductos extends JFrame {
 		JTextField pesotxt = new JTextField();
 
 		JButton guardarbtn = new JButton("Guardar");
-
+		JButton cerrarbtn = new JButton("Cancelar");
 		JPanel editarProductoPanel = new JPanel();
 		editarProductoPanel.setLayout(new GridLayout(5, 2));
 		editarProductoPanel.add(nombrelbl);
@@ -88,7 +88,7 @@ public class VentanaProductos extends JFrame {
 		editarProductoPanel.add(pesolbl);
 		editarProductoPanel.add(pesotxt);
 		editarProductoPanel.add(guardarbtn);
-
+		editarProductoPanel.add(cerrarbtn);
 		guardarbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -107,6 +107,13 @@ public class VentanaProductos extends JFrame {
 					ex.printStackTrace();
 				}
 				servicio.editarProducto(producto);
+				editarProductoFrame.dispose();
+			}
+		});
+
+		cerrarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				editarProductoFrame.dispose();
 			}
 		});
@@ -159,13 +166,13 @@ public class VentanaProductos extends JFrame {
 				catch(NumberFormatException ex){
 					ex.printStackTrace();
 				}
-				// Save the data or perform any other actions
+
 				try {
 					servicio.agregarProducto(producto);
 				} catch (SQLException ex) {
 					throw new RuntimeException(ex);
 				}
-				altaProductoFrame.dispose(); // Close the Alta Producto frame after saving
+				altaProductoFrame.dispose();
 			}
 		});
 
@@ -286,10 +293,10 @@ public class VentanaProductos extends JFrame {
 				String.valueOf(producto.getPeso())}};
 
 		JTable resultado = new JTable(new DefaultTableModel(prod, columnNames));
-		JScrollPane contenedorTabla = new JScrollPane(resultado); //Sin esto no se muestra el nombre de las columnas
+		JScrollPane contenedorTabla = new JScrollPane(resultado);
 
-		//controla el tamaño (si no no se ven los botones)
-		int maxVisibleRows = 3; // Change this value to limit the number of visible rows
+
+		int maxVisibleRows = 3;
 		int rowHeight = resultado.getRowHeight();
 		int headerHeight = resultado.getTableHeader().getPreferredSize().height;
 		Dimension preferredSize = new Dimension(contenedorTabla.getPreferredSize().width,
@@ -297,7 +304,7 @@ public class VentanaProductos extends JFrame {
 		contenedorTabla.setPreferredSize(preferredSize);
 
 
-		// Create Editar, Dar de Baja, and Close buttons
+
 		JButton editarButton = new JButton("Editar");
 		JButton darDeBajaButton = new JButton("Dar de Baja");
 		JButton cerrarButton = new JButton("Cerrar");
