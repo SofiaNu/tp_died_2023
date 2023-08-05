@@ -95,12 +95,10 @@ public class VentanaOrden extends JFrame{
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         JButton altabtn = new JButton("Crear Orden Provision");
-        JButton listarbtn = new JButton("Listar Ordenes Pendientes");
         JButton buscarbtn = new JButton("Buscar Orden");
         JButton cerrarbtn = new JButton("Cerrar");
 
         contentPane.add(altabtn);
-        contentPane.add(listarbtn);
         contentPane.add(buscarbtn);
         contentPane.add(cerrarbtn);
         setContentPane(contentPane);
@@ -126,14 +124,6 @@ public class VentanaOrden extends JFrame{
                     throw new RuntimeException(ex);
                 }
 
-            }
-        });
-
-        listarbtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                showListarPanel();
             }
         });
 
