@@ -83,8 +83,16 @@ public class OrdenProvisionRepository {
                     stockProductoInsertStatement.setInt(2, pp.getProducto().getId());
                     stockProductoInsertStatement.setInt(3, pp.getCantidad());
                     stockProductoInsertStatement.addBatch();
+
                 }
             }
+            stockProductoInsertStatement.executeBatch();
+//            ResultSet rsStockProd = stockProductoInsertStatement.getResultSet();
+//            if(rsStockProd != null){
+//                while(rsStockProd.next()){
+//
+//                }
+//            }
 
             //conn.conexion.commit();
             ordenInsertStatement.close();
@@ -161,6 +169,7 @@ public class OrdenProvisionRepository {
                     OrdenProvision op = buildOPFromRs(rs);
                     op.setDestino(sucursal);
                     ordenes.add(op);
+                    op.setListaProductos(productosProvistosDeOrden(op));
                 }
             }catch(SQLException e){
                 e.printStackTrace();
@@ -270,12 +279,11 @@ public class OrdenProvisionRepository {
             rs= pstm.executeQuery();
             if(rs.next()){
                 ordenProvision = buildOPFromRs(rs);
+                ordenProvision.setListaProductos(productosProvistosDeOrden(ordenProvision));
                 //String aux= rs.getString("NOMBRE");
                 //System.out.println(aux);
             }
-            else{
-                System.out.print("No existe la orden");
-            }
+
         }catch(SQLException e){
             e.printStackTrace();
         }finally {
