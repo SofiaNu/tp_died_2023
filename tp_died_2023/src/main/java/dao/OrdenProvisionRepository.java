@@ -231,7 +231,7 @@ public class OrdenProvisionRepository {
 
             HashMap hashMapProductos = new HashMap<Integer, Producto>();
             while(rsProd.next()){
-                Producto prod = getProducto(rs);
+                Producto prod = getProducto(rsProd);
                 hashMapProductos.put(prod.getId(), prod);
             }
 
