@@ -218,10 +218,10 @@ public class OrdenProvisionRepository {
             }
             List<Integer> idProductosList = idProductos.stream().toList();
             String sqlStm = "SELECT * FROM tp_tablas.\"PRODUCTO\" WHERE ";
-            for(int i = 0; i<idProductosList.size()-2; i++){
+            for(int i = 0; i<idProductosList.size(); i++){
                 Integer prodId = idProductosList.get(i);
                 sqlStm = sqlStm += " \"ID\" = " + prodId;
-                if(i <= (idProductosList.size() - 1)){
+                if(i < (idProductosList.size() - 1)){
                     sqlStm += " OR ";
                 }
             }
