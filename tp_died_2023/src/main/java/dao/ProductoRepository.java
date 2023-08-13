@@ -1,6 +1,9 @@
 package dao;
 
 import clases.Producto;
+import connectionpool.ConnectionPool;
+
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,12 +25,11 @@ public class ProductoRepository {
 
 
     public void altaProducto(Producto producto) throws SQLException {
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm =null;
         ResultSet rs=null;
         try {
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("INSERT INTO tp_tablas.\"PRODUCTO\" " +
+            pstm = conn.prepareStatement("INSERT INTO tp_tablas.\"PRODUCTO\" " +
                     "(\"NOMBRE\",\"PRECIO_UNITARIO\",\"PESO\",\"DETALLE\") values (?,?,?,?)");
 
             pstm.setString(1, producto.getNombre());
@@ -49,20 +51,17 @@ public class ProductoRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
     }
     public void bajaProducto(int p) throws SQLException { //MANEJAR POSIBLE ERROR DE NO ENCONTRAR LA FILA
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm = null;
         ResultSet rs = null;
         try {
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("DELETE FROM tp_tablas.\"PRODUCTO\" WHERE \"ID\"=" + p);
+            pstm = conn.prepareStatement("DELETE FROM tp_tablas.\"PRODUCTO\" WHERE \"ID\"=" + p);
             pstm.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -77,22 +76,19 @@ public class ProductoRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
     }
 
     public List<Producto> listarProductos() throws SQLException {
         List<Producto> productos= new ArrayList<Producto>();
-        Conexion conn =Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm =null;
         ResultSet rs= null;
         try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"PRODUCTO\"");
+            pstm = conn.prepareStatement("SELECT * FROM tp_tablas.\"PRODUCTO\"");
             rs= pstm.executeQuery();
             while(rs.next()){
                 productos.add(getProducto(rs));
@@ -112,10 +108,8 @@ public class ProductoRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
         return productos;
@@ -123,12 +117,11 @@ public class ProductoRepository {
 
     public Producto buscarProducto(String n){
         Producto producto= null;
-        Conexion conn =Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm =null;
         ResultSet rs= null;
         try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"PRODUCTO\" WHERE \"NOMBRE\"=?");
+            pstm = conn.prepareStatement("SELECT * FROM tp_tablas.\"PRODUCTO\" WHERE \"NOMBRE\"=?");
             pstm.setString(1,n);
             rs= pstm.executeQuery();
             if(rs.next()){
@@ -152,10 +145,8 @@ public class ProductoRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
         return producto;
@@ -163,12 +154,11 @@ public class ProductoRepository {
 
     public Producto buscarProducto(int n){
         Producto producto= null;
-        Conexion conn =Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm =null;
         ResultSet rs= null;
         try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"PRODUCTO\" WHERE \"ID\"="+n);
+            pstm = conn.prepareStatement("SELECT * FROM tp_tablas.\"PRODUCTO\" WHERE \"ID\"="+n);
             rs= pstm.executeQuery();
             if(rs.next()){
                 producto = getProducto(rs);
@@ -191,22 +181,19 @@ public class ProductoRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
         return producto;
     }
 
     public void editarProducto(Producto producto){ //MANEJAR POSIBLE ERROR DE NO ENCONTRAR LA FILA A MODIF.
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm =null;
         ResultSet rs=null;
         try {
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("UPDATE tp_tablas.\"PRODUCTO\" " +
+            pstm = conn.prepareStatement("UPDATE tp_tablas.\"PRODUCTO\" " +
                     "SET \"NOMBRE\"=?,\"PRECIO_UNITARIO\"=?,\"PESO\"=?,\"DETALLE\"=?" +
                     "WHERE \"ID\"="+producto.getId());
             pstm.setString(1, producto.getNombre());
@@ -228,10 +215,8 @@ public class ProductoRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
     }

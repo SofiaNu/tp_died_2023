@@ -1,6 +1,7 @@
 package dao;
 
 import clases.*;
+import connectionpool.ConnectionPool;
 
 import java.sql.*;
 import java.sql.Date;
@@ -18,7 +19,7 @@ public class OrdenProvisionRepository {
         return _INSTANCE;
     }
     public void altaOrdenProvision(OrdenProvision ordenProvision){
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement ordenInsertStatement = null;
         PreparedStatement stockProductoInsertStatement = null;
 
@@ -35,8 +36,8 @@ public class OrdenProvisionRepository {
         }
 
         try {
-            conn.abrir();
-//          conn.conexion.setAutoCommit(false);
+            
+//          conn.setAutoCommit(false);
             String ordenProvisionInsertSqlStr =
                             """
                             INSERT INTO tp_tablas."ORDEN_PROVISION"\
@@ -44,7 +45,7 @@ public class OrdenProvisionRepository {
                             values (?,?,?)
                             """;
 
-            ordenInsertStatement = conn.conexion.prepareStatement(ordenProvisionInsertSqlStr, Statement.RETURN_GENERATED_KEYS);
+            ordenInsertStatement = conn.prepareStatement(ordenProvisionInsertSqlStr, Statement.RETURN_GENERATED_KEYS);
 
             ordenInsertStatement.setDate(1, java.sql.Date.valueOf(ordenProvision.getFecha()));
             ordenInsertStatement.setInt(2, ordenProvision.getDestino().getId());
@@ -75,7 +76,7 @@ public class OrdenProvisionRepository {
                     ("ORDEN_PROVISION","PRODUCTO","CANTIDAD")
                     values (?,?,?)
                     """;
-            stockProductoInsertStatement = conn.conexion.prepareStatement(productoProvistoInsertSqlStr);
+            stockProductoInsertStatement = conn.prepareStatement(productoProvistoInsertSqlStr);
 
             if(ordenProvision.getListaProductos() != null && ordenProvision.getListaProductos().size() > 0){
                 for(ProductoProvisto pp : ordenProvision.getListaProductos()){
@@ -94,7 +95,7 @@ public class OrdenProvisionRepository {
 //                }
 //            }
 
-            //conn.conexion.commit();
+            //conn.commit();
             ordenInsertStatement.close();
             if(stockProductoInsertStatement != null ) stockProductoInsertStatement.close();
 
@@ -113,22 +114,20 @@ public class OrdenProvisionRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
+            } 
         }
     }
 
     public void bajaOrden(OrdenProvision ordenProvision){
         if(ordenProvision == null || ordenProvision.getId() <= 0) return;
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm = null;
         ResultSet rs = null;
         try {
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("DELETE FROM tp_tablas.\"ORDEN_PROVISION\" WHERE \"ID\"= ?");
+            
+            pstm = conn.prepareStatement("DELETE FROM tp_tablas.\"ORDEN_PROVISION\" WHERE \"ID\"= ?");
             pstm.setInt(1, ordenProvision.getId());
             pstm.execute();
         } catch (SQLException e) {
@@ -144,11 +143,9 @@ public class OrdenProvisionRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
+            } 
         }
     }
 
@@ -157,12 +154,12 @@ public class OrdenProvisionRepository {
             if(sucursal == null || sucursal.getId() <= 0){
                 return ordenes;
             }
-            Conexion conn = Conexion.getInstance();
+            Connection conn = ConnectionPool.getConnection();
             PreparedStatement pstm =null;
             ResultSet rs= null;
             try{
-                conn.abrir();
-                pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"ORDEN_PROVISION\" WHERE \"SUCURSAL_DESTINO\" = ?");
+                
+                pstm = conn.prepareStatement("SELECT * FROM tp_tablas.\"ORDEN_PROVISION\" WHERE \"SUCURSAL_DESTINO\" = ?");
                 pstm.setInt(1, sucursal.getId());
                 rs= pstm.executeQuery();
                 while(rs.next()){
@@ -184,10 +181,8 @@ public class OrdenProvisionRepository {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                if (conn != null) try {
-                    conn.cerrar();
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                if (conn != null)  {
+                    ConnectionPool.releaseConnection(conn);
                 }
             }
             return ordenes;
@@ -198,14 +193,14 @@ public class OrdenProvisionRepository {
         if(op == null || op.getId() <= 0){
             return productosProvistos;
         }
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm =null;
         PreparedStatement pstmProd = null;
         ResultSet rsProd = null;
         ResultSet rs= null;
         try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"PRODUCTO_PROVISTO\" WHERE \"ORDEN_PROVISION\" = ?");
+            
+            pstm = conn.prepareStatement("SELECT * FROM tp_tablas.\"PRODUCTO_PROVISTO\" WHERE \"ORDEN_PROVISION\" = ?");
             pstm.setInt(1, op.getId());
             rs= pstm.executeQuery();
             while(rs.next()){
@@ -231,7 +226,7 @@ public class OrdenProvisionRepository {
                 }
             }
 
-            pstmProd = conn.conexion.prepareStatement(sqlStm);
+            pstmProd = conn.prepareStatement(sqlStm);
             rsProd = pstmProd.executeQuery();
 
             HashMap hashMapProductos = new HashMap<Integer, Producto>();
@@ -259,22 +254,20 @@ public class OrdenProvisionRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
+            } 
         }
         return productosProvistos;
     }
     public OrdenProvision buscar(int id) {
         OrdenProvision ordenProvision = null;
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm = null;
         ResultSet rs = null;
         try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"ORDEN_PROVISION\" WHERE \"ID\"=?");
+            
+            pstm = conn.prepareStatement("SELECT * FROM tp_tablas.\"ORDEN_PROVISION\" WHERE \"ID\"=?");
             pstm.setInt(1, id);
             rs= pstm.executeQuery();
             if(rs.next()){
@@ -297,11 +290,9 @@ public class OrdenProvisionRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
+            } 
         }
         return ordenProvision;
     }

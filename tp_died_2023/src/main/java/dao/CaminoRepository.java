@@ -2,7 +2,9 @@ package dao;
 
 import clases.Camino;
 import clases.Estado;
+import connectionpool.ConnectionPool;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,10 +23,9 @@ public class CaminoRepository {
     }
 
     public void altaCamino(Camino camino){
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm=null;
         try{
-            conn.abrir();
 
             boolean estado;
             if(camino.getEstado()==Estado.OPERATIVO){
@@ -34,7 +35,7 @@ public class CaminoRepository {
                 estado =false;
             }
 
-            pstm = conn.conexion.prepareStatement("INSERT INTO tp_tablas.\"CAMINO\"" +
+            pstm = conn.prepareStatement("INSERT INTO tp_tablas.\"CAMINO\"" +
                     "(\"SUCURSAL_ORIGEN\", \"SUCURSAL_DESTINO\", \"TIEMPO_TRANSITO\", " +
                     "\"CAPACIDAD_MAXIMA\", \"ESTADO\") values (?,?,?,?,?)");
             pstm.setInt(1,camino.getOrigen().getId());
@@ -52,20 +53,17 @@ public class CaminoRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
 
     }
     public void setNoOperativoCamino(int id){
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm=null;
         try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("UPDATE tp_tablas.\"CAMINO\" SET \"ESTADO\"=?" +
+            pstm = conn.prepareStatement("UPDATE tp_tablas.\"CAMINO\" SET \"ESTADO\"=?" +
                     "WHERE \"ID\"="+id );
             pstm.setBoolean(1,false);
             pstm.executeQuery();
@@ -77,10 +75,8 @@ public class CaminoRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+               ConnectionPool.releaseConnection(conn);
             }
         }
     }
@@ -99,12 +95,11 @@ public class CaminoRepository {
     }
     public List<Camino> listarCaminos(){
         List<Camino> caminos =new ArrayList<Camino>();
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm=null;
         ResultSet rs= null;
         try{
-            conn.abrir();
-            pstm=conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"CAMINO\"");
+            pstm=conn.prepareStatement("SELECT * FROM tp_tablas.\"CAMINO\"");
             rs= pstm.executeQuery();
             while(rs.next()){
                 caminos.add(getCamino(rs));
@@ -122,10 +117,8 @@ public class CaminoRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null)  {
+                ConnectionPool.releaseConnection(conn);
             }
         }
         return caminos;
@@ -147,10 +140,9 @@ public class CaminoRepository {
         String query= "UPDATE tp_tablas.\"CAMINO\" SET \"SUCURSAL_ORIGEN\"=? , \"SUCURSAL_DESTINO\"=? ," +
                 " \"TIEMPO_TRANSITO\"=? , \"CAPACIDAD_MAXIMA\"=? , \"ESTADO\"=? "+
                 "WHERE \"ID\"="+camino.getId();
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm= null;
         try{
-            conn.abrir();
             boolean estado;
             if(camino.getEstado()==Estado.OPERATIVO){
                 estado=true;
@@ -158,7 +150,7 @@ public class CaminoRepository {
             else {
                 estado =false;
             }
-            pstm = conn.conexion.prepareStatement(query);
+            pstm = conn.prepareStatement(query);
             pstm.setInt(1,camino.getOrigen().getId());
             pstm.setInt(2,camino.getDestino().getId());
             pstm.setFloat(3,camino.getTiempoTransito());
@@ -174,10 +166,8 @@ public class CaminoRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
     }
@@ -187,11 +177,10 @@ public class CaminoRepository {
     }
 
     private void ejecutarQuery(String query){
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm=null;
         try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement(query);
+            pstm = conn.prepareStatement(query);
             pstm.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -201,22 +190,19 @@ public class CaminoRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
     }
 
     private Camino busqueda(String query){
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         Camino camino = new Camino();
         PreparedStatement pstm= null;
         ResultSet rs = null;
         try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement(query);
+            pstm = conn.prepareStatement(query);
             rs = pstm.executeQuery();
             if(rs.next()) {
                 camino = getCamino(rs);
@@ -237,10 +223,8 @@ public class CaminoRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
         return camino;

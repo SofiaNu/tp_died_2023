@@ -3,6 +3,7 @@ package dao;
 import clases.Estado;
 import clases.StockProducto;
 import clases.Sucursal;
+import connectionpool.ConnectionPool;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -49,12 +50,11 @@ public class SucursalRepository {
     public List<Sucursal> buscarSucursal(boolean estado){
 
         List<Sucursal> sucursales = new ArrayList<Sucursal>();
-        Conexion conn =Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm =null;
         ResultSet rs= null;
         try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"SUCURSAL\" WHERE \"ESTADO\"=?");
+            pstm = conn.prepareStatement("SELECT * FROM tp_tablas.\"SUCURSAL\" WHERE \"ESTADO\"=?");
             pstm.setBoolean(1, estado);
             rs= pstm.executeQuery();
             while(rs.next()){
@@ -75,10 +75,8 @@ public class SucursalRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
         return sucursales;
@@ -90,12 +88,11 @@ public class SucursalRepository {
     }
     public List<Sucursal> listarSucursal() throws SQLException {
         List<Sucursal> sucursales= new ArrayList<Sucursal>();
-        Conexion conn =Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm =null;
         ResultSet rs= null;
         try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"SUCURSAL\"");
+            pstm = conn.prepareStatement("SELECT * FROM tp_tablas.\"SUCURSAL\"");
             rs= pstm.executeQuery();
             while(rs.next()){
                 sucursales.add(getSucursal(rs));
@@ -115,10 +112,8 @@ public class SucursalRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
         return sucursales;
@@ -158,12 +153,11 @@ public class SucursalRepository {
     }
 
     private boolean ejecutarQuery(String query){
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm=null;
         boolean r=false;
         try{
-            conn.abrir();
-            Statement statement = conn.conexion.createStatement();
+            Statement statement = conn.createStatement();
             statement.execute(query);
             r=true;
         } catch (SQLException e) {
@@ -174,10 +168,8 @@ public class SucursalRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
         return r;
@@ -197,14 +189,14 @@ public class SucursalRepository {
 
     }
     private Sucursal busqueda(String query){
-        Conexion conn = Conexion.getInstance();
+        //Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         Sucursal sucursal = new Sucursal();
         PreparedStatement pstm= null;
         ResultSet rs = null;
 
         try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement(query);
+            pstm = conn.prepareStatement(query);
             rs = pstm.executeQuery();
             if(rs.next()) {
                 sucursal = getSucursal(rs);
@@ -225,10 +217,8 @@ public class SucursalRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
         return sucursal;

@@ -1,12 +1,10 @@
 package dao;
 
 import clases.*;
+import connectionpool.ConnectionPool;
 import servicios.ProductoServicios;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,13 +37,12 @@ public class StockProductoRepository {
     }
     public List<StockProducto> listarStockProductosEnSucursal(int sucursal){
         List<StockProducto> stockProductos =new ArrayList<StockProducto>();
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm=null;
         ResultSet rs= null;
         ProductoRepository productoRepository = ProductoRepository.getInstance();
         try{
-            conn.abrir();
-            pstm=conn.conexion.prepareStatement("SELECT * FROM tp_tablas.\"STOCK_PRODUCTO\" WHERE \"SUCURSAL\" ="+ sucursal);
+            pstm=conn.prepareStatement("SELECT * FROM tp_tablas.\"STOCK_PRODUCTO\" WHERE \"SUCURSAL\" ="+ sucursal);
             rs= pstm.executeQuery();
             while(rs.next()){
                 stockProductos.add(getStockProducto(rs,productoRepository));
@@ -63,10 +60,8 @@ public class StockProductoRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
         return stockProductos;
@@ -80,12 +75,11 @@ public class StockProductoRepository {
     }
 
     private boolean ejecutarQuery(String query){
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm=null;
         boolean r=false;
         try{
-            conn.abrir();
-            Statement statement = conn.conexion.createStatement();
+            Statement statement = conn.createStatement();
             statement.execute(query);
             r=true;
         } catch (SQLException e) {
@@ -96,24 +90,21 @@ public class StockProductoRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
         return r;
     }
 
     private StockProducto busqueda(String query){
-        Conexion conn = Conexion.getInstance();
+        Connection conn = ConnectionPool.getConnection();
         StockProducto stockProducto = new StockProducto();
         PreparedStatement pstm= null;
         ResultSet rs = null;
         ProductoRepository productoRepository = ProductoRepository.getInstance();
         try{
-            conn.abrir();
-            pstm = conn.conexion.prepareStatement(query);
+            pstm = conn.prepareStatement(query);
             rs = pstm.executeQuery();
             if(rs.next()) {
                 stockProducto = getStockProducto(rs,productoRepository);
@@ -134,10 +125,8 @@ public class StockProductoRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (conn != null) try {
-                conn.cerrar();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
             }
         }
         return stockProducto;
