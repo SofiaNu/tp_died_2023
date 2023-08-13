@@ -216,16 +216,22 @@ public class VentanaSucursales extends JFrame {
 						throw new RuntimeException(ex);
 					}
 				}
-				if(nombrebtn.isSelected()){
+				else if(nombrebtn.isSelected()){
 					try {
 						buscar(nombretxt.getText());
 					} catch (SQLException ex) {
 						throw new RuntimeException(ex);
 					}
 				}
-				if(estadobtn.isSelected()){
+				else if(estadobtn.isSelected()){
 					try {
 						buscar((Estado) estadoComboBox.getSelectedItem());
+					} catch (SQLException ex) {
+						throw new RuntimeException(ex);
+					}
+				} else {
+					try {
+						buscar();
 					} catch (SQLException ex) {
 						throw new RuntimeException(ex);
 					}
@@ -250,6 +256,16 @@ public class VentanaSucursales extends JFrame {
 
 		frame.setVisible(true);
 
+
+	}
+	private void buscar() throws SQLException {
+		List<Sucursal> sucursales= sucursalServicios.listarSucursales();
+		if(sucursales.get(0) == null){
+			showSinResultadosDialog();
+		}
+		else{
+			showResultadoBusquedaPanel(sucursales);
+		}
 
 	}
 	private void buscar(int id) throws SQLException {
