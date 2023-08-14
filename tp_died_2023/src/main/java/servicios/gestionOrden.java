@@ -85,8 +85,38 @@ public class gestionOrden {
         return (int)caminos.stream().filter(c->c.getOrigen()==sucursal).count();
     }
 
-    public List<List<Camino>> encontrarRuta(Sucursal origen,Sucursal destino){
-        return null;
+    public List<List<Sucursal>> encontrarRuta(Sucursal origen,Sucursal destino){
+        List<List<Sucursal>> resultado = new ArrayList<>();
+        List<Sucursal> marcados = new ArrayList<>();
+        marcados.add(origen);
+        encontrarRutaAux(origen,destino,marcados,resultado);
+
+        return resultado;
+    }
+
+    public void encontrarRutaAux(Sucursal v1, Sucursal destino, List<Sucursal> marcados, List<List<Sucursal>> resultado){
+        List<Sucursal> adyacentes = this.vecinos(v1);
+        List<Sucursal>  copiaMarcados =null;
+        ;
+
+        for(Sucursal ady: adyacentes){
+            System.out.println(">> " + ady);
+            copiaMarcados = marcados.stream().collect(Collectors.toList());
+            if(ady.equals(destino)) {
+                copiaMarcados.add(destino);
+                resultado.add(new ArrayList<>(copiaMarcados));
+                System.out.println("Path found "+ resultado);
+            } else {
+                if( !copiaMarcados.contains(ady)) {
+                    copiaMarcados.add(ady);
+                    this.encontrarRutaAux(ady,destino,copiaMarcados,resultado);
+                }
+            }
+        }
+    }
+
+    public double tiempoEnRuta (List<Camino> ruta){
+        return ruta.stream().mapToDouble(r-> (double)r.getTiempoTransito()).sum();
     }
 
 }
