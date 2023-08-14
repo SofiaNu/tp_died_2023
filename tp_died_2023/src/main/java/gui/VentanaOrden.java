@@ -145,8 +145,8 @@ public class VentanaOrden extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel panel = new JPanel();
 
-        JLabel tiempolbl = new JLabel("Tiempo minimo: ");
-        JTextField tiempotxt = new JTextField();
+        JLabel tiempolbl = new JLabel("Tiempo minimo (en horas): ");
+        JTextField tiempotxt = new JTextField(5);
 
         List<ProductoProvisto> productos = new ArrayList<>();
 
@@ -455,7 +455,6 @@ public class VentanaOrden extends JFrame{
 
     private void buscarOrden(int id) throws SQLException {
         OrdenProvision orden = ordenProvisionServicios.buscarOrden(id);
-        //OrdenProvision orden = null;
         if(orden != null){
             showOrdenPanel(orden);
         }
