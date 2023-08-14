@@ -41,8 +41,8 @@ public class OrdenProvisionRepository {
             String ordenProvisionInsertSqlStr =
                             """
                             INSERT INTO tp_tablas."ORDEN_PROVISION"\
-                            ("FECHA","SUCURSAL_DESTINO","TIEMPO_LIMITE")\
-                            values (?,?,?)
+                            ("FECHA","SUCURSAL_DESTINO","TIEMPO_LIMITE","ESTADO")\
+                            values (?,?,?,?)
                             """;
 
             ordenInsertStatement = conn.prepareStatement(ordenProvisionInsertSqlStr, Statement.RETURN_GENERATED_KEYS);
@@ -50,6 +50,12 @@ public class OrdenProvisionRepository {
             ordenInsertStatement.setDate(1, java.sql.Date.valueOf(ordenProvision.getFecha()));
             ordenInsertStatement.setInt(2, ordenProvision.getDestino().getId());
             ordenInsertStatement.setFloat(3, ordenProvision.getTiempoLimite());
+            if(ordenProvision.getEstado()==EstadoOrden.PENDIENTE){
+                ordenInsertStatement.setBoolean(4,true);
+            }
+            else{
+                ordenInsertStatement.setBoolean(4,false);
+            }
 
             try{
                 ordenInsertStatement.execute();
