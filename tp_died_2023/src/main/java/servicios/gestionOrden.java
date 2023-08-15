@@ -70,7 +70,7 @@ public class gestionOrden {
     public List<Sucursal> vecinos(Sucursal sucursal){
         List<Sucursal> resultado = new ArrayList<>();
         for(Camino c: caminos){
-            if(c.getOrigen() == sucursal){
+            if(c.getOrigen().equals(sucursal)){
                 resultado.add(c.getDestino());
             }
         }
@@ -94,18 +94,14 @@ public class gestionOrden {
         return resultado;
     }
 
-    public void encontrarRutaAux(Sucursal v1, Sucursal destino, List<Sucursal> marcados, List<List<Sucursal>> resultado){
-        List<Sucursal> adyacentes = this.vecinos(v1);
-        List<Sucursal>  copiaMarcados =null;
-        ;
-
+    public void encontrarRutaAux(Sucursal origen, Sucursal destino, List<Sucursal> marcados, List<List<Sucursal>> resultado){
+        List<Sucursal> adyacentes = vecinos(origen);
+        List<Sucursal>  copiaMarcados = null;
         for(Sucursal ady: adyacentes){
-            System.out.println(">> " + ady);
             copiaMarcados = marcados.stream().collect(Collectors.toList());
             if(ady.equals(destino)) {
                 copiaMarcados.add(destino);
                 resultado.add(new ArrayList<>(copiaMarcados));
-                System.out.println("Path found "+ resultado);
             } else {
                 if( !copiaMarcados.contains(ady)) {
                     copiaMarcados.add(ady);
@@ -119,4 +115,10 @@ public class gestionOrden {
         return ruta.stream().mapToDouble(r-> (double)r.getTiempoTransito()).sum();
     }
 
+    public void prueba(){
+        Sucursal origen = sucursales.get(0);
+        Sucursal destino = sucursales.get(6);
+        System.out.println("CAMINOS DESDE: "+origen.toString()+" HASTA: "+destino.toString());
+        System.out.println(encontrarRuta(origen,destino));
+    }
 }

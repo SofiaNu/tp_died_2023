@@ -69,6 +69,14 @@ public class Sucursal {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	public boolean equals(Sucursal s){
+		if(this.id == s.getId()){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
 
 	public String toString(){
 		return nombre;
