@@ -46,6 +46,11 @@ public class SucursalServicios {
     public List<Sucursal> listarSucursales() throws SQLException {
         return sucursalRepository.listarSucursal();
     }
+
+    public List<Sucursal> listarSucursalesOperativas(){
+        return  sucursalRepository.listarOperativos();
+    }
+
     public void modificarEstado(Sucursal sucursal){ sucursalRepository.modificarEstado(sucursal.getId(),sucursal.getEstado());}
 
     public void editarSucursal(Sucursal sucursal){

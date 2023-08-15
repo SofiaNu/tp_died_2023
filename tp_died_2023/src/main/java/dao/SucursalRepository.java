@@ -86,18 +86,26 @@ public class SucursalRepository {
         return ejecutarQuery(query);
 
     }
-    public List<Sucursal> listarSucursal() throws SQLException {
+    public List<Sucursal> listarOperativos(){
+        String statement = "SELECT * FROM tp_tablas.\"SUCURSAL\" WHERE \"ESTADO\"= true";
+        return ejecutarListado(statement);
+    }
+
+    public List<Sucursal> listarSucursal(){
+        String statement = "SELECT * FROM tp_tablas.\"SUCURSAL\"";
+        return ejecutarListado(statement);
+    }
+
+    public List<Sucursal> ejecutarListado(String stm){
         List<Sucursal> sucursales= new ArrayList<Sucursal>();
         Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm =null;
         ResultSet rs= null;
         try{
-            pstm = conn.prepareStatement("SELECT * FROM tp_tablas.\"SUCURSAL\"");
+            pstm = conn.prepareStatement(stm);
             rs= pstm.executeQuery();
             while(rs.next()){
                 sucursales.add(getSucursal(rs));
-                String aux= rs.getString("NOMBRE");
-                System.out.println(aux);
             }
         }catch(SQLException e){
             e.printStackTrace();
@@ -117,7 +125,38 @@ public class SucursalRepository {
             }
         }
         return sucursales;
-    }
+}
+
+ /*   public List<Sucursal> listarSucursal() throws SQLException {
+        List<Sucursal> sucursales= new ArrayList<Sucursal>();
+        Connection conn = ConnectionPool.getConnection();
+        PreparedStatement pstm =null;
+        ResultSet rs= null;
+        try{
+            pstm = conn.prepareStatement("SELECT * FROM tp_tablas.\"SUCURSAL\"");
+            rs= pstm.executeQuery();
+            while(rs.next()){
+                sucursales.add(getSucursal(rs));
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            if (rs != null) try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (pstm != null) try {
+                pstm.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
+            }
+        }
+        return sucursales;
+    } */
     private Sucursal  getSucursal(ResultSet rs) throws SQLException {
         Sucursal sucursal = new Sucursal();
         sucursal.setNombre(rs.getString("NOMBRE"));

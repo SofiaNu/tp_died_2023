@@ -29,6 +29,9 @@ public class CaminoServicios {
         return caminoRepository.listarCaminos();
     };
 
+    public List<Camino> listarCaminosOperativos(){
+        return caminoRepository.listarOperativos();
+    }
     public Camino buscarCamino(int id){
         return caminoRepository.buscarCamino(id);
     };

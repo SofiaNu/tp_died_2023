@@ -93,13 +93,24 @@ public class CaminoRepository {
         }
         ejecutarQuery(query);
     }
+
+    public List<Camino> listarOperativos(){
+        String stm = "SELECT * FROM tp_tablas.\"CAMINO\" WHERE \"ESTADO\"=true";
+        return listarCaminosQuery(stm);
+    }
+
     public List<Camino> listarCaminos(){
+        String stm = "SELECT * FROM tp_tablas.\"CAMINO\"";
+        return listarCaminosQuery(stm);
+    }
+
+    public List<Camino> listarCaminosQuery(String stm){
         List<Camino> caminos =new ArrayList<Camino>();
         Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm=null;
         ResultSet rs= null;
         try{
-            pstm=conn.prepareStatement("SELECT * FROM tp_tablas.\"CAMINO\"");
+            pstm=conn.prepareStatement(stm);
             rs= pstm.executeQuery();
             while(rs.next()){
                 caminos.add(getCamino(rs));

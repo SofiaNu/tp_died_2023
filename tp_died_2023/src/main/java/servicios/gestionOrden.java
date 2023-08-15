@@ -10,8 +10,8 @@ public class gestionOrden {
     SucursalServicios sucursalServicios = new SucursalServicios();
     OrdenProvisionServicios ordenProvisionServicios = new OrdenProvisionServicios();
     CaminoServicios caminoServicios = new CaminoServicios();
-    private List<Camino> caminos = caminoServicios.listarCaminos();
-    private List<Sucursal> sucursales = sucursalServicios.listarSucursales();
+    private List<Camino> caminos = caminoServicios.listarCaminosOperativos();
+    private List<Sucursal> sucursales = sucursalServicios.listarSucursalesOperativas();
 
     public gestionOrden() throws SQLException {};
 
@@ -117,7 +117,7 @@ public class gestionOrden {
 
     public void prueba(){
         Sucursal origen = sucursales.get(0);
-        Sucursal destino = sucursales.get(6);
+        Sucursal destino = sucursales.get(5);
         System.out.println("CAMINOS DESDE: "+origen.toString()+" HASTA: "+destino.toString());
         System.out.println(encontrarRuta(origen,destino));
     }
