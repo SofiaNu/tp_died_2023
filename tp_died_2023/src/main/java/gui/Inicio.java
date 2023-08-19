@@ -1,5 +1,7 @@
 package gui;
 
+import routeviewer.RouteGUI;
+
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,7 +20,7 @@ public class Inicio extends JFrame{
 
 	public Inicio() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 250, 300);
+		setBounds(100, 100, 600, 600);
 		setTitle("Inicio");
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -65,6 +67,9 @@ public class Inicio extends JFrame{
 			}
 		});
 		contentPane.add(btnOrdenes);
+		RouteGUI rg = new RouteGUI();
+
+		contentPane.add(rg);
 	}
 
 
