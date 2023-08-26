@@ -15,13 +15,12 @@ public class gestionOrden {
 
     public gestionOrden() throws SQLException {};
 
-
     public List<Sucursal> sucursalesValidas(OrdenProvision orden) throws SQLException {
         sucursales = sucursales.stream()
-                .filter(s-> s.getEstado()==Estado.OPERATIVO &&
-                        tieneStock(s.getStock(), orden.getListaProductos()) &&
+                .filter(s-> tieneStock(s.getStock(), orden.getListaProductos()) &&
                         noEsSumidero(s))
                 .collect(Collectors.toList());
+        sucursales = sucursales.stream().filter(s-> !encontrarRuta(s, orden.getDestino()).isEmpty()).collect(Collectors.toList());
         return sucursales;
     }
 //ESTO PROBABLEMENTE TAMBIEN A SUCURSAL
@@ -90,7 +89,6 @@ public class gestionOrden {
         List<Sucursal> marcados = new ArrayList<>();
         marcados.add(origen);
         encontrarRutaAux(origen,destino,marcados,resultado);
-
         return resultado;
     }
 
@@ -115,6 +113,22 @@ public class gestionOrden {
         return ruta.stream().mapToDouble(r-> (double)r.getTiempoTransito()).sum();
     }
 
+    public List<Camino> encontrarCaminos(List<Sucursal> rutaSucursales){
+       List<Camino> caminos = new ArrayList<>();
+        for(int i = 0; i == rutaSucursales.size() - 1; i++){
+            caminos.add(getCamino(rutaSucursales.get(i),rutaSucursales.get(i+1)));
+       }
+        return caminos;
+    }
+
+    public Camino getCamino(Sucursal o, Sucursal d){
+        for(Camino c: caminos){
+            if (c.getOrigen().equals(o) && c.getDestino().equals(d)){
+                return c;
+            }
+        }
+        return null; //????¡¡¡¡
+    }
     public void prueba(){
         Sucursal origen = sucursales.get(0);
         Sucursal destino = sucursales.get(5);
