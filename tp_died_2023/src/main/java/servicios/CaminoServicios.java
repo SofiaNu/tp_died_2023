@@ -1,8 +1,10 @@
 package servicios;
 
 import clases.Camino;
+import clases.Estado;
 import dao.CaminoRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CaminoServicios {
@@ -43,5 +45,21 @@ public class CaminoServicios {
 
     public void editarCamino(Camino camino){
         caminoRepository.editarCamino(camino);
+    }
+
+    public List<Camino> listarCaminosAModificarEstado(int idSucursal, Estado estado) {//si ingresa estado en operativo, significa que quiero que quede en esa posicion
+        List<Camino> caminos = new ArrayList<>();
+        if (estado == Estado.OPERATIVO){//quiero pasar a operativo, entonces tiene que estar como no operativa mi sucursal
+            caminos = caminoRepository.AModificar(idSucursal, false);
+        }else {//quiero pasar a no operativo, entonces tiene que estar como operativas ambas sucursales
+            caminos = caminoRepository.AModificar(idSucursal, true);
+        }
+        return caminos;
+    }
+
+    public void modificarEstados(List<Camino> caminos) {
+        for(int i=0;i<caminos.size();i++){
+            caminoRepository.modificarEstado(caminos.get(i).getId(), caminos.get(i).getEstado());
+        }
     }
 }

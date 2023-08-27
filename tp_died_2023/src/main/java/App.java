@@ -5,6 +5,7 @@ import dao.ProductoRepository;
 import dao.StockProductoRepository;
 import dao.SucursalRepository;
 import gui.*;
+import servicios.SucursalServicios;
 import servicios.gestionOrden;
 
 import java.sql.SQLException;
@@ -18,10 +19,13 @@ public class App {
 	public static void main(String[] args) throws SQLException {
 		// TODO Auto-generated method stub
 		ConnectionPool.setup();
-		//Inicio inicio = new Inicio();
-		//inicio.setVisible(true);
-		gestionOrden ordens = new gestionOrden();
-		ordens.prueba();
+		Inicio inicio = new Inicio();
+		inicio.setVisible(true);
+		//gestionOrden ordens = new gestionOrden();
+		//ordens.prueba();
+
+
+
 	}
 
 
