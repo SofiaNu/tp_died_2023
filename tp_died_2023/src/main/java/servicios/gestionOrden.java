@@ -113,12 +113,16 @@ public class gestionOrden {
         return ruta.stream().mapToDouble(r-> (double)r.getTiempoTransito()).sum();
     }
 
-    public List<Camino> encontrarCaminos(List<Sucursal> rutaSucursales){
-       List<Camino> caminos = new ArrayList<>();
-        for(int i = 0; i == rutaSucursales.size() - 1; i++){
-            caminos.add(getCamino(rutaSucursales.get(i),rutaSucursales.get(i+1)));
+    public List<List<Camino>> encontrarCaminos(List<List<Sucursal>> rutas){
+       List<List<Camino>> resultado = new ArrayList<>();
+       for(List<Sucursal> rutaSucursales: rutas){
+           List<Camino> path = new ArrayList<>();
+           for(int i = 0; i <= rutaSucursales.size() - 2; i++){
+                path.add(getCamino(rutaSucursales.get(i),rutaSucursales.get(i+1)));
+          }
+        resultado.add(path);
        }
-        return caminos;
+        return resultado;
     }
 
     public Camino getCamino(Sucursal o, Sucursal d){
@@ -132,7 +136,10 @@ public class gestionOrden {
     public void prueba(){
         Sucursal origen = sucursales.get(0);
         Sucursal destino = sucursales.get(5);
+        List<List<Sucursal>> resultado = encontrarRuta(origen,destino);
         System.out.println("CAMINOS DESDE: "+origen.toString()+" HASTA: "+destino.toString());
-        System.out.println(encontrarRuta(origen,destino));
+        System.out.println(resultado);
+        System.out.println(encontrarCaminos(resultado));
+
     }
 }
