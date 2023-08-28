@@ -53,6 +53,7 @@ public class Camino {
 	public Estado getEstado() {
 		return estado;
 	}
+	public String toString(){return origen.toString()+"-"+destino.toString();}
 	public void setEstado(Estado estado) {
 		this.estado = estado;
 	}

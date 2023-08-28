@@ -1,6 +1,7 @@
 package servicios;
 
 import clases.*;
+import dao.CaminoRepository;
 import dao.StockProductoRepository;
 import dao.SucursalRepository;
 
@@ -10,6 +11,8 @@ import java.util.List;
 public class SucursalServicios {
     private SucursalRepository sucursalRepository;
     private StockProductoRepository stockProductoRepository;
+
+    private CaminoServicios caminoServicios= new CaminoServicios();
     public SucursalServicios(){
         super();
         sucursalRepository = SucursalRepository.getInstance();
@@ -51,7 +54,17 @@ public class SucursalServicios {
         return  sucursalRepository.listarOperativos();
     }
 
-    public void modificarEstado(Sucursal sucursal){ sucursalRepository.modificarEstado(sucursal.getId(),sucursal.getEstado());}
+    public void modificarEstado(Sucursal sucursal){
+        Estado aux;
+        if(sucursal.getEstado() == Estado.OPERATIVO){ aux = Estado.NO_OPERATIVO;}
+        else { aux = Estado.OPERATIVO;}
+
+        List<Camino> caminos = caminoServicios.listarCaminosAModificarEstado(sucursal.getId(),aux);
+
+        sucursalRepository.modificarEstado(sucursal.getId(),sucursal.getEstado());
+
+        caminoServicios.modificarEstados(caminos);
+    }
 
     public void editarSucursal(Sucursal sucursal){
         sucursalRepository.editarSucursal(sucursal);

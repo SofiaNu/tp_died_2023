@@ -15,6 +15,7 @@ public class CaminoRepository {
     private static CaminoRepository _INSTANCE;
     private CaminoRepository(){};
 
+
     public static CaminoRepository getInstance(){
         if(_INSTANCE==null){
             _INSTANCE= new CaminoRepository();
@@ -93,6 +94,11 @@ public class CaminoRepository {
         }
         ejecutarQuery(query);
     }
+    public void modificarEstados(List<Camino> caminos, Estado estado){
+        for (int i = 0; i<caminos.size(); i++) {
+            modificarEstado(caminos.get(i).getId(),estado);
+        }
+    }
 
     public List<Camino> listarOperativos(){
         String stm = "SELECT * FROM tp_tablas.\"CAMINO\" WHERE \"ESTADO\"=true";
@@ -103,7 +109,21 @@ public class CaminoRepository {
         String stm = "SELECT * FROM tp_tablas.\"CAMINO\"";
         return listarCaminosQuery(stm);
     }
-
+    public List<Camino> listarCaminosPorSucursal(int id){
+        String stm = "SELECT * FROM tp_tablas.\"CAMINO\" WHERE \"SUCURSAL_ORIGEN\"="+id+" OR \"SUCURSAL_DESTINO\"=\""+id;
+        return listarCaminosQuery(stm);
+    }
+    public List<Camino> AModificar(int id,boolean estado){
+        String stm = "SELECT * " +
+                "FROM tp_tablas.\"CAMINO\" c " +
+                "WHERE " +
+                "    (c.\"SUCURSAL_ORIGEN\" IN (SELECT \"ID\" FROM tp_tablas.\"SUCURSAL\" WHERE \"ESTADO\" = "+estado+" AND \"ID\" = "+id+") " +
+                " AND c.\"SUCURSAL_DESTINO\" IN (SELECT \"ID\" FROM tp_tablas.\"SUCURSAL\" WHERE \"ESTADO\" = true)) " +
+                "    OR " +
+                "(c.\"SUCURSAL_ORIGEN\" IN (SELECT \"ID\" FROM tp_tablas.\"SUCURSAL\" WHERE \"ESTADO\" = true) " +
+                " AND c.\"SUCURSAL_DESTINO\" IN (SELECT \"ID\" FROM tp_tablas.\"SUCURSAL\" WHERE \"ESTADO\" = "+estado+" AND \"ID\" = "+id+" ))";
+        return listarCaminosQuery(stm);
+    }
     public List<Camino> listarCaminosQuery(String stm){
         List<Camino> caminos =new ArrayList<Camino>();
         Connection conn = ConnectionPool.getConnection();
@@ -256,4 +276,23 @@ public class CaminoRepository {
         }
         return camino;
     }
+/*
+    public void modificarEstadosCaminos(int id, Estado estado) {
+        List<Camino> caminos= this.listarCaminosPorSucursal(id);
+        if(estado != Estado.OPERATIVO ){
+            for (Camino camino : caminos) {
+                if (camino.getEstado() == Estado.OPERATIVO) {
+                    this.setNoOperativoCamino(camino.getId());
+                }
+            }
+        }else{
+            SucursalRepository sucursalRepository = SucursalRepository.getInstance();
+            for (Camino camino : caminos) {
+                if (camino.getEstado() == Estado.NO_OPERATIVO) {
+
+                    this.setNoOperativoCamino(camino.getId());
+                }
+            }
+        }
+    }*/
 }

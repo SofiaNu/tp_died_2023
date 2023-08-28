@@ -15,13 +15,12 @@ public class gestionOrden {
 
     public gestionOrden() throws SQLException {};
 
-
     public List<Sucursal> sucursalesValidas(OrdenProvision orden) throws SQLException {
         sucursales = sucursales.stream()
-                .filter(s-> s.getEstado()==Estado.OPERATIVO &&
-                        tieneStock(s.getStock(), orden.getListaProductos()) &&
+                .filter(s-> tieneStock(s.getStock(), orden.getListaProductos()) &&
                         noEsSumidero(s))
                 .collect(Collectors.toList());
+        sucursales = sucursales.stream().filter(s-> !encontrarRuta(s, orden.getDestino()).isEmpty()).collect(Collectors.toList());
         return sucursales;
     }
 //ESTO PROBABLEMENTE TAMBIEN A SUCURSAL
@@ -90,7 +89,6 @@ public class gestionOrden {
         List<Sucursal> marcados = new ArrayList<>();
         marcados.add(origen);
         encontrarRutaAux(origen,destino,marcados,resultado);
-
         return resultado;
     }
 
@@ -115,10 +113,33 @@ public class gestionOrden {
         return ruta.stream().mapToDouble(r-> (double)r.getTiempoTransito()).sum();
     }
 
+    public List<List<Camino>> encontrarCaminos(List<List<Sucursal>> rutas){
+       List<List<Camino>> resultado = new ArrayList<>();
+       for(List<Sucursal> rutaSucursales: rutas){
+           List<Camino> path = new ArrayList<>();
+           for(int i = 0; i <= rutaSucursales.size() - 2; i++){
+                path.add(getCamino(rutaSucursales.get(i),rutaSucursales.get(i+1)));
+          }
+        resultado.add(path);
+       }
+        return resultado;
+    }
+
+    public Camino getCamino(Sucursal o, Sucursal d){
+        for(Camino c: caminos){
+            if (c.getOrigen().equals(o) && c.getDestino().equals(d)){
+                return c;
+            }
+        }
+        return null; //????¡¡¡¡
+    }
     public void prueba(){
         Sucursal origen = sucursales.get(0);
         Sucursal destino = sucursales.get(5);
+        List<List<Sucursal>> resultado = encontrarRuta(origen,destino);
         System.out.println("CAMINOS DESDE: "+origen.toString()+" HASTA: "+destino.toString());
-        System.out.println(encontrarRuta(origen,destino));
+        System.out.println(resultado);
+        System.out.println(encontrarCaminos(resultado));
+
     }
 }
