@@ -23,6 +23,16 @@ public class gestionOrden {
         sucursales = sucursales.stream().filter(s-> !encontrarRuta(s, orden.getDestino()).isEmpty()).collect(Collectors.toList());
         return sucursales;
     }
+
+    public void generarResultadosValidos(OrdenProvision orden, List<List<Sucursal>> rutasSucursal, List<List<Camino>> rutasCamino) throws SQLException {
+        List<Sucursal> origenesValidos = sucursalesValidas(orden);
+        for(Sucursal s: origenesValidos){
+            rutasSucursal= encontrarRuta(s,orden.getDestino());
+            rutasCamino = encontrarCaminos(rutasSucursal);
+            filtrarRutasPorTiempo(rutasSucursal,rutasCamino,orden.getTiempoLimite());
+        }
+    }
+
 //ESTO PROBABLEMENTE TAMBIEN A SUCURSAL
     public boolean tieneStock(List<StockProducto> stock, List<ProductoProvisto> orden){
         boolean r=true;
@@ -109,6 +119,15 @@ public class gestionOrden {
         }
     }
 
+    public void filtrarRutasPorTiempo(List<List<Sucursal>> rSucursales, List<List<Camino>> rutas,double tiempo){
+        for(List<Camino> r: rutas){
+            if(tiempoEnRuta(r)> tiempo){
+                rSucursales.remove(rutas.indexOf(r));
+                rutas.remove(r);
+            }
+        }
+    }
+
     public double tiempoEnRuta (List<Camino> ruta){
         return ruta.stream().mapToDouble(r-> (double)r.getTiempoTransito()).sum();
     }
@@ -134,7 +153,7 @@ public class gestionOrden {
         return null; //????¡¡¡¡
     }
     public void prueba(){
-        Sucursal origen = sucursales.get(0);
+        Sucursal origen = sucursales.get(2);
         Sucursal destino = sucursales.get(5);
         List<List<Sucursal>> resultado = encontrarRuta(origen,destino);
         System.out.println("CAMINOS DESDE: "+origen.toString()+" HASTA: "+destino.toString());
