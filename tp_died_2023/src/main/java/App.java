@@ -20,7 +20,7 @@ public class App {
 		// TODO Auto-generated method stub
 		ConnectionPool.setup();
 		Inicio inicio = new Inicio();
-		//inicio.setVisible(true);
+		inicio.setVisible(true);
 		gestionOrden ordens = new gestionOrden();
 		ordens.prueba();
 
