@@ -20,6 +20,25 @@ public class CaminoDrawable extends Drawable{
     }
 
     private Camino camino;
+
+    public SucursalDrawable getOrigen() {
+        return origen;
+    }
+
+    public void setOrigen(SucursalDrawable origen) {
+        this.origen = origen;
+    }
+
+    public SucursalDrawable getDestino() {
+        return destino;
+    }
+
+    public void setDestino(SucursalDrawable destino) {
+        this.destino = destino;
+    }
+
+    private SucursalDrawable origen;
+    private SucursalDrawable destino;
     float xF, yF;
     QuadCurve2D.Float quadCurve = null;
 
