@@ -13,7 +13,7 @@ import java.util.List;
 public class PageRank {
     private class NodoSucursal{
         int id;
-        int cantSalientes;
+        double cantSalientes;
         double pageRank;
         List<NodoSucursal> entrantes; //esto deberia cargarse con algo de lo de sofi.
 
@@ -23,10 +23,10 @@ public class PageRank {
         public void setId(int id){
             this.id=id;
         }
-        public int getSalientes(){
+        public double getSalientes(){
             return this.cantSalientes;
         }
-        public void setSalientes(int cantCaminos){
+        public void setSalientes(double cantCaminos){
             this.cantSalientes=cantCaminos;
         }
         public double getPageRank(){
@@ -42,15 +42,17 @@ public class PageRank {
             this.entrantes=entrantes;
         }
 
-        public NodoSucursal() {}
+        public NodoSucursal() {
+            this.pageRank=1.0;
+        }
     }
     private List<NodoSucursal> sucursales;
     private static final double DAMPING_FACTOR = 0.85; // Factor de amortiguación típico de PageRank
     private static final double EPSILON = 0.0001; // Criterio de convergencia
 
 
-    public int gradoSalida(Sucursal sucursal,List<Camino> caminos){
-        return (int)caminos.stream().filter(c->c.getOrigen()==sucursal).count();
+    public double gradoSalida(Sucursal sucursal,List<Camino> caminos){
+        return (double)caminos.stream().filter(c->c.getOrigen()==sucursal).count();
     }
     public List<NodoSucursal> entrantes(NodoSucursal sucursal,List<Camino> caminos){
         List<NodoSucursal> resultado = new ArrayList<>();
@@ -82,24 +84,29 @@ public class PageRank {
            sucursales.add(sucursal);
         }
         for(int i=0; i < sucursales.size();i++){
-            sucursales.get(i).setPageRank(1);
+            //sucursales.get(i).setPageRank(1.0);
             sucursales.get(i).setEntrantes(this.entrantes(sucursales.get(i),caminos));
         }
 
     }
     public void calcularPR(int maxIteracion){
 
-        int cantSucursales = sucursales.size();
+        double cantSucursales = (double) sucursales.size();
 
         for (int i = 0; i < maxIteracion; i++) {
-            double[] newPageRanks = new double[cantSucursales];
+            double[] newPageRanks = new double[(int) cantSucursales];
 
             for (int j = 0; j < cantSucursales; j++) {
                 NodoSucursal nodoSucursal = sucursales.get(j);
                 double newPageRank = (1.0 - DAMPING_FACTOR) / cantSucursales;//esto no se si realmente es util, principalmente el problema es que divida por sucursales
 
                 for (NodoSucursal nodoEntrante : nodoSucursal.getEntrantes()) {
-                    newPageRank += DAMPING_FACTOR * nodoEntrante.getPageRank() / nodoEntrante.getSalientes();
+                    if(nodoEntrante.getSalientes()!=0) {
+                        newPageRank += DAMPING_FACTOR * nodoEntrante.getPageRank() / nodoEntrante.getSalientes();
+                    }
+                    else {//chequear si es necesario
+                        newPageRank += DAMPING_FACTOR * nodoEntrante.getPageRank() / cantSucursales;
+                    }
                 }
 
                 newPageRanks[i] = newPageRank;
@@ -122,7 +129,7 @@ public class PageRank {
     }
     public void printPageRank(){
         for (NodoSucursal node : sucursales ){
-            System.out.println("Node " + node.getId() + ": PageRank = " + node.getPageRank());
+            System.out.println("sucursal " + node.getId() + ": PageRank = " + node.getPageRank());
         }
     }
     private boolean checkConvergencia(double[] newPageRanks) {
