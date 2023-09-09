@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 // based on https://www.baeldung.com/java-connection-pooling
 public class ConnectionPool {
-    private int POOL_SIZE = 3;//as this program does not (at least for now) run concurrent connections this can be 1... but for fun? => 3
+    private int POOL_SIZE = 1;//as this program does not (at least for now) run concurrent connections this can be 1... but for fun? => 3
     private ArrayList<Connection> availableConnections;
     private ArrayList<Connection> usedConnections;
     private static ConnectionPool _instance = null;

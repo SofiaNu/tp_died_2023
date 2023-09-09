@@ -236,7 +236,7 @@ public class SucursalRepository {
         }
         return sucursal;
     };
-    public List<Sucursal> PageRankSucursales(){
-        List<Sucursal> sucursales = this.listarSucursal();
-    }
+    //public List<Sucursal> PageRankSucursales(){
+      //  List<Sucursal> sucursales = this.listarSucursal();
+    //}
 }
