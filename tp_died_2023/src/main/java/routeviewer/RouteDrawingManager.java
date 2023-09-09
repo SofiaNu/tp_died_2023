@@ -5,6 +5,7 @@ import clases.Sucursal;
 import routeviewer.drawable.CaminoDrawable;
 import routeviewer.drawable.SucursalDrawable;
 
+import java.sql.Array;
 import java.util.List;
 import java.awt.*;
 import java.util.ArrayList;
@@ -24,6 +25,12 @@ public class RouteDrawingManager {
     CaminoDrawable caminoDrawable6 = new CaminoDrawable(100,350, 100, 100, Color.ORANGE);
     private int height;
     private int width;
+
+    public RouteDrawingManager(){
+        this.internalCaminoDrawables = new ArrayList<List<CaminoDrawable>>();
+        this.internalSucursalDrawables = new ArrayList<SucursalDrawable>();
+    }
+
 
     public void setSize(int w, int h){
         height = h;
