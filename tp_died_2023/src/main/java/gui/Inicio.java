@@ -97,11 +97,22 @@ public class Inicio extends JFrame{
 		frame.setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JPanel panel = new JPanel(new FlowLayout());
+
 		//ACA debería haber un mapa (¿supongo/talvez?)
 		JLabel info = new JLabel("La maxima capacidad de transporte desde el puerto a la sucursal final");
 		JLabel capacidad = new JLabel(String.valueOf(flujoMaximo.flujoMaximo()));
+
+		JButton cerrarbtn = new JButton("Cerrar");
+
+		cerrarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
 		panel.add(info);
 		panel.add(capacidad);
+		panel.add(cerrarbtn);
 		frame.add(panel);
 		frame.setVisible(true);
 	};
@@ -115,7 +126,7 @@ public class Inicio extends JFrame{
 
 		JPanel panel = new JPanel(new FlowLayout());
 
-		String[] columnNames = {"Id", "Nombre", "Ranking"};
+		String[] columnNames = {"Id", "Nombre"};
 		JTable tablaResultados = new JTable(new DefaultTableModel());
 
 		DefaultTableModel model = (DefaultTableModel) tablaResultados.getModel();
@@ -125,7 +136,7 @@ public class Inicio extends JFrame{
 
 		if(sucursales != null) {
 			for (Sucursal s : sucursales) {
-				String[] fila = {String.valueOf(s.getId()), s.getNombre(), String.valueOf(s.getHoraApertura())};
+				String[] fila = {String.valueOf(s.getId()), s.getNombre()};
 				model.addRow(fila);
 			}
 		}
@@ -136,8 +147,17 @@ public class Inicio extends JFrame{
 		Dimension preferredSize = new Dimension(contenedorTabla.getPreferredSize().width,
 				maxVisibleRows * rowHeight + headerHeight);
 		contenedorTabla.setPreferredSize(preferredSize);
-		panel.add(contenedorTabla);
 
+		JButton cerrarbtn = new JButton("Cerrar");
+		cerrarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
+
+		panel.add(contenedorTabla);
+		panel.add(cerrarbtn);
 		resultadoFrame.add(panel);
 		resultadoFrame.setVisible(true);
 
