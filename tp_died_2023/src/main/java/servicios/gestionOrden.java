@@ -7,13 +7,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class gestionOrden {
-    SucursalServicios sucursalServicios = new SucursalServicios();
-    OrdenProvisionServicios ordenProvisionServicios = new OrdenProvisionServicios();
-    CaminoServicios caminoServicios = new CaminoServicios();
-     List<Camino> caminos = caminoServicios.listarCaminosOperativos();
-     List<Sucursal> sucursales = sucursalServicios.listarSucursalesOperativas();
+     List<Camino> caminos ;
+     List<Sucursal> sucursales ;
 
-    public gestionOrden() throws SQLException {};
+    public gestionOrden() throws SQLException {
+        SucursalServicios sucursalServicios = new SucursalServicios();
+        OrdenProvisionServicios ordenProvisionServicios = new OrdenProvisionServicios();
+        CaminoServicios caminoServicios = new CaminoServicios();
+        caminos = caminoServicios.listarCaminosOperativos();
+        sucursales = sucursalServicios.listarSucursalesOperativas();
+
+    };
 
     public List<Sucursal> sucursalesValidas(OrdenProvision orden) throws SQLException {
         sucursales = sucursales.stream()
