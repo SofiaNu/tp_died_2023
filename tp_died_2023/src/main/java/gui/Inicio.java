@@ -1,6 +1,7 @@
 package gui;
 
 import clases.Sucursal;
+import servicios.FlujoMaximo;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -78,14 +79,31 @@ public class Inicio extends JFrame{
 		JButton btnFlujo = new JButton("Flujo Maximo");
 		btnFlujo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				showVentanaFlujo();
+				try {
+					showVentanaFlujo();
+				} catch (SQLException ex) {
+					throw new RuntimeException(ex);
+				}
 			}
 		});
 		contentPane.add(btnFlujo);
 	}
 
-	public void showVentanaFlujo(){
+	public void showVentanaFlujo() throws SQLException {
+		FlujoMaximo flujoMaximo = new FlujoMaximo();
 
+		JFrame frame = new JFrame(("FLujo maximo de transporte"));
+		frame.setSize(500, 300);
+		frame.setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		JPanel panel = new JPanel(new FlowLayout());
+		//ACA debería haber un mapa (¿supongo/talvez?)
+		JLabel info = new JLabel("La maxima capacidad de transporte desde el puerto a la sucursal final");
+		JLabel capacidad = new JLabel(String.valueOf(flujoMaximo.flujoMaximo()));
+		panel.add(info);
+		panel.add(capacidad);
+		frame.add(panel);
+		frame.setVisible(true);
 	};
 
 	public void showPageRank(){
@@ -125,6 +143,5 @@ public class Inicio extends JFrame{
 
 
 	}
-
 
 }
