@@ -10,8 +10,8 @@ public class gestionOrden {
     SucursalServicios sucursalServicios = new SucursalServicios();
     OrdenProvisionServicios ordenProvisionServicios = new OrdenProvisionServicios();
     CaminoServicios caminoServicios = new CaminoServicios();
-    private List<Camino> caminos = caminoServicios.listarCaminosOperativos();
-    private List<Sucursal> sucursales = sucursalServicios.listarSucursalesOperativas();
+     List<Camino> caminos = caminoServicios.listarCaminosOperativos();
+     List<Sucursal> sucursales = sucursalServicios.listarSucursalesOperativas();
 
     public gestionOrden() throws SQLException {};
 
@@ -55,21 +55,21 @@ public class gestionOrden {
         return caminos.stream().anyMatch(c-> c.getOrigen() == s);
     }
 
-    public List<Sucursal> dfs(Sucursal origen) throws SQLException {
+    public List<Sucursal> bfs(Sucursal inicio){
         List<Sucursal> resultado = new ArrayList<>();
-        Stack<Sucursal> pendientes = new Stack<>();
-        Set<Sucursal> marcados = new HashSet<>();
-        marcados.add(origen);
-        pendientes.push(origen);
+        Queue<Sucursal> pendientes = new LinkedList<>();
+        HashSet<Sucursal> marcados = new HashSet<>();
+        marcados.add(inicio);
+        pendientes.add(inicio);
 
         while(!pendientes.isEmpty()){
-            Sucursal actual = pendientes.pop();
-            List<Sucursal> vecinos = vecinos(actual);
+            Sucursal actual = pendientes.poll();
+            List<Sucursal> adyacentes = this.vecinos(actual);
             resultado.add(actual);
-            for(Sucursal v : vecinos){
-                if(!marcados.contains(v)){
-                    pendientes.push(v);
-                    marcados.add(v);
+            for(Sucursal s : adyacentes){
+                if(!marcados.contains(s)){
+                    pendientes.add(s);
+                    marcados.add(s);
                 }
             }
         }
@@ -153,7 +153,7 @@ public class gestionOrden {
         return null; //????¡¡¡¡
     }
     public void prueba(){
-        Sucursal origen = sucursales.get(2);
+        Sucursal origen = sucursales.get(0);
         Sucursal destino = sucursales.get(5);
         List<List<Sucursal>> resultado = encontrarRuta(origen,destino);
         System.out.println("CAMINOS DESDE: "+origen.toString()+" HASTA: "+destino.toString());
