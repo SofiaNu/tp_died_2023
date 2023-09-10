@@ -90,13 +90,6 @@ public class gestionOrden {
         return resultado;
     }
 
-    public int gradoEntrada(Sucursal sucursal){
-        return (int)caminos.stream().filter(c->c.getDestino()==sucursal).count();
-    }
-
-    public int gradoSalida(Sucursal sucursal){
-        return (int)caminos.stream().filter(c->c.getOrigen()==sucursal).count();
-    }
 
     public List<List<Sucursal>> encontrarRuta(Sucursal origen,Sucursal destino){
         List<List<Sucursal>> resultado = new ArrayList<>();

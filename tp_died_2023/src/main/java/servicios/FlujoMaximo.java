@@ -2,14 +2,14 @@ package servicios;
 
 import clases.Camino;
 import clases.Sucursal;
+import connectionpool.ConnectionPool;
 
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class FlujoMaximo extends gestionOrden{
-    public FlujoMaximo() throws SQLException {
-    }
+    public FlujoMaximo() throws SQLException {super();}
     public float pesoMaximo(List<Camino> ruta){
         return (float)ruta.stream().mapToDouble(r-> (double)r.getCapacidadMaxima()).min().getAsDouble();
     }
@@ -38,10 +38,28 @@ public class FlujoMaximo extends gestionOrden{
         }
     }
 
+    public long gradoEntrada(Sucursal sucursal){
+        return caminos.stream().filter(c->c.getDestino().equals(sucursal)).count();
+    }
+
+    public long gradoSalida(Sucursal sucursal){
+        return caminos.stream().filter(c->c.getOrigen().equals(sucursal)).count();
+    }
     private Sucursal getFuente(){
-        return sucursales.stream().filter(s-> gradoEntrada(s)==0).findFirst().get();
+        return sucursales.stream().filter(s-> gradoEntrada(s)==0).findAny().get();
     }
     private Sucursal getSumidero(){
         return sucursales.stream().filter(s-> gradoSalida(s)==0).findFirst().get();
+    }
+
+
+    public static void main(String[] args) throws SQLException {
+        // TODO Auto-generated method stub
+        ConnectionPool.setup();
+        FlujoMaximo f = new FlujoMaximo();
+        System.out.println(f.getFuente());
+        System.out.println(f.getSumidero());
+        System.out.println(f.flujoMaximo());
+
     }
 }
