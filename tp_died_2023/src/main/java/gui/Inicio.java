@@ -107,7 +107,7 @@ public class Inicio extends JFrame{
 		cerrarbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				dispose();
+				frame.setVisible(false);
 			}
 		});
 		panel.add(info);
@@ -152,7 +152,7 @@ public class Inicio extends JFrame{
 		cerrarbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				dispose();
+				resultadoFrame.setVisible(false);
 			}
 		});
 
