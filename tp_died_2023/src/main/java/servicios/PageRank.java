@@ -51,8 +51,14 @@ public class PageRank {
     private static final double EPSILON = 0.0001; // Criterio de convergencia
 
 
-    public double gradoSalida(Sucursal sucursal,List<Camino> caminos){
-        return (double)caminos.stream().filter(c->c.getOrigen()==sucursal).count();
+    public int gradoSalida(Sucursal sucursal,List<Camino> caminos){
+        int retorno = 0;
+        for (Camino camino: caminos) {
+            if(camino.getOrigen().getId() == sucursal.getId()){
+                retorno++;
+            }
+        }
+        return retorno;
     }
     public List<NodoSucursal> entrantes(NodoSucursal sucursal,List<Camino> caminos){
         List<NodoSucursal> resultado = new ArrayList<>();
@@ -62,12 +68,19 @@ public class PageRank {
                 aux.add(c.getOrigen());
             }
         }
+        //volver al checkeo con stream
         for(int i=0;i<aux.size();i++){
-            resultado.add(obtenerNodoSucursal(aux.get(i)));
+            for(NodoSucursal sucursal1: sucursales){
+                if(sucursal1.getId() == aux.get(i).getId()){
+                    resultado.add(sucursal1);
+                }
+            }
+
         }
         return resultado;
     }
     private  NodoSucursal obtenerNodoSucursal(Sucursal sucursal){
+
       return sucursales.stream().filter(s->s.getId() == sucursal.getId()).findFirst().get();
     }
 
@@ -81,11 +94,12 @@ public class PageRank {
            NodoSucursal sucursal = new NodoSucursal();
            sucursal.setId(sucursalesReales.get(i).getId());
            sucursal.setSalientes(this.gradoSalida(sucursalesReales.get(i),caminos));
+           System.out.println("" +sucursal.getId()+ " "+ sucursal.getSalientes());
            sucursales.add(sucursal);
         }
         for(int i=0; i < sucursales.size();i++){
-            //sucursales.get(i).setPageRank(1.0);
             sucursales.get(i).setEntrantes(this.entrantes(sucursales.get(i),caminos));
+            System.out.println(""+ sucursales.get(i).getId()+ " " + sucursales.get(i).getEntrantes());
         }
 
     }
@@ -98,23 +112,20 @@ public class PageRank {
 
             for (int j = 0; j < cantSucursales; j++) {
                 NodoSucursal nodoSucursal = sucursales.get(j);
-                double newPageRank = (1.0 - DAMPING_FACTOR) / cantSucursales;//esto no se si realmente es util, principalmente el problema es que divida por sucursales
+                double newPageRank = (1.0 - DAMPING_FACTOR) + 1.0/ cantSucursales;
 
                 for (NodoSucursal nodoEntrante : nodoSucursal.getEntrantes()) {
-                    if(nodoEntrante.getSalientes()!=0) {
+
                         newPageRank += DAMPING_FACTOR * nodoEntrante.getPageRank() / nodoEntrante.getSalientes();
-                    }
-                    else {//chequear si es necesario
-                        newPageRank += DAMPING_FACTOR * nodoEntrante.getPageRank() / cantSucursales;
-                    }
+
                 }
 
-                newPageRanks[i] = newPageRank;
+                newPageRanks[j] = newPageRank;
             }
 
             // Actualizar los valores de PageRank después de una iteración
             for (int j = 0; j < cantSucursales; j++) {
-                sucursales.get(i).setPageRank(newPageRanks[j]);
+                sucursales.get(j).setPageRank(newPageRanks[j]);
             }
 
             // Verificar la convergencia
@@ -126,11 +137,6 @@ public class PageRank {
         }
 
 
-    }
-    public void printPageRank(){
-        for (NodoSucursal node : sucursales ){
-            System.out.println("sucursal " + node.getId() + ": PageRank = " + node.getPageRank());
-        }
     }
     private boolean checkConvergencia(double[] newPageRanks) {
         for (int i = 0; i < newPageRanks.length; i++) {
@@ -149,84 +155,14 @@ public class PageRank {
 
 
     public static void main(String[] args) {
-        // Crear nodos y establecer enlaces entre ellos (similar al ejemplo anterior)
 
         PageRank pageRank = new PageRank();
-        pageRank.calcularPR(1); // Número máximo de iteraciones
+        pageRank.calcularPR(100);
         pageRank.printPR();
     }
 
 }
 
-    /*import java.util.ArrayList;
-import java.util.List;
-
-public class PageRank {
-    private static final double DAMPING_FACTOR = 0.85; // Factor de amortiguación típico de PageRank
-    private static final double EPSILON = 0.0001; // Criterio de convergencia
-
-    private List<Node> nodes;
-
-    public PageRank(List<Node> nodes) {
-        this.nodes = nodes;
-    }
-
-    public void calculatePageRank(int maxIterations) {
-        int numNodes = nodes.size();
-
-        for (int iteration = 0; iteration < maxIterations; iteration++) {
-            double[] newPageRanks = new double[numNodes];
-
-            for (int i = 0; i < numNodes; i++) {
-                Node node = nodes.get(i);
-                double newPageRank = (1.0 - DAMPING_FACTOR) / numNodes;
-
-                for (Node linkingNode : node.getLinks()) {
-                    newPageRank += DAMPING_FACTOR * linkingNode.getPageRank() / linkingNode.getLinks().size();
-                }
-
-                newPageRanks[i] = newPageRank;
-            }
-
-            // Actualizar los valores de PageRank después de una iteración
-            for (int i = 0; i < numNodes; i++) {
-                nodes.get(i).setPageRank(newPageRanks[i]);
-            }
-
-            // Verificar la convergencia
-            if (checkConvergence(newPageRanks)) {
-                break;
-            }
-        }
-    }
-
-    private boolean checkConvergence(double[] newPageRanks) {
-        for (int i = 0; i < newPageRanks.length; i++) {
-            double diff = Math.abs(newPageRanks[i] - nodes.get(i).getPageRank());
-            if (diff > EPSILON) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public void printPageRank() {
-        for (Node node : nodes) {
-            System.out.println("Node " + node.getId() + ": PageRank = " + node.getPageRank());
-        }
-    }
-
-    public static void main(String[] args) {
-        // Crear nodos y establecer enlaces entre ellos (similar al ejemplo anterior)
-
-        List<Node> nodes = new ArrayList<>();
-        // Agregar nodos a la lista
-
-        PageRank pageRank = new PageRank(nodes);
-        pageRank.calculatePageRank(100); // Número máximo de iteraciones
-        pageRank.printPageRank();
-    }
-}*/
 
 
 
