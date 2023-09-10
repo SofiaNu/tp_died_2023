@@ -53,13 +53,5 @@ public class FlujoMaximo extends gestionOrden{
     }
 
 
-    public static void main(String[] args) throws SQLException {
-        // TODO Auto-generated method stub
-        ConnectionPool.setup();
-        FlujoMaximo f = new FlujoMaximo();
-        System.out.println(f.getFuente());
-        System.out.println(f.getSumidero());
-        System.out.println(f.flujoMaximo());
 
-    }
 }
