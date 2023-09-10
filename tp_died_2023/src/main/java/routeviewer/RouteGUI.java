@@ -20,20 +20,21 @@ public class RouteGUI extends JPanel {
 
         List<List<Camino>> caminos = new ArrayList<List<Camino>>();
         List<List<Sucursal>> rutasSucursal = new ArrayList<List<Sucursal>>();
-        OrdenProvisionServicios ops = new OrdenProvisionServicios();
+        //OrdenProvisionServicios ops = new OrdenProvisionServicios();
 
         try{
-            gestionOrden go = new gestionOrden();
-            OrdenProvision orden = ops.buscarOrden(5);
-            go.generarResultadosValidos(orden, rutasSucursal, caminos);
+            //gestionOrden go = new gestionOrden();
+            //OrdenProvision orden = ops.buscarOrden(5);
+            //go.generarResultadosValidos(orden, rutasSucursal, caminos);
         }catch(Exception e){
             e.printStackTrace();
         }
-
         this.setPreferredSize(new Dimension(500, 500));
         this.setBackground(Color.black);
         routeDrawingManager = new RouteDrawingManager();
-        routeDrawingManager.setSize(getWidth(), getHeight());
+        //routeDrawingManager.setSize(getWidth(), getHeight());
+        caminos = routeDrawingManager.crearPruebasQM();
+        routeDrawingManager.setCaminosToDraw(caminos);
     }
     @Override
     protected void paintComponent(Graphics g){

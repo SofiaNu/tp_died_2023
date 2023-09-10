@@ -37,6 +37,15 @@ public class CaminoDrawable extends Drawable{
         this.destino = destino;
     }
 
+    private Color selectedColor = Color.RED;
+    public Color getSelectedColor() {
+        return selectedColor;
+    }
+
+    public void setSelectedColor(Color borderColor) {
+        this.selectedColor = selectedColor;
+    }
+
     private SucursalDrawable origen;
     private SucursalDrawable destino;
     float xF, yF;
