@@ -27,7 +27,6 @@ public class FlujoMaximo extends gestionOrden{
                 setMinimo(r,capacidad);
             }
         }
-
         return flow;
     }
 
