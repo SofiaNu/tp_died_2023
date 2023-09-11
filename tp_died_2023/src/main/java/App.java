@@ -20,6 +20,8 @@ public class App {
 		//ConnectionPool.setup();
 		Inicio inicio = new Inicio();
 		inicio.setVisible(true);
+		//VentanaOrden vo = new VentanaOrden();
+		//vo.setVisible(true);
 		//gestionOrden ordens = new gestionOrden();
 		//ordens.prueba();
 	}

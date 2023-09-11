@@ -158,9 +158,12 @@ public class OrdenProvisionRepository {
     public List<OrdenProvision> ordenesDeSucursal(Sucursal sucursal){
             List<OrdenProvision> ordenes = new ArrayList<OrdenProvision>();
             if(sucursal == null || sucursal.getId() <= 0){
+                System.out.println("ordenesDeSucursal, sucnull or did null");
                 return ordenes;
             }
+
             Connection conn = ConnectionPool.getConnection();
+            System.out.println("oconn" + conn == null ? "null" : "good");
             PreparedStatement pstm =null;
             ResultSet rs= null;
             try{
@@ -174,6 +177,7 @@ public class OrdenProvisionRepository {
                     ordenes.add(op);
                     op.setListaProductos(productosProvistosDeOrden(op));
                 }
+                System.out.println("afwh");
             }catch(SQLException e){
                 e.printStackTrace();
             }finally {
@@ -188,6 +192,7 @@ public class OrdenProvisionRepository {
                     e.printStackTrace();
                 }
                 if (conn != null)  {
+                    System.out.println("Rel conn");
                     ConnectionPool.releaseConnection(conn);
                 }
             }
@@ -314,12 +319,57 @@ public class OrdenProvisionRepository {
             ordenProvision.setFecha(rs.getDate("FECHA").toLocalDate());
             ordenProvision.setDestino(destino);
             ordenProvision.setTiempoLimite(rs.getFloat("TIEMPO_LIMITE"));
-
+            EstadoOrden estadoOrden = rs.getBoolean("ESTADO") ? EstadoOrden.PENDIENTE : EstadoOrden.EN_PROCESO;
+            ordenProvision.setEstado(estadoOrden);
             return ordenProvision;
         } catch (SQLException sqlException) {
             return null;
         }
 
+    }
+
+    public boolean asignarRecorridoOrdenProvision(List<Camino> recorridoAAsignar, OrdenProvision ordenProvision){
+        Connection conn = ConnectionPool.getConnection();
+        PreparedStatement pstm =null;
+        PreparedStatement updateOP = null;
+        ResultSet rs=null;
+        try {
+            String sqlString = "INSERT INTO tp_tablas.\"ORDEN_PROVISION_CAMINO\" " +  "(\"CAMINO\",\"ORDEN_PROVISION\",\"PARADA_NUMERO\") " + "VALUES ";
+            int iteratorIndex = 0;
+            for(Camino c : recorridoAAsignar){
+                int paradaNumero = iteratorIndex + 1;
+                String rowToInsert = "(" + String.valueOf(c.getId()) + ", " + String.valueOf(ordenProvision.getId()) + ", " + String.valueOf(paradaNumero)  + ")";
+                if(iteratorIndex < recorridoAAsignar.size()-1){
+                    rowToInsert = rowToInsert + ",";
+                }
+                sqlString += rowToInsert;
+                iteratorIndex++;
+            }
+            sqlString +=  ";";
+            pstm = conn.prepareStatement(sqlString);
+            pstm.execute();
+            updateOP = conn.prepareStatement("UPDATE tp_tablas.\"ORDEN_PROVISION\"SET \"ESTADO\" = FALSE WHERE \"ID\" = " +String.valueOf(ordenProvision.getId()) + "; ");
+            updateOP.execute();
+            //.out.println(rs.getString(2));
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }finally {
+            if (rs != null) try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (pstm != null) try {
+                pstm.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                ConnectionPool.releaseConnection(conn);
+            }
+        }
     }
 
     private ProductoProvisto buildPPFromRs(ResultSet rs){

@@ -28,4 +28,21 @@ public class OrdenProvisionServicios {
         OrdenProvisionRepository.getInstance().bajaOrden(ordenProvision);
     }
 
+    public boolean asignarRecorridoAOrdenProvision(List<Camino> recorridoAAsignar, OrdenProvision ordenProvision) throws Exception{
+        if(recorridoAAsignar == null || recorridoAAsignar.isEmpty() || ordenProvision == null || ordenProvision.getId()<= 0){
+            throw new Exception("Ocurrio un error al intentar asignar un recorrido a la orden");
+        }
+        if(ordenProvision.getDestino() == null){
+            System.out.println("op.getDestino not pop");
+            throw new Exception("Ocurrio un error al intentar asignar un recorrido a la orden (Orden)");
+        }
+        Sucursal dest = ordenProvision.getDestino();
+        int sucursalDestIdFromRecorrido = recorridoAAsignar.get(recorridoAAsignar.size() - 1).getDestino().getId();
+        if(sucursalDestIdFromRecorrido != ordenProvision.getDestino().getId() ){
+            System.out.println("Sucursal final != OP.SucursalFinal");
+            throw new Exception("Ocurrio un error al intentar asignar un recorrido a la orden (Caminos)");
+        }
+        return OrdenProvisionRepository.getInstance().asignarRecorridoOrdenProvision(recorridoAAsignar, ordenProvision);
+    }
+
 }

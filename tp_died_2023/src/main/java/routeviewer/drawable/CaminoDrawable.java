@@ -11,6 +11,8 @@ public class CaminoDrawable extends Drawable{
     private float THICKNESS = 4;
     private float RADIUS_X = 70, RADIUS_Y = 70;
 
+    private Color usingColor = this.getBaseColor();
+
     public Camino getCamino() {
         return camino;
     }
@@ -36,6 +38,18 @@ public class CaminoDrawable extends Drawable{
     public void setDestino(SucursalDrawable destino) {
         this.destino = destino;
     }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+        this.usingColor = selected ? this.selectedColor : this.getBaseColor();
+    }
+
+    private boolean selected = false;
+
 
     private Color selectedColor = Color.RED;
     public Color getSelectedColor() {
@@ -117,7 +131,7 @@ public class CaminoDrawable extends Drawable{
         System.out.println(" xi " + x+ " yi " + y+ " ctrX "+ctrlX+ " ctrY " + ctrlY+ " xF " + xF + " yF " + yF + "centerX " + midX + "centerY" + midY);
         quadCurve = new QuadCurve2D.Float(x,y, ctrlX, ctrlY, xF, yF);
 
-        g.setColor(this.getBaseColor());
+        g.setColor(this.usingColor);
         g.setStroke(new BasicStroke(THICKNESS, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g.draw(quadCurve);
     }

@@ -6,7 +6,6 @@ import clases.Sucursal;
 import routeviewer.drawable.CaminoDrawable;
 import routeviewer.drawable.SucursalDrawable;
 
-import java.sql.Array;
 import java.time.LocalTime;
 import java.util.*;
 import java.awt.*;
@@ -28,6 +27,17 @@ public class RouteDrawingManager {
     CaminoDrawable caminoDrawable6 = new CaminoDrawable(0,0, 490, 490, Color.ORANGE);
     private int height = 500;
     private int width = 500;
+
+    public boolean isShouldSelectFirstOnListAfterSettingCaminos() {
+        return shouldSelectFirstOnListAfterSettingCaminos;
+    }
+
+    public void setShouldSelectFirstOnListAfterSettingCaminos(boolean shouldSelectFirstOnListAfterSettingCaminos) {
+        this.shouldSelectFirstOnListAfterSettingCaminos = shouldSelectFirstOnListAfterSettingCaminos;
+    }
+
+    private boolean shouldSelectFirstOnListAfterSettingCaminos = false;
+
 
     public RouteDrawingManager(){
         this.internalCaminoDrawables = new ArrayList<List<CaminoDrawable>>();
@@ -95,11 +105,14 @@ public class RouteDrawingManager {
             return;
         }
 
-
+        int currRecorridoIndex = 0;
         for(List<CaminoDrawable> recorrido : internalCaminoDrawables){
             for(CaminoDrawable cd : recorrido){
-                // hacer seleccionados y deseleccionar
-                // sera con un for creo cerbro quemado y voy a postales
+                if(index == currRecorridoIndex){
+                    cd.setSelected(true);
+                }else {
+                    cd.setSelected(false);
+                }
                 // mas obj, flecha en caminos o algo que marque dir quizas degradez o mas grueso hacia mas fino?
                 // falta la gui de seeccionar, sera un dropdown y algo mas supongo
                 // ademas de probar que la parte de backend sea compatible
@@ -107,6 +120,7 @@ public class RouteDrawingManager {
                 // better layout strategy maybe si sobra el time
                 // sleepy saturday, sunday rather
             }
+            currRecorridoIndex++;
         }
 
     }
@@ -120,6 +134,9 @@ public class RouteDrawingManager {
         }
 
         setDrawableInitialPositions();
+        if(shouldSelectFirstOnListAfterSettingCaminos){
+            setSelectedRecorridoIndex(0);
+        }
     }
     private void clearInternalData(){
         this.internalCaminoDrawables = new ArrayList<List<CaminoDrawable>>();
@@ -235,15 +252,15 @@ public class RouteDrawingManager {
 
 
         List<Camino> rec1 = new ArrayList<>();
-        Camino r1_c1 = new Camino(s1,s3,10.0f, 50.0f, Estado.OPERATIVO);
+        Camino r1_c1 = new Camino(s5,s3,10.0f, 50.0f, Estado.OPERATIVO);
         Camino r1_c2 = new Camino(s3,s4,10.0f, 50.0f, Estado.OPERATIVO);
-        Camino r1_c3 = new Camino(s4,s5,10.0f, 50.0f, Estado.OPERATIVO);
+        Camino r1_c3 = new Camino(s4,s1,10.0f, 50.0f, Estado.OPERATIVO);
         Collections.addAll(rec1, r1_c1, r1_c2, r1_c3);
 
         List<Camino> rec2 = new ArrayList<>();
-        Camino r2_c1 = new Camino(s1,s2,10.0f, 50.0f, Estado.OPERATIVO);
-        Camino r2_c2 = new Camino(s2,s4,10.0f, 50.0f, Estado.OPERATIVO);
-        Camino r2_c3 = new Camino(s4,s5,10.0f, 50.0f, Estado.OPERATIVO);
+        Camino r2_c1 = new Camino(s2,s3,10.0f, 50.0f, Estado.OPERATIVO);
+        Camino r2_c2 = new Camino(s3,s5,10.0f, 50.0f, Estado.OPERATIVO);
+        Camino r2_c3 = new Camino(s5,s1,10.0f, 50.0f, Estado.OPERATIVO);
         Collections.addAll(rec2, r2_c1, r2_c2, r2_c3);
 
 

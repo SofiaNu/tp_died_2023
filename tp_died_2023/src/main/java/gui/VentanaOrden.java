@@ -1,12 +1,16 @@
 package gui;
 
 import clases.*;
+import routeviewer.RouteGUI;
 import servicios.OrdenProvisionServicios;
 import servicios.ProductoServicios;
 import servicios.SucursalServicios;
+import servicios.gestionOrden;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -97,10 +101,12 @@ public class VentanaOrden extends JFrame{
         JButton altabtn = new JButton("Crear Orden Provision");
         JButton buscarbtn = new JButton("Buscar Orden");
         JButton cerrarbtn = new JButton("Cerrar");
+        JButton gestionarOrdenesDeSucursal = new JButton("Gestionar ordenes de sucursal");
 
         contentPane.add(altabtn);
         contentPane.add(buscarbtn);
         contentPane.add(cerrarbtn);
+        contentPane.add(gestionarOrdenesDeSucursal);
         setContentPane(contentPane);
 
         altabtn.addActionListener(new ActionListener() {
@@ -133,7 +139,102 @@ public class VentanaOrden extends JFrame{
                 dispose();
             }
         });
+
+        gestionarOrdenesDeSucursal.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                List<Sucursal> sucursalList = null;
+                try{
+                    sucursalList = sucursalServicios.listarSucursales();
+                    if(sucursalList == null || sucursalList.size() == 0){
+                        System.out.println("SucusalList empty or null");
+                        return;
+                    }
+                    showSelectSucursalToManageOrderDialog(sucursalList);
+                } catch (Exception ex){
+                    ex.printStackTrace();
+                    System.exit(-1);
+                }
+
+//                String id =JOptionPane.showInputDialog(this, "Id de la Orden: ");
+//                if(!id.isEmpty() || id!=null){
+//                    buscarOrden(Integer.valueOf(id));
+//                }
+            }
+        });
+
         contentPane.setVisible(true);
+    }
+
+    private void showSelectSucursalToManageOrderDialog(List<Sucursal> sucursalList){
+        JFrame dialogFr = new JFrame("Gestionar ordenes de sucursal");
+        dialogFr.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JComboBox<String> sucursalesCb = new JComboBox<>();
+        sucursalesCb.addItem("Seleccionar sucursal");
+        for(Sucursal s : sucursalList){
+            sucursalesCb.addItem(s.getNombre() + "(Id " + s.getId() + ")");
+        }
+
+        JButton gestionarOrdenesDeSucBtn = new JButton("Gestionar Ordenes de sucursal");
+        gestionarOrdenesDeSucBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(sucursalesCb.getSelectedIndex() <= 0){
+                    System.out.println("Select index <= 0");
+                    return;
+                }
+                Sucursal selectedSucursal = sucursalList.get(sucursalesCb.getSelectedIndex() - 1);
+                try{
+                    System.out.println("Fetching ordenes");
+                    List<OrdenProvision> ordenesDeSucursal = ordenProvisionServicios.listarOrdenes(selectedSucursal);
+                    if(ordenesDeSucursal == null || ordenesDeSucursal.isEmpty()){
+                        JOptionPane.showMessageDialog(dialogFr, "No hay ordenes de esta sucursal");
+                    }else{
+                        showMultiOrdenPanel(ordenesDeSucursal);
+                        dialogFr.dispose();
+                    }
+
+
+                } catch (Exception ex){
+                    System.out.println("Gestionar multi orden error");
+                    ex.printStackTrace();
+
+                }
+
+            }
+        });
+        gestionarOrdenesDeSucBtn.setEnabled(false);
+
+        JButton cancelBtn = new JButton("Cancelar");
+        cancelBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialogFr.dispose();
+            }
+        });
+        sucursalesCb.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(sucursalesCb.getSelectedIndex() <= 0){
+                    gestionarOrdenesDeSucBtn.setEnabled(false);
+                }else {
+                    gestionarOrdenesDeSucBtn.setEnabled(true);
+                }
+            }
+        });
+
+
+        JPanel panel = new JPanel();
+        panel.add(sucursalesCb, BorderLayout.NORTH);
+        panel.add(gestionarOrdenesDeSucBtn, BorderLayout.SOUTH);
+        panel.add(cancelBtn, BorderLayout.SOUTH);
+        dialogFr.setLayout(new BorderLayout());
+        dialogFr.add(panel);
+        dialogFr.setSize(300, 200);
+        dialogFr.setLocationRelativeTo(null);
+        dialogFr.setVisible(true);
+
     }
     public void showAltaPanel() throws SQLException {
         ProductoServicios productoServicios = new ProductoServicios();
@@ -511,6 +612,203 @@ public class VentanaOrden extends JFrame{
         frame.add(resultadobusqueda);
         frame.setVisible(true);
 
+    }
+
+    public void showMultiOrdenPanel(List<OrdenProvision> ordenes){
+        if(ordenes == null || ordenes.isEmpty()) return;
+
+        JFrame frame = new JFrame("Resultado Busqueda:");
+        frame.setSize(500, 300);
+        frame.setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JPanel resultadobusqueda = new JPanel();
+        String[] columnNames = {"Id", "Fecha", "Tiempo Limite", "Peso", "Estado"};
+        //List<String[]> resultados = new ArrayList<>();
+//                {{String.valueOf(o.getId()),String.valueOf(o.getFecha()),
+//                String.valueOf(o.getTiempoLimite()),String.valueOf(o.getPeso()),String.valueOf(o.getEstado())}};
+        int idx = 0;
+        String[][] resultadosArray = new String[ordenes.size()][columnNames.length];
+        for(OrdenProvision o : ordenes){
+            String[] row = {String.valueOf(o.getId()),
+                    String.valueOf(o.getFecha()),
+                    String.valueOf(o.getTiempoLimite()),
+                    String.valueOf(o.getPeso()),
+                    String.valueOf(o.getEstado())};
+            resultadosArray[idx] = row;
+            idx++;
+        }
+
+
+        JTable tablaResultados = new JTable(resultadosArray,columnNames);
+        JButton verProductosbtn = new JButton("Ver Listado Productos");
+        //JButton bajabtn = new JButton("Dar de Baja Orden");
+        JButton cerrarbtn = new JButton("Cerrar");
+        JButton seleccionarRecorridobtn = new JButton("Seleccioanr recorrido");
+
+        resultadobusqueda.add(tablaResultados);
+        resultadobusqueda.add(verProductosbtn);
+        resultadobusqueda.add(seleccionarRecorridobtn);
+        //resultadobusqueda.add(bajabtn);
+        resultadobusqueda.add(cerrarbtn);
+
+        cerrarbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+
+            }
+        });
+
+        verProductosbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                OrdenProvision op = ordenes.get(tablaResultados.getSelectedRow());
+                showListaProductos(op);
+            }
+        });
+
+//        bajabtn.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                try {
+//                    OrdenProvision op = ordenes.get(tablaResultados.getSelectedRow());
+//                    showBorrarOrdenDialog(o);
+//                } catch (Exception ex) {
+//                    throw new RuntimeException(ex);
+//                }
+//            }
+//        });
+
+        seleccionarRecorridobtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int ordenIndex = tablaResultados.getSelectedRow();
+                if(ordenIndex < 0){
+                    JOptionPane.showMessageDialog(frame, "Seleccione una de la lista");
+                    return;
+                }
+                OrdenProvision op = ordenes.get(tablaResultados.getSelectedRow());
+                if(op.getEstado() == EstadoOrden.EN_PROCESO) {
+                    JOptionPane.showMessageDialog(frame, "Esta orden de provision ya esta en proceso");
+                    return;
+                }
+                showGestionRecorridoOrden(op);
+                frame.dispose();
+            }
+        });
+
+        frame.add(resultadobusqueda);
+        frame.setVisible(true);
+
+    }
+
+    public void showGestionRecorridoOrden(OrdenProvision op){
+        //final List<List<Camino>> caminos = new ArrayList<List<Camino>>();//Decoment for real
+        List<List<Sucursal>> rutasSucursal = new ArrayList<List<Sucursal>>();
+
+        try{
+            //gestionOrden go = new gestionOrden();//Decoment for real
+            //go.generarResultadosValidos(op, rutasSucursal, caminos);//Decoment for real
+        }catch(Exception e){
+            System.out.println("Error gestion recorrido orden");
+            e.printStackTrace();
+            return;
+        }
+        RouteGUI routeGUI = new RouteGUI();
+        final List<List<Camino>> caminos = routeGUI.getPruebasCam(); //fortesting; Comment for real
+        JFrame frame = new JFrame("Resultado Busqueda:");
+
+        if(caminos == null || caminos.isEmpty()){
+            JOptionPane.showMessageDialog(frame, "No hay caminos para mostrar");
+            frame.dispose();
+            return;
+        }
+
+        frame.setSize(700, 700);
+        frame.setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+//        RouteGUI routeGUI = new RouteGUI();
+
+        String[] columnNames = {"Sucursal proveedora", "Cantidad de paradas"};
+        int idx = 0;
+        String[][] resultadosArray = new String[caminos.size()][columnNames.length];
+        for(List<Camino> recorrido : caminos){
+            String sucursalProv = recorrido.get(0).getOrigen().getNombre();
+            String[] row = {
+                    sucursalProv,
+                    String.valueOf(recorrido.size()),
+            };
+            resultadosArray[idx] = row;
+            idx++;
+        }
+        JPanel containerPanel = new JPanel(new BorderLayout());
+        containerPanel.setSize(700,900);
+        JPanel headerPanel = new JPanel();
+        JLabel tituloLabel = new JLabel("Seleccione un camino de la lista inferior");
+        JLabel subtituloLabel = new JLabel("Los caminos estan ordenados desde el mas optimo hasta el menos optimo " +
+                "Luego de seleccionar un camino presione el boton asignar");
+        JButton asignarBtn = new JButton("Asignar");
+
+        JTable tablaResultados = new JTable(resultadosArray,columnNames);
+        tablaResultados.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        if(resultadosArray.length > 0){
+            tablaResultados.getSelectionModel().setSelectionInterval(0,0);
+        }
+
+        tablaResultados.setDefaultEditor(Object.class, null);
+
+        headerPanel.add(tituloLabel);
+        headerPanel.add(subtituloLabel);
+        containerPanel.add(headerPanel);
+        containerPanel.add(tablaResultados, BorderLayout.NORTH);
+        containerPanel.add(routeGUI);
+        containerPanel.add(asignarBtn, BorderLayout.SOUTH);
+        frame.add(containerPanel);
+
+        tablaResultados.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                int row = tablaResultados.getSelectedRow();
+                if(row < 0){
+                    return;
+                }
+
+                routeGUI.setSelectedIndex(row);
+
+
+            }
+        });
+
+        asignarBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = tablaResultados.getSelectedRow();
+                if(row < 0){
+                    JOptionPane.showMessageDialog(frame, "Seleccione una de la lista");
+                    return;
+                }
+                List<Camino> selectedCaminoToAssign = caminos.get(row);
+                boolean result = false;
+                try{
+                    result = ordenProvisionServicios.asignarRecorridoAOrdenProvision(selectedCaminoToAssign, op);
+
+                } catch (Exception exception){
+                    JOptionPane.showMessageDialog(frame, "Error!: " + exception.getMessage());
+                }
+
+                if(result){
+                    JOptionPane.showMessageDialog(frame, "Asignado correctamente");
+                }
+
+            }
+        });
+
+        //resultadobusqueda.add(bajabtn);
+        //resultadobusqueda.add(cerrarbtn);
+
+        //frame.add(routeGUI, BorderLayout.SOUTH);
+        frame.setVisible(true);
     }
     public Sucursal getSucursalDestino() throws SQLException {
         Sucursal destino = null;

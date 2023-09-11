@@ -1,11 +1,7 @@
 package routeviewer;
 
 import clases.Camino;
-import clases.OrdenProvision;
 import clases.Sucursal;
-import servicios.OrdenProvisionServicios;
-import servicios.SucursalServicios;
-import servicios.gestionOrden;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -32,10 +28,21 @@ public class RouteGUI extends JPanel {
         this.setPreferredSize(new Dimension(500, 500));
         this.setBackground(Color.black);
         routeDrawingManager = new RouteDrawingManager();
+        routeDrawingManager.setShouldSelectFirstOnListAfterSettingCaminos(true);
         //routeDrawingManager.setSize(getWidth(), getHeight());
         caminos = routeDrawingManager.crearPruebasQM();
         routeDrawingManager.setCaminosToDraw(caminos);
     }
+
+    public List<List<Camino>> getPruebasCam(){
+        return routeDrawingManager.crearPruebasQM();
+    }
+
+    public void setSelectedIndex(int index){
+        routeDrawingManager.setSelectedRecorridoIndex(index);
+        repaint();
+    }
+
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
