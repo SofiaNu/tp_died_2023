@@ -7,11 +7,14 @@ import dao.SucursalRepository;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class PageRank {
-    private class NodoSucursal{
+    private class NodoSucursal implements Comparable<NodoSucursal>{
         int id;
         double cantSalientes;
         double pageRank;
@@ -45,8 +48,14 @@ public class PageRank {
         public NodoSucursal() {
             this.pageRank=1.0;
         }
+
+        public int compareTo(NodoSucursal otro) {
+            return Double.compare(otro.getId(), this.getPageRank());
+        }
+
     }
     private List<NodoSucursal> sucursales;
+    private  List<Sucursal> sucursalesReales;
     private static final double DAMPING_FACTOR = 0.85; // Factor de amortiguación típico de PageRank
     private static final double EPSILON = 0.0001; // Criterio de convergencia
 
@@ -88,22 +97,21 @@ public class PageRank {
         SucursalRepository sucursalRepository = SucursalRepository.getInstance();
         CaminoRepository caminoRepository = CaminoRepository.getInstance();
         List<Camino> caminos = caminoRepository.listarCaminos();
-        List<Sucursal> sucursalesReales = sucursalRepository.listarSucursal();
+         this.sucursalesReales = sucursalRepository.listarSucursal();
         sucursales = new ArrayList<NodoSucursal>();
         for(int i =0; i<sucursalesReales.size(); i++){
            NodoSucursal sucursal = new NodoSucursal();
            sucursal.setId(sucursalesReales.get(i).getId());
            sucursal.setSalientes(this.gradoSalida(sucursalesReales.get(i),caminos));
-           System.out.println("" +sucursal.getId()+ " "+ sucursal.getSalientes());
            sucursales.add(sucursal);
         }
         for(int i=0; i < sucursales.size();i++){
             sucursales.get(i).setEntrantes(this.entrantes(sucursales.get(i),caminos));
-            System.out.println(""+ sucursales.get(i).getId()+ " " + sucursales.get(i).getEntrantes());
         }
 
     }
-    public void calcularPR(int maxIteracion){
+    public List<Sucursal> calcularPR(int maxIteracion){
+        List<Sucursal> sucursalesRetorno= new ArrayList<Sucursal>();
 
         double cantSucursales = (double) sucursales.size();
 
@@ -130,12 +138,26 @@ public class PageRank {
 
             // Verificar la convergencia
             if (checkConvergencia(newPageRanks)) {
-                break;
-            }
+                List<NodoSucursal> aux= this.sucursales.stream().sorted(Comparator.comparingDouble(NodoSucursal::getPageRank).reversed()).collect(Collectors.toList());
 
+
+                for(NodoSucursal nodo:aux) {
+                    Sucursal s = this.sucursalesReales.stream().filter(su->su.getId()==nodo.getId()).findFirst().get();
+                    sucursalesRetorno.add(s);
+                }
+                return sucursalesRetorno;
+            }
 
         }
 
+        List<NodoSucursal> aux= this.sucursales.stream().sorted(Comparator.comparingDouble(NodoSucursal::getPageRank).reversed()).collect(Collectors.toList());
+
+
+        for(NodoSucursal nodo:aux) {
+            Sucursal s = this.sucursalesReales.stream().filter(su->su.getId()==nodo.getId()).findFirst().get();
+            sucursalesRetorno.add(s);
+        }
+        return sucursalesRetorno;
 
     }
     private boolean checkConvergencia(double[] newPageRanks) {
@@ -154,11 +176,32 @@ public class PageRank {
     }
 
 
+    public List<Sucursal> listarSucursales(){
+        List<NodoSucursal> aux= sucursales.stream().sorted(Comparator.comparingDouble(NodoSucursal::getPageRank)).collect(Collectors.toList());
+
+        return null;
+    }
+    public List<Sucursal> sucursalesOrdenadasPR(){
+
+        this.calcularPR(100);
+
+
+        List<Sucursal> retorno =this.listarSucursales();
+        return retorno;
+    }
+
+
     public static void main(String[] args) {
 
         PageRank pageRank = new PageRank();
         pageRank.calcularPR(100);
+
         pageRank.printPR();
+
+
+
+
+
     }
 
 }
