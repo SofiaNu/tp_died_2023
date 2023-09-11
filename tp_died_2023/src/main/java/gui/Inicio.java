@@ -4,6 +4,7 @@ import routeviewer.RouteGUI;
 import java.awt.EventQueue;
 import clases.Sucursal;
 import servicios.FlujoMaximo;
+import servicios.PageRank;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -132,11 +133,11 @@ public class Inicio extends JFrame{
 
 		String[] columnNames = {"Id", "Nombre"};
 		JTable tablaResultados = new JTable(new DefaultTableModel());
-
+		PageRank pageRank = new PageRank();
 		DefaultTableModel model = (DefaultTableModel) tablaResultados.getModel();
 		model.setColumnIdentifiers(columnNames);
 
-		List<Sucursal> sucursales = new ArrayList<>(); //ACA VA LA LISTA
+		List<Sucursal> sucursales = pageRank.calcularPR(100);
 
 		if(sucursales != null) {
 			for (Sucursal s : sucursales) {
