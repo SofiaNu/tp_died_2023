@@ -1,18 +1,20 @@
 package gui;
 
 import routeviewer.RouteGUI;
-
 import java.awt.EventQueue;
+import clases.Sucursal;
+import servicios.FlujoMaximo;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JButton;
-import java.awt.FlowLayout;
-import java.awt.Font;
+import javax.swing.table.DefaultTableModel;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Inicio extends JFrame{
 
@@ -70,7 +72,100 @@ public class Inicio extends JFrame{
 		RouteGUI rg = new RouteGUI();
 
 		contentPane.add(rg);
+		JButton btnPageRank = new JButton("Page Rank");
+		btnPageRank.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				showPageRank();
+			}
+		});
+		contentPane.add(btnPageRank);
+
+		JButton btnFlujo = new JButton("Flujo Maximo");
+		btnFlujo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					showVentanaFlujo();
+				} catch (SQLException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+		});
+		contentPane.add(btnFlujo);
 	}
 
+	public void showVentanaFlujo() throws SQLException {
+		FlujoMaximo flujoMaximo = new FlujoMaximo();
+
+		JFrame frame = new JFrame(("FLujo maximo de transporte"));
+		frame.setSize(500, 300);
+		frame.setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		JPanel panel = new JPanel(new FlowLayout());
+
+		//ACA debería haber un mapa (¿supongo/talvez?)
+		JLabel info = new JLabel("La maxima capacidad de transporte desde el puerto a la sucursal final");
+		JLabel capacidad = new JLabel(String.valueOf(flujoMaximo.flujoMaximo()));
+
+		JButton cerrarbtn = new JButton("Cerrar");
+
+		cerrarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+			}
+		});
+		panel.add(info);
+		panel.add(capacidad);
+		panel.add(cerrarbtn);
+		frame.add(panel);
+		frame.setVisible(true);
+	};
+
+	public void showPageRank(){
+
+		JFrame resultadoFrame = new JFrame("Page Rank:");
+		resultadoFrame.setSize(500, 300);
+		resultadoFrame.setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		JPanel panel = new JPanel(new FlowLayout());
+
+		String[] columnNames = {"Id", "Nombre"};
+		JTable tablaResultados = new JTable(new DefaultTableModel());
+
+		DefaultTableModel model = (DefaultTableModel) tablaResultados.getModel();
+		model.setColumnIdentifiers(columnNames);
+
+		List<Sucursal> sucursales = new ArrayList<>(); //ACA VA LA LISTA
+
+		if(sucursales != null) {
+			for (Sucursal s : sucursales) {
+				String[] fila = {String.valueOf(s.getId()), s.getNombre()};
+				model.addRow(fila);
+			}
+		}
+		JScrollPane contenedorTabla = new JScrollPane(tablaResultados); //Sin esto no se muestra el nombre de las columnas
+		int maxVisibleRows = 8;
+		int rowHeight = tablaResultados.getRowHeight();
+		int headerHeight = tablaResultados.getTableHeader().getPreferredSize().height;
+		Dimension preferredSize = new Dimension(contenedorTabla.getPreferredSize().width,
+				maxVisibleRows * rowHeight + headerHeight);
+		contenedorTabla.setPreferredSize(preferredSize);
+
+		JButton cerrarbtn = new JButton("Cerrar");
+		cerrarbtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				resultadoFrame.setVisible(false);
+			}
+		});
+
+		panel.add(contenedorTabla);
+		panel.add(cerrarbtn);
+		resultadoFrame.add(panel);
+		resultadoFrame.setVisible(true);
+
+
+	}
 
 }
