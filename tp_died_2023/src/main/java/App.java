@@ -6,7 +6,6 @@ import dao.StockProductoRepository;
 import dao.SucursalRepository;
 import gui.*;
 import servicios.*;
-
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -26,7 +25,6 @@ public class App {
 		Sucursal sucursal = sucursalServicios.buscarSucursal(7);
 		//sucursalServicios.pageRank();
 		//PageRank pageRank ne
-
 
 	}
 

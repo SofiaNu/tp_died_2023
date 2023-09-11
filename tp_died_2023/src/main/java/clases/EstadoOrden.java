@@ -1,5 +1,6 @@
 package clases;
 
 public enum EstadoOrden {
-    PENDIENTE,EN_PROCESO
+    PENDIENTE//true
+    ,EN_PROCESO//false
 }
