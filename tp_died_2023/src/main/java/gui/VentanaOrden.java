@@ -148,7 +148,7 @@ public class VentanaOrden extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 List<Sucursal> sucursalList = null;
                 try{
-                    sucursalList = sucursalServicios.listarSucursales();
+                    sucursalList = sucursalServicios.listarSucursales(false);
                     if(sucursalList == null || sucursalList.size() == 0){
                         System.out.println("SucusalList empty or null");
                         return;

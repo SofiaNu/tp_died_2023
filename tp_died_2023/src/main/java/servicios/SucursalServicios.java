@@ -55,6 +55,13 @@ public class SucursalServicios {
     public List<Sucursal> listarSucursales() throws SQLException {
         return sucursalRepository.listarSucursal();
     }
+    public List<Sucursal> listarSucursales(boolean traerStock) throws SQLException {
+        if(traerStock){
+            return sucursalRepository.listarSucursal();
+        }else{
+            return sucursalRepository.listarSucursalSinStocks();
+        }
+    }
 
     public List<Sucursal> listarSucursalesOperativas() {
         return sucursalRepository.listarOperativos();

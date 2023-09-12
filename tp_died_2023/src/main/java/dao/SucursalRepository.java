@@ -88,7 +88,7 @@ public class SucursalRepository {
     }
     public List<Sucursal> listarOperativos(){
         String statement = "SELECT * FROM tp_tablas.\"SUCURSAL\" WHERE \"ESTADO\"= true";
-        return ejecutarListado(statement);
+        return ejecutarListado(statement, true);
     }
     /*public List<Sucursal> listarNoOperativos(){
         String statement = "SELECT * FROM tp_tablas.\"SUCURSAL\" WHERE \"ESTADO\"= false";
@@ -96,10 +96,15 @@ public class SucursalRepository {
     }*/
     public List<Sucursal> listarSucursal(){
         String statement = "SELECT * FROM tp_tablas.\"SUCURSAL\"";
-        return ejecutarListado(statement);
+        return ejecutarListado(statement, true);
     }
 
-    public List<Sucursal> ejecutarListado(String stm){
+    public List<Sucursal> listarSucursalSinStocks(){
+        String statement = "SELECT * FROM tp_tablas.\"SUCURSAL\"";
+        return ejecutarListado(statement, false);
+    }
+
+    public List<Sucursal> ejecutarListado(String stm, boolean traerStocks){
         List<Sucursal> sucursales= new ArrayList<Sucursal>();
         Connection conn = ConnectionPool.getConnection();
         PreparedStatement pstm =null;
@@ -108,7 +113,11 @@ public class SucursalRepository {
             pstm = conn.prepareStatement(stm);
             rs= pstm.executeQuery();
             while(rs.next()){
-                sucursales.add(getSucursal(rs));
+                if(traerStocks){
+                    sucursales.add(getSucursal(rs));
+                }else{
+                    sucursales.add(getSucursalWithoutStocks(rs));
+                }
             }
         }catch(SQLException e){
             e.printStackTrace();
@@ -144,6 +153,21 @@ public class SucursalRepository {
         sucursal.setCapacidad(rs.getFloat("CAPACIDAD"));
         sucursal.setId(rs.getInt("ID"));
         sucursal.setStock(getStockSucursal(rs.getInt("ID")));
+        return sucursal;
+    }
+
+    private Sucursal  getSucursalWithoutStocks(ResultSet rs) throws SQLException {
+        Sucursal sucursal = new Sucursal();
+        sucursal.setNombre(rs.getString("NOMBRE"));
+        sucursal.setHoraApertura(rs.getTime("HORA_APERTURA").toLocalTime());
+        sucursal.setHoraCierre(rs.getTime("HORA_CIERRE").toLocalTime());
+        if(rs.getBoolean("ESTADO")){
+            sucursal.setEstado(Estado.OPERATIVO);}
+        else{
+            sucursal.setEstado(Estado.NO_OPERATIVO);
+        }
+        sucursal.setCapacidad(rs.getFloat("CAPACIDAD"));
+        sucursal.setId(rs.getInt("ID"));
         return sucursal;
     }
 
