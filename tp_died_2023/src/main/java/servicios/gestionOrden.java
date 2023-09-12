@@ -1,6 +1,8 @@
 package servicios;
 
 import clases.*;
+import connectionpool.ConnectionPool;
+import gui.Inicio;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -21,18 +23,18 @@ public class gestionOrden {
 
     public List<Sucursal> sucursalesValidas(OrdenProvision orden) throws SQLException {
         sucursales = sucursales.stream()
-                .filter(s-> tieneStock(s.getStock(), orden.getListaProductos()) &&
+                .filter(s-> /*!s.equals(orden.getDestino()) &&*/ tieneStock(s.getStock(), orden.getListaProductos()) &&
                         noEsSumidero(s))
                 .collect(Collectors.toList());
-        sucursales = sucursales.stream().filter(s-> !encontrarRuta(s, orden.getDestino()).isEmpty()).collect(Collectors.toList());
+        sucursales = sucursales.stream().filter(s-> !(encontrarRuta(s, orden.getDestino()).isEmpty())).collect(Collectors.toList());
         return sucursales;
     }
 
     public void generarResultadosValidos(OrdenProvision orden, List<List<Sucursal>> rutasSucursal, List<List<Camino>> rutasCamino) throws SQLException {
         List<Sucursal> origenesValidos = sucursalesValidas(orden);
         for(Sucursal s: origenesValidos){
-            rutasSucursal= encontrarRuta(s,orden.getDestino());
-            rutasCamino = encontrarCaminos(rutasSucursal);
+            rutasSucursal.addAll(encontrarRuta(s,orden.getDestino()));
+            rutasCamino.addAll(encontrarCaminos(rutasSucursal));
             filtrarRutasPorTiempo(rutasSucursal,rutasCamino,orden.getTiempoLimite());
         }
     }
@@ -56,7 +58,7 @@ public class gestionOrden {
     }
     //ESTO SE DEBERIA HACER EN LA CLASE SUCURSAL
     public boolean noEsSumidero(Sucursal s){
-        return caminos.stream().anyMatch(c-> c.getOrigen() == s);
+        return caminos.stream().anyMatch(c-> c.getOrigen().equals(s));
     }
 
     public List<Sucursal> bfs(Sucursal inicio){
@@ -156,6 +158,23 @@ public class gestionOrden {
         System.out.println("CAMINOS DESDE: "+origen.toString()+" HASTA: "+destino.toString());
         System.out.println(resultado);
         System.out.println(encontrarCaminos(resultado));
+
+    }
+    public static void main(String[] args) throws SQLException {
+        // TODO Auto-generated method stub
+        ConnectionPool.setup();
+        OrdenProvisionServicios ordenProvisionServicios = new OrdenProvisionServicios();
+        OrdenProvision orden = ordenProvisionServicios.buscarOrden(3);
+        gestionOrden gestionOrden = new gestionOrden();
+
+        //Sucursal sucursal = sucursalServicios.buscarSucursal(1);
+        //Sucursal destino = sucursalServicios.buscarSucursal(4);
+        List<List<Sucursal>> rsucursal = new ArrayList<>();
+        List<List<Camino>> rutas = new ArrayList<>();
+        gestionOrden.generarResultadosValidos(orden,rsucursal,rutas);
+
+        System.out.println(rutas);
+
 
     }
 }
