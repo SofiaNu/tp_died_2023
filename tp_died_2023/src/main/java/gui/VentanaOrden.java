@@ -644,7 +644,7 @@ public class VentanaOrden extends JFrame{
         JButton verProductosbtn = new JButton("Ver Listado Productos");
         //JButton bajabtn = new JButton("Dar de Baja Orden");
         JButton cerrarbtn = new JButton("Cerrar");
-        JButton seleccionarRecorridobtn = new JButton("Seleccioanr recorrido");
+        JButton seleccionarRecorridobtn = new JButton("Seleccionar recorrido");
 
         resultadobusqueda.add(tablaResultados);
         resultadobusqueda.add(verProductosbtn);
@@ -741,19 +741,19 @@ public class VentanaOrden extends JFrame{
 
 //        RouteGUI routeGUI = new RouteGUI();
 
-        String[] columnNames = {"Sucursal proveedora", "Cantidad de paradas"};
+        String[] columnNames = {"Sucursal proveedora", "Tiempo de envio"};
         int idx = 0;
         String[][] resultadosArray = new String[caminos.size()][columnNames.length];
         for(List<Camino> recorrido : caminos){
             String sucursalProv = recorrido.get(0).getOrigen().getNombre();
             String[] row = {
                     sucursalProv,
-                    String.valueOf(recorrido.size()),
+                    String.valueOf(tiempoCamino(recorrido)),
             };
             resultadosArray[idx] = row;
             idx++;
         }
-        JPanel containerPanel = new JPanel(new BorderLayout());
+        JPanel containerPanel = new JPanel(new FlowLayout());
         containerPanel.setSize(700,900);
         JPanel headerPanel = new JPanel();
         JLabel tituloLabel = new JLabel("Seleccione un camino de la lista inferior");
@@ -769,10 +769,18 @@ public class VentanaOrden extends JFrame{
 
         tablaResultados.setDefaultEditor(Object.class, null);
 
+        JScrollPane contenedorTabla = new JScrollPane(tablaResultados); //Sin esto no se muestra el nombre de las columnas
+        int maxVisibleRows = 4;
+        int rowHeight = tablaResultados.getRowHeight();
+        int headerHeight = tablaResultados.getTableHeader().getPreferredSize().height;
+        Dimension preferredSize = new Dimension(contenedorTabla.getPreferredSize().width,
+                maxVisibleRows * rowHeight + headerHeight);
+        contenedorTabla.setPreferredSize(preferredSize);
+
         headerPanel.add(tituloLabel);
         headerPanel.add(subtituloLabel);
         containerPanel.add(headerPanel);
-        containerPanel.add(tablaResultados, BorderLayout.NORTH);
+        containerPanel.add(contenedorTabla, BorderLayout.NORTH);
         containerPanel.add(routeGUI);
         containerPanel.add(asignarBtn, BorderLayout.SOUTH);
         frame.add(containerPanel);
@@ -828,6 +836,10 @@ public class VentanaOrden extends JFrame{
             destino = sucursalServicios.buscarSucursal(Integer.valueOf(id));
         }
         return destino;
+    }
+
+    private double tiempoCamino(List<Camino> recorrido){
+       return recorrido.stream().mapToDouble(c-> c.getTiempoTransito()).sum();
     }
 
 }

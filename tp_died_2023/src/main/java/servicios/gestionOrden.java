@@ -23,7 +23,7 @@ public class gestionOrden {
 
     public List<Sucursal> sucursalesValidas(OrdenProvision orden) throws SQLException {
         sucursales = sucursales.stream()
-                .filter(s-> /*!s.equals(orden.getDestino()) &&*/ tieneStock(s.getStock(), orden.getListaProductos()) &&
+                .filter(s-> !s.equals(orden.getDestino()) && tieneStock(s.getStock(), orden.getListaProductos()) &&
                         noEsSumidero(s))
                 .collect(Collectors.toList());
         sucursales = sucursales.stream().filter(s-> !(encontrarRuta(s, orden.getDestino()).isEmpty())).collect(Collectors.toList());
