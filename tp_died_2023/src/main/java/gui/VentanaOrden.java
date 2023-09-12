@@ -577,16 +577,27 @@ public class VentanaOrden extends JFrame{
         JTable tablaResultados = new JTable(resultado,columnNames);
         JButton verProductosbtn = new JButton("Ver Listado Productos");
         JButton bajabtn = new JButton("Dar de Baja Orden");
+        JButton mapabtn = new JButton("Seleccionar Recorrido");
         JButton cerrarbtn = new JButton("Cerrar");
 
         resultadobusqueda.add(tablaResultados);
         resultadobusqueda.add(verProductosbtn);
+        resultadobusqueda.add(mapabtn);
         resultadobusqueda.add(bajabtn);
         resultadobusqueda.add(cerrarbtn);
 
         cerrarbtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+
+            }
+        });
+
+        mapabtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showGestionRecorridoOrden(o);
                 frame.dispose();
 
             }
@@ -754,7 +765,7 @@ public class VentanaOrden extends JFrame{
             idx++;
         }
         JPanel containerPanel = new JPanel(new FlowLayout());
-        containerPanel.setSize(700,900);
+        containerPanel.setSize(500,900);
         JPanel headerPanel = new JPanel();
         JLabel tituloLabel = new JLabel("Seleccione un camino de la lista inferior");
         JLabel subtituloLabel = new JLabel("Los caminos estan ordenados desde el mas optimo hasta el menos optimo " +

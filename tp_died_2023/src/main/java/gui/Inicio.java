@@ -70,9 +70,9 @@ public class Inicio extends JFrame{
 			}
 		});
 		contentPane.add(btnOrdenes);
-		RouteGUI rg = new RouteGUI();
+		//RouteGUI rg = new RouteGUI();
 
-		contentPane.add(rg);
+		//contentPane.add(rg);
 		JButton btnPageRank = new JButton("Page Rank");
 		btnPageRank.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
