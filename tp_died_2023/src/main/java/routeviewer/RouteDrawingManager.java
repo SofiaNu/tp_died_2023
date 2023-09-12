@@ -152,13 +152,6 @@ public class RouteDrawingManager {
                 }else {
                     cd.setSelected(false);
                 }
-                // mas obj, flecha en caminos o algo que marque dir quizas degradez o mas grueso hacia mas fino?
-                // falta la gui de seeccionar, sera un dropdown y algo mas supongo
-                // ademas de probar que la parte de backend sea compatible
-                // nombres de suc
-                // better layout strategy maybe si sobra el time
-                // sleepy saturday, sunday rather
-                // dios mio este doble loop es lo mas ineficiente que hice, es horrible de leer estaba dormido
                 currCaminoIndex++;
             }
             currRecorridoIndex++;

@@ -163,7 +163,6 @@ public class OrdenProvisionRepository {
             }
 
             Connection conn = ConnectionPool.getConnection();
-            System.out.println("oconn" + conn == null ? "null" : "good");
             PreparedStatement pstm =null;
             ResultSet rs= null;
             try{
@@ -177,7 +176,6 @@ public class OrdenProvisionRepository {
                     ordenes.add(op);
                     op.setListaProductos(productosProvistosDeOrden(op));
                 }
-                System.out.println("afwh");
             }catch(SQLException e){
                 e.printStackTrace();
             }finally {
@@ -192,7 +190,6 @@ public class OrdenProvisionRepository {
                     e.printStackTrace();
                 }
                 if (conn != null)  {
-                    System.out.println("Rel conn");
                     ConnectionPool.releaseConnection(conn);
                 }
             }

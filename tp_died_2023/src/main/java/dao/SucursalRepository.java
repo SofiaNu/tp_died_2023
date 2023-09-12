@@ -60,7 +60,7 @@ public class SucursalRepository {
             while(rs.next()){
                 sucursales.add(getSucursal(rs));
                 String aux= rs.getString("NOMBRE");
-                System.out.println(aux);
+                //System.out.println(aux);
             }
         }catch(SQLException e){
             e.printStackTrace();

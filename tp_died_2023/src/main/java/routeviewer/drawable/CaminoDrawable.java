@@ -132,7 +132,7 @@ public class CaminoDrawable extends Drawable{
             ctrlY = perpM * (ctrlX - midX) + midY;
         }
 
-        System.out.println(" xi " + x+ " yi " + y+ " ctrX "+ctrlX+ " ctrY " + ctrlY+ " xF " + xF + " yF " + yF + "centerX " + midX + "centerY" + midY);
+        //System.out.println(" xi " + x+ " yi " + y+ " ctrX "+ctrlX+ " ctrY " + ctrlY+ " xF " + xF + " yF " + yF + "centerX " + midX + "centerY" + midY);
         quadCurve = new QuadCurve2D.Float(x,y, ctrlX, ctrlY, xF, yF);
 
         g.setColor(this.usingColor);

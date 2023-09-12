@@ -37,7 +37,7 @@ public class ProductoRepository {
             pstm.setFloat(3, producto.getPeso());
             pstm.setString(4, producto.getDetalle());
             rs = pstm.executeQuery();
-            System.out.println(rs.getString(2));
+            //System.out.println(rs.getString(2));
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {
@@ -93,7 +93,7 @@ public class ProductoRepository {
             while(rs.next()){
                 productos.add(getProducto(rs));
                 String aux= rs.getString("NOMBRE");
-                System.out.println(aux);
+                //System.out.println(aux);
             }
         }catch(SQLException e){
             e.printStackTrace();
@@ -127,7 +127,7 @@ public class ProductoRepository {
             if(rs.next()){
                 producto = getProducto(rs);
                 String aux= rs.getString("NOMBRE");
-                System.out.println(aux);
+                //System.out.println(aux);
             }
             else{
                 System.out.print("No existe el producto");
@@ -163,7 +163,7 @@ public class ProductoRepository {
             if(rs.next()){
                 producto = getProducto(rs);
                 String aux= rs.getString("NOMBRE");
-                System.out.println(aux);
+                //System.out.println(aux);
             }
             else{
                 System.out.print("No existe el producto");
@@ -201,7 +201,7 @@ public class ProductoRepository {
             pstm.setFloat(3, producto.getPeso());
             pstm.setString(4, producto.getDetalle());
             rs = pstm.executeQuery();
-            System.out.println(rs.getString(2));
+            //System.out.println(rs.getString(2));
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {

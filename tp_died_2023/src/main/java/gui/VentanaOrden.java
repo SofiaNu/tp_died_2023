@@ -17,6 +17,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -189,7 +191,6 @@ public class VentanaOrden extends JFrame{
                 }
                 Sucursal selectedSucursal = sucursalList.get(sucursalesCb.getSelectedIndex() - 1);
                 try{
-                    System.out.println("Fetching ordenes");
                     List<OrdenProvision> ordenesDeSucursal = ordenProvisionServicios.listarOrdenes(selectedSucursal);
                     if(ordenesDeSucursal == null || ordenesDeSucursal.isEmpty()){
                         JOptionPane.showMessageDialog(dialogFr, "No hay ordenes de esta sucursal");
@@ -349,6 +350,9 @@ public class VentanaOrden extends JFrame{
     }
     public void showBuscarDialog() throws SQLException {
         String id =JOptionPane.showInputDialog(this, "Id de la Orden: ");
+        if(id == null){
+            return;
+        }
         if(!id.isEmpty() || id!=null){
             buscarOrden(Integer.valueOf(id));
         }
@@ -721,8 +725,12 @@ public class VentanaOrden extends JFrame{
         List<List<Sucursal>> rutasSucursal = new ArrayList<List<Sucursal>>();
 
         try{
+            Instant start = Instant.now();
             gestionOrden go = new gestionOrden();//Decoment for real
             go.generarResultadosValidos(op, rutasSucursal, caminos);//Decoment for real
+            Instant end = Instant.now();
+            long timeElapsed = Duration.between(start, end).toSeconds();
+            System.out.println("TIME: " + timeElapsed + "[s] exec: generarResultadosValidos()");
         }catch(Exception e){
             System.out.println("Error gestion recorrido orden");
             e.printStackTrace();

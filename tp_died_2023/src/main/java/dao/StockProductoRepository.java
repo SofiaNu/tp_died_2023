@@ -135,7 +135,7 @@ public class StockProductoRepository {
         StockProducto stockProducto = new StockProducto();
         stockProducto.setProducto(productoRepository.buscarProducto(rs.getInt("PRODUCTO")));
         stockProducto.setCantidad(rs.getInt("CANTIDAD"));
-        System.out.println(stockProducto.getProducto().getNombre() + stockProducto.getCantidad() );
+        //System.out.println(stockProducto.getProducto().getNombre() + stockProducto.getCantidad() );
 
         return stockProducto;
     }
