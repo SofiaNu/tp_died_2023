@@ -30,8 +30,8 @@ public class RouteGUI extends JPanel {
         routeDrawingManager = new RouteDrawingManager();
         routeDrawingManager.setShouldSelectFirstOnListAfterSettingCaminos(true);
         //routeDrawingManager.setSize(getWidth(), getHeight());
-        caminos = routeDrawingManager.crearPruebasQM();
-        routeDrawingManager.setCaminosToDraw(caminos);
+        //caminos = routeDrawingManager.crearPruebasQM();
+        //routeDrawingManager.setCaminosToDraw(caminos);
     }
 
     public List<List<Camino>> getPruebasCam(){
@@ -43,6 +43,9 @@ public class RouteGUI extends JPanel {
         repaint();
     }
 
+    public void setRecorridos(List<List<Camino>> caminos){
+        routeDrawingManager.setCaminosToDraw(caminos);
+    }
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);

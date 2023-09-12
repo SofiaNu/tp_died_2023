@@ -1,6 +1,7 @@
 package gui;
 
 import clases.*;
+import dao.CaminoRepository;
 import routeviewer.RouteGUI;
 import servicios.OrdenProvisionServicios;
 import servicios.ProductoServicios;
@@ -703,19 +704,26 @@ public class VentanaOrden extends JFrame{
     }
 
     public void showGestionRecorridoOrden(OrdenProvision op){
-        //final List<List<Camino>> caminos = new ArrayList<List<Camino>>();//Decoment for real
+        final List<List<Camino>> caminos = new ArrayList<List<Camino>>();//Decoment for real
         List<List<Sucursal>> rutasSucursal = new ArrayList<List<Sucursal>>();
 
         try{
-            //gestionOrden go = new gestionOrden();//Decoment for real
-            //go.generarResultadosValidos(op, rutasSucursal, caminos);//Decoment for real
+            gestionOrden go = new gestionOrden();//Decoment for real
+            go.generarResultadosValidos(op, rutasSucursal, caminos);//Decoment for real
         }catch(Exception e){
             System.out.println("Error gestion recorrido orden");
             e.printStackTrace();
             return;
         }
         RouteGUI routeGUI = new RouteGUI();
-        final List<List<Camino>> caminos = routeGUI.getPruebasCam(); //fortesting; Comment for real
+        //final List<List<Camino>> caminos = routeGUI.getPruebasCam(); //fortesting; Comment for real
+
+        //---<other pruebas>
+//        List<Camino> caminoPruebtotal = CaminoRepository.getInstance().listarCaminos();
+//        List<List<Camino>> caminosB = new ArrayList<>();
+//        caminosB.add(caminoPruebtotal);
+//        final List<List<Camino>> caminos = caminosB; //fortesting; Comment for real
+        //---</other pruebas>
         JFrame frame = new JFrame("Resultado Busqueda:");
 
         if(caminos == null || caminos.isEmpty()){
@@ -723,6 +731,9 @@ public class VentanaOrden extends JFrame{
             frame.dispose();
             return;
         }
+
+
+        routeGUI.setRecorridos(caminos);
 
         frame.setSize(700, 700);
         frame.setLocationRelativeTo(null);
