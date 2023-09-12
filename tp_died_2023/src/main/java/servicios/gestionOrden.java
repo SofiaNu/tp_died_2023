@@ -34,9 +34,9 @@ public class gestionOrden {
         List<Sucursal> origenesValidos = sucursalesValidas(orden);
         for(Sucursal s: origenesValidos){
             rutasSucursal.addAll(encontrarRuta(s,orden.getDestino()));
-            rutasCamino.addAll(encontrarCaminos(rutasSucursal));
-            filtrarRutasPorTiempo(rutasSucursal,rutasCamino,orden.getTiempoLimite());
         }
+        rutasCamino.addAll(encontrarCaminos(rutasSucursal));
+        filtrarRutasPorTiempo(rutasSucursal,rutasCamino,orden.getTiempoLimite());
     }
 
 //ESTO PROBABLEMENTE TAMBIEN A SUCURSAL
