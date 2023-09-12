@@ -69,6 +69,7 @@ public class RouteDrawingManager {
 //        caminoDrawable6.draw(g);
         drawCaminos(g);
         drawSucursales(g);
+        drawTextLabels(g);
     }
 
     private void drawSucursales(Graphics2D g){
@@ -82,6 +83,12 @@ public class RouteDrawingManager {
             for(CaminoDrawable caminoDrawable : recorrido){
                 caminoDrawable.draw(g);
             }
+        }
+    }
+
+    private void drawTextLabels(Graphics2D g){
+        for(SucursalDrawable sucursalDrawable : internalSucursalDrawables){
+            sucursalDrawable.drawTextLabels(g);
         }
     }
 
@@ -104,12 +111,38 @@ public class RouteDrawingManager {
             System.out.println("Index not changed");
             return;
         }
-
+        for(SucursalDrawable sd : internalSucursalDrawables){
+            //resets selected
+            sd.setSelected(false);
+            sd.setSelectedString(null);
+        }
         int currRecorridoIndex = 0;
         for(List<CaminoDrawable> recorrido : internalCaminoDrawables){
+            int currCaminoIndex = 0;
             for(CaminoDrawable cd : recorrido){
                 if(index == currRecorridoIndex){
                     cd.setSelected(true);
+
+                    // <Should be moved to SucursalDrawable>
+                    int origenSucursalNumber = currCaminoIndex;
+                    int destinoSucursalNumber = currCaminoIndex + 1;
+                    String origenSucursalStr = "[ " +  String.valueOf(origenSucursalNumber)+ " ]";
+                    String destinoSucursalStr = "[ " +  String.valueOf(destinoSucursalNumber)+ " ]";;
+
+                    if(origenSucursalNumber == 0){
+                        origenSucursalStr = "[ I ]";
+                    }
+                    if(destinoSucursalNumber == recorrido.size()){
+                        destinoSucursalStr = "[ F ]";
+                    }
+
+                    cd.getOrigen().setSelected(true);
+                    cd.getOrigen().setSelectedString(origenSucursalStr);
+
+                    cd.getDestino().setSelected(true);
+                    cd.getDestino().setSelectedString(destinoSucursalStr);
+                    //</Should be moved>
+
                 }else {
                     cd.setSelected(false);
                 }
@@ -119,14 +152,20 @@ public class RouteDrawingManager {
                 // nombres de suc
                 // better layout strategy maybe si sobra el time
                 // sleepy saturday, sunday rather
+                // dios mio este doble loop es lo mas ineficiente que hice, es horrible de leer estaba dormido
+                currCaminoIndex++;
             }
             currRecorridoIndex++;
         }
 
     }
-
+    public void setSucursalesToDraw(List<Sucursal> sucursalesToConvert){
+        for(Sucursal suc : sucursalesToConvert){
+            createIfNotExistsSucursalDrawable(suc);
+        }
+    }
     public void setCaminosToDraw(List<List<Camino>> recorridos){
-        clearInternalData();
+        clearInternalData(false);
         for (List<Camino> recorrido : recorridos) {
             //create caminos drawable
             createDrawablesFromRecorrido(recorrido);
@@ -138,9 +177,12 @@ public class RouteDrawingManager {
             setSelectedRecorridoIndex(0);
         }
     }
-    private void clearInternalData(){
+    private void clearInternalData(boolean clearSuc){
+        if(clearSuc){
+            this.internalSucursalDrawables = new ArrayList<SucursalDrawable>();
+        }
+
         this.internalCaminoDrawables = new ArrayList<List<CaminoDrawable>>();
-        this.internalSucursalDrawables = new ArrayList<SucursalDrawable>();
     }
     private void createDrawablesFromRecorrido(List<Camino> recorrido){
         List<CaminoDrawable> nuevosCaminos = new ArrayList<>();
@@ -172,6 +214,9 @@ public class RouteDrawingManager {
 
         sucursalDrawable = new SucursalDrawable(200, 200, Color.ORANGE);
         sucursalDrawable.setSucursal(sucursal);
+        if(sucursal.getEstado() == Estado.NO_OPERATIVO){
+            sucursalDrawable.setInactive(true);
+        }
         internalSucursalDrawables.add(sucursalDrawable);
         return sucursalDrawable;
     }
@@ -184,7 +229,7 @@ public class RouteDrawingManager {
 
         int xCellCount = (int) Math.sqrt(sucursalCount) + 1;
         int xCellSize = this.width / (xCellCount);
-        int yCellCount = (int) Math.sqrt(sucursalCount);
+        int yCellCount = (int) Math.sqrt(sucursalCount) + 1;
         int yCellSize = this.height / (yCellCount);
 
 
@@ -266,6 +311,30 @@ public class RouteDrawingManager {
 
         Collections.addAll(caminos, rec1, rec2);
         return caminos;
+    }
+
+
+    public List<Sucursal> obtenerSucursalesPruebaQM(){
+        List<Sucursal> allSucursales;
+        //allSucursales = sucursalesToConvert;
+        allSucursales = new ArrayList<>();
+        int sucId = 1;
+        Sucursal s1 = new Sucursal("Sucursal1", LocalTime.of(4,0), LocalTime.of(22,0),Estado.OPERATIVO, 100.0f);
+        s1.setId(sucId++);
+        Sucursal s2 = new Sucursal("Sucursal2", LocalTime.of(4,0), LocalTime.of(22,0),Estado.OPERATIVO, 100.0f);
+        s2.setId(sucId++);
+        Sucursal s3 = new Sucursal("Sucursal3", LocalTime.of(4,0), LocalTime.of(22,0),Estado.OPERATIVO, 100.0f);
+        s3.setId(sucId++);
+        Sucursal s4 = new Sucursal("Sucursal4", LocalTime.of(4,0), LocalTime.of(22,0),Estado.OPERATIVO, 100.0f);
+        s4.setId(sucId++);
+        Sucursal s5 = new Sucursal("Sucursal5", LocalTime.of(4,0), LocalTime.of(22,0),Estado.OPERATIVO, 100.0f);
+        s5.setId(sucId++);
+        Sucursal s6 = new Sucursal("Sucursal6", LocalTime.of(4,0), LocalTime.of(22,0),Estado.NO_OPERATIVO, 100.0f);
+        s6.setId(sucId++);
+        Sucursal s7 = new Sucursal("Sucursal7", LocalTime.of(4,0), LocalTime.of(22,0),Estado.OPERATIVO, 100.0f);
+        s7.setId(sucId++);
+        Collections.addAll(allSucursales, s1, s2, s3, s4, s5, s6, s7);
+        return allSucursales;
     }
 }
 

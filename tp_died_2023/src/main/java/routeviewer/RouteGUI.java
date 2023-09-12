@@ -31,6 +31,8 @@ public class RouteGUI extends JPanel {
         routeDrawingManager.setShouldSelectFirstOnListAfterSettingCaminos(true);
         //routeDrawingManager.setSize(getWidth(), getHeight());
         //caminos = routeDrawingManager.crearPruebasQM();
+        //List<Sucursal> sucs = new ArrayList<>();
+        //routeDrawingManager.setSucursalesToDraw(sucs);
         //routeDrawingManager.setCaminosToDraw(caminos);
     }
 
@@ -43,7 +45,8 @@ public class RouteGUI extends JPanel {
         repaint();
     }
 
-    public void setRecorridos(List<List<Camino>> caminos){
+    public void setRecorridos(List<List<Camino>> caminos, List<Sucursal> allSucursales){
+        routeDrawingManager.setSucursalesToDraw(allSucursales);
         routeDrawingManager.setCaminosToDraw(caminos);
     }
     @Override
@@ -51,5 +54,9 @@ public class RouteGUI extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         routeDrawingManager.drawContents(g2d, getWidth(), getHeight());
+    }
+
+    public void tryRedraw(){
+        repaint();
     }
 }
