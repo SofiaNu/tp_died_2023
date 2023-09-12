@@ -196,8 +196,6 @@ public class PageRank {
         PageRank pageRank = new PageRank();
         pageRank.calcularPR(100);
 
-        pageRank.printPR();
-
 
 
 
