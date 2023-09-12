@@ -49,6 +49,36 @@ public class SucursalDrawable extends Drawable{
         super(x, y, baseColor);
     }
 
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+    public String getSelectedString() {
+        return selectedString;
+    }
+
+    public void setSelectedString(String selectedString) {
+        this.selectedString = selectedString;
+    }
+
+    private boolean isSelected = false;
+    private String selectedString = null;
+
+    public boolean isInactive() {
+        return isInactive;
+    }
+
+    public void setInactive(boolean inactive) {
+        isInactive = inactive;
+        setBaseColor(inactive ? Color.PINK: getBaseColor());
+    }
+
+    private boolean isInactive = false;
+
     @Override
     public void draw(Graphics2D g) {
         Ellipse2D ellipse2D = new Ellipse2D.Double(getX(),getY(),RADIUS_X * 2,RADIUS_Y * 2);
@@ -59,6 +89,43 @@ public class SucursalDrawable extends Drawable{
         g.setColor(this.getBaseColor());
         g.fillOval((int)getX(),(int)getY(),(int)RADIUS_X * 2,(int)RADIUS_Y * 2);
         //g.drawString("Sucursal", getX() , getY() - RADIUS_Y * 0.35f);
+    }
+
+
+    public void drawTextLabels(Graphics2D g){
+        String nombreString = "Sucursal";
+        if(sucursal != null){
+            nombreString = sucursal.getNombre() + "(" + String.valueOf(sucursal.getId())+  ")";
+        }
+        // nombre
+        Font nombreFont = new Font("Verdana", Font.BOLD, (int)(RADIUS_Y / 3.7));
+        g.setFont(nombreFont);
+
+        FontMetrics fm = g.getFontMetrics();
+        int textWidth = fm.stringWidth(nombreString);
+
+        float nombreStrX = getX() + (float)RADIUS_X - (textWidth / 2.0f);
+        float nombreStrY = getY() + RADIUS_Y * 0.85f;
+
+        g.setColor(Color.WHITE);
+        g.drawString(nombreString, nombreStrX, nombreStrY);
+
+        //pos
+        System.out.println("btdtl: " + isSelected + " " + getSelectedString());
+        if(isSelected && getSelectedString() != null){
+            System.out.println("DrawingTL");
+            Font positionfont = new Font("Verdana", Font.BOLD, (int)(RADIUS_Y / 2.5));
+            g.setFont(positionfont);
+
+            fm = g.getFontMetrics();
+            textWidth = fm.stringWidth(getSelectedString());
+
+            float positionStrX = getX() + (float)RADIUS_X - (textWidth / 2.0f);
+            float positionStrY = getY() + RADIUS_Y * 1.5f;
+
+            g.setColor(Color.WHITE);
+            g.drawString(getSelectedString(), positionStrX, positionStrY);
+        }
     }
 
     public boolean hit(float x, float y) {

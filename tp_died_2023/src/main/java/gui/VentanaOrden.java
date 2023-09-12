@@ -18,7 +18,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -732,8 +734,14 @@ public class VentanaOrden extends JFrame{
             return;
         }
 
-
-        routeGUI.setRecorridos(caminos);
+        List<Sucursal> allSucursales = new ArrayList<>();
+        try{
+            allSucursales = sucursalServicios.listarSucursales();
+        } catch( Exception exc){
+            System.out.println("Error obtener sucursales");
+            System.exit(-1);
+        }
+        routeGUI.setRecorridos(caminos, allSucursales);
 
         frame.setSize(700, 700);
         frame.setLocationRelativeTo(null);
