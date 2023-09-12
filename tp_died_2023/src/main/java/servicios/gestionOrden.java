@@ -14,7 +14,7 @@ public class gestionOrden {
 
     public gestionOrden() throws SQLException {
         SucursalServicios sucursalServicios = new SucursalServicios();
-        OrdenProvisionServicios ordenProvisionServicios = new OrdenProvisionServicios();
+        //OrdenProvisionServicios ordenProvisionServicios = new OrdenProvisionServicios();
         CaminoServicios caminoServicios = new CaminoServicios();
         caminos = caminoServicios.listarCaminosOperativos();
         sucursales = sucursalServicios.listarSucursalesOperativas();

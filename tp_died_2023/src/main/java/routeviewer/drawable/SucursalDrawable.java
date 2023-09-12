@@ -111,9 +111,7 @@ public class SucursalDrawable extends Drawable{
         g.drawString(nombreString, nombreStrX, nombreStrY);
 
         //pos
-        System.out.println("btdtl: " + isSelected + " " + getSelectedString());
         if(isSelected && getSelectedString() != null){
-            System.out.println("DrawingTL");
             Font positionfont = new Font("Verdana", Font.BOLD, (int)(RADIUS_Y / 2.5));
             g.setFont(positionfont);
 

@@ -12,10 +12,14 @@ import java.awt.*;
 import java.util.List;
 
 public class RouteDrawingManager {
+    public static final int CWIDTH = 500;
+    public static final int CHEIGHT = 500;
+    public static final int CDIAG = (int)Math.sqrt(CWIDTH * CWIDTH + CHEIGHT * CHEIGHT);
+    public static final int CDIAG2 = CWIDTH * CWIDTH + CHEIGHT * CHEIGHT;
     List<List<CaminoDrawable>> internalCaminoDrawables;
     List<SucursalDrawable> internalSucursalDrawables;
 
-    int selectedRecorridoIndex = -1;
+    int selectedRecorridoIndex = 0;
 
     SucursalDrawable sucursalDrawable = new SucursalDrawable(50,50, Color.ORANGE);
     CaminoDrawable caminoDrawable = new CaminoDrawable(100,100, 350, 350, Color.CYAN);
@@ -84,6 +88,10 @@ public class RouteDrawingManager {
                 caminoDrawable.draw(g);
             }
         }
+        List<CaminoDrawable> selectedCaminos = internalCaminoDrawables.get(selectedRecorridoIndex);
+        for(CaminoDrawable caminoDrawable : selectedCaminos){
+            caminoDrawable.draw(g);
+        }
     }
 
     private void drawTextLabels(Graphics2D g){
@@ -107,10 +115,8 @@ public class RouteDrawingManager {
         if(index < 0) return;
         if(internalCaminoDrawables.size() < index) return;
 
-        if(selectedRecorridoIndex == index) {
-            System.out.println("Index not changed");
-            return;
-        }
+        selectedRecorridoIndex = index;
+
         for(SucursalDrawable sd : internalSucursalDrawables){
             //resets selected
             sd.setSelected(false);

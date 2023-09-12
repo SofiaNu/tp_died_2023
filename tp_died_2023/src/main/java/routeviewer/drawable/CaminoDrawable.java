@@ -2,6 +2,7 @@ package routeviewer.drawable;
 
 import clases.Camino;
 import clases.Sucursal;
+import routeviewer.RouteDrawingManager;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -99,6 +100,9 @@ public class CaminoDrawable extends Drawable{
         float xDif = (xF - x);
         float yDif = (yF - y);
 
+        float d2 = xDif * xDif + yDif * yDif;
+        float distanceFactor = 16 * d2/ RouteDrawingManager.CDIAG2;
+
         float ctrlX = 0, ctrlY = 0;
 
         if(xDif == 0){
@@ -114,7 +118,7 @@ public class CaminoDrawable extends Drawable{
 
         float midX = x + 0.5f * xDif;
         float midY = y + 0.5f * yDif;
-        float ctrlDisplc = (float)Math.sqrt(midX*midX + midY*midY) * ctrlFactor;
+        float ctrlDisplc = (float)Math.sqrt(midX*midX + midY*midY) * ctrlFactor * distanceFactor;
 
         if(isVertical){
             ctrlY = midY;

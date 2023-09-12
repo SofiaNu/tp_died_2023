@@ -738,7 +738,7 @@ public class VentanaOrden extends JFrame{
 //        final List<List<Camino>> caminos = caminosB; //fortesting; Comment for real
         //---</other pruebas>
         JFrame frame = new JFrame("Resultado Busqueda:");
-
+        frame.setBounds(100, 100, 700, 700);
         if(caminos == null || caminos.isEmpty()){
             JOptionPane.showMessageDialog(frame, "No hay caminos para mostrar");
             frame.dispose();
@@ -776,8 +776,7 @@ public class VentanaOrden extends JFrame{
         containerPanel.setSize(500,900);
         JPanel headerPanel = new JPanel();
         JLabel tituloLabel = new JLabel("Seleccione un camino de la lista inferior");
-        JLabel subtituloLabel = new JLabel("Los caminos estan ordenados desde el mas optimo hasta el menos optimo " +
-                "Luego de seleccionar un camino presione el boton asignar");
+        JLabel subtituloLabel = new JLabel("Luego de seleccionar un camino presione el boton Asignar");
         JButton asignarBtn = new JButton("Asignar");
 
         JTable tablaResultados = new JTable(resultadosArray,columnNames);
