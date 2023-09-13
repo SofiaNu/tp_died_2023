@@ -612,8 +612,12 @@ public class VentanaOrden extends JFrame{
         mapabtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(o.getEstado() == EstadoOrden.PENDIENTE){
                 showGestionRecorridoOrden(o);
-                frame.dispose();
+                frame.dispose();}
+                else{
+                    JOptionPane.showMessageDialog(null, "Esta orden de provision ya esta en proceso");
+                }
 
             }
         });
@@ -665,14 +669,22 @@ public class VentanaOrden extends JFrame{
             idx++;
         }
 
+        JTable tablaResultados = new JTable(new DefaultTableModel(resultadosArray,columnNames));
+        JScrollPane contenedorTabla = new JScrollPane(tablaResultados);
 
-        JTable tablaResultados = new JTable(resultadosArray,columnNames);
+        int maxVisibleRows = 5;
+        int rowHeight = tablaResultados.getRowHeight();
+        int headerHeight = tablaResultados.getTableHeader().getPreferredSize().height;
+        Dimension preferredSize = new Dimension(contenedorTabla.getPreferredSize().width,
+                maxVisibleRows * rowHeight + headerHeight);
+        contenedorTabla.setPreferredSize(preferredSize);
+
         JButton verProductosbtn = new JButton("Ver Listado Productos");
         //JButton bajabtn = new JButton("Dar de Baja Orden");
         JButton cerrarbtn = new JButton("Cerrar");
         JButton seleccionarRecorridobtn = new JButton("Seleccionar recorrido");
 
-        resultadobusqueda.add(tablaResultados);
+        resultadobusqueda.add(contenedorTabla);
         resultadobusqueda.add(verProductosbtn);
         resultadobusqueda.add(seleccionarRecorridobtn);
         //resultadobusqueda.add(bajabtn);
