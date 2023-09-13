@@ -1,6 +1,7 @@
 package servicios;
 
 import clases.Camino;
+import clases.OrdenProvision;
 import clases.Sucursal;
 import connectionpool.ConnectionPool;
 
@@ -25,6 +26,23 @@ public class FlujoMaximo extends gestionOrden{
             if(capacidad !=0){
                 flow+= capacidad;
                 setMinimo(r,capacidad);
+            }
+        }
+        return flow;
+    }
+
+    public float flujoMaximo(List<List<Camino>> rutasMinimas){
+        Sucursal fuente = getFuente();
+        Sucursal sumidero = getSumidero();
+        List<List<Sucursal>> rSucursales = encontrarRuta(fuente,sumidero);
+        List<List<Camino>> rutas = encontrarCaminos(rSucursales);
+        float flow =0;
+        for(List<Camino> r: rutas){
+            float capacidad = pesoMaximo(r);
+            if(capacidad !=0){
+                flow+= capacidad;
+                setMinimo(r,capacidad);
+                rutasMinimas.add(r);
             }
         }
         return flow;

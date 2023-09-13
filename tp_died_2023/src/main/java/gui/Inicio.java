@@ -1,10 +1,13 @@
 package gui;
 
+import clases.Camino;
 import routeviewer.RouteGUI;
 import java.awt.EventQueue;
 import clases.Sucursal;
+import servicios.CaminoServicios;
 import servicios.FlujoMaximo;
 import servicios.PageRank;
+import servicios.SucursalServicios;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -84,8 +87,8 @@ public class Inicio extends JFrame{
 		JButton btnFlujo = new JButton("Flujo Maximo");
 		btnFlujo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-					//showVentanaFlujo();
-					showMsgFlujoMaximo();
+					showVentanaFlujo();
+					//showMsgFlujoMaximo();
 			}
 		});
 		contentPane.add(btnFlujo);
@@ -100,25 +103,53 @@ public class Inicio extends JFrame{
 		}
 
 		JFrame frame = new JFrame(("FLujo maximo de transporte"));
-		frame.setSize(500, 300);
+		frame.setSize(500, 800);
 		frame.setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JPanel panel = new JPanel(new FlowLayout());
 
-		//ACA debería haber un mapa (¿supongo/talvez?)
+		SucursalServicios sucursalServicios = new SucursalServicios();
+		CaminoServicios caminoServicios = new CaminoServicios();
+		List<Sucursal> allSucursales = new ArrayList<>();
+		List<Camino> allCaminos = new ArrayList<>();
+		try{
+			allSucursales = sucursalServicios.listarSucursales();
+		} catch( Exception exc){
+			System.out.println("Error obtener sucursales");
+			System.exit(-1);
+		}
+
+		try{
+			allCaminos = caminoServicios.listarCaminos();
+		} catch( Exception exc){
+			System.out.println("Error obtener caminos");
+			System.exit(-1);
+		}
+
+		List<List<Camino>> recorridosMinimos = new ArrayList<>();
+
+		float fmaximo = flujoMaximo.flujoMaximo(recorridosMinimos);
+
 		JLabel info = new JLabel("La maxima capacidad de transporte desde el puerto a la sucursal final");
-		JLabel capacidad = new JLabel(String.valueOf(flujoMaximo.flujoMaximo()));
+		RouteGUI routeGUI = new RouteGUI();
+		//List<List<Camino>> caminosbase = new ArrayList<>();
+		//caminosbase.add(allCaminos);
+		routeGUI.setRecorridos(recorridosMinimos,allSucursales);
+		JLabel fmax = new JLabel(String.valueOf(fmaximo));
 
 		JButton cerrarbtn = new JButton("Cerrar");
 
 		cerrarbtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				frame.setVisible(false);
+				frame.dispose();
 			}
 		});
+
+
 		panel.add(info);
-		panel.add(capacidad);
+		panel.add(fmax);
+		panel.add(routeGUI);
 		panel.add(cerrarbtn);
 		frame.add(panel);
 		frame.setVisible(true);
@@ -179,7 +210,8 @@ public class Inicio extends JFrame{
 			throw new RuntimeException(e);
 		}
 		JLabel info = new JLabel("La maxima capacidad de transporte desde el puerto a la sucursal final es de: ");
-		JLabel capacidad = new JLabel(String.valueOf(flujoMaximo.flujoMaximo()));
+		float cap = flujoMaximo.flujoMaximo();
+		JLabel capacidad = new JLabel(String.valueOf(cap));
 		JOptionPane.showMessageDialog(null ,info + String.valueOf(capacidad));
 	}
 
