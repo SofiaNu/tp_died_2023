@@ -84,18 +84,20 @@ public class Inicio extends JFrame{
 		JButton btnFlujo = new JButton("Flujo Maximo");
 		btnFlujo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					showVentanaFlujo();
-				} catch (SQLException ex) {
-					throw new RuntimeException(ex);
-				}
+					//showVentanaFlujo();
+					showMsgFlujoMaximo();
 			}
 		});
 		contentPane.add(btnFlujo);
 	}
 
-	public void showVentanaFlujo() throws SQLException {
-		FlujoMaximo flujoMaximo = new FlujoMaximo();
+	public void showVentanaFlujo()  {
+		FlujoMaximo flujoMaximo = null;
+		try {
+			flujoMaximo = new FlujoMaximo();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 
 		JFrame frame = new JFrame(("FLujo maximo de transporte"));
 		frame.setSize(500, 300);
@@ -167,6 +169,18 @@ public class Inicio extends JFrame{
 		resultadoFrame.setVisible(true);
 
 
+	}
+
+	public void showMsgFlujoMaximo(){
+		FlujoMaximo flujoMaximo = null;
+		try {
+			flujoMaximo = new FlujoMaximo();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		JLabel info = new JLabel("La maxima capacidad de transporte desde el puerto a la sucursal final es de: ");
+		JLabel capacidad = new JLabel(String.valueOf(flujoMaximo.flujoMaximo()));
+		JOptionPane.showMessageDialog(null ,info + String.valueOf(capacidad));
 	}
 
 }
