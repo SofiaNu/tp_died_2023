@@ -69,6 +69,16 @@ public class FlujoMaximo extends gestionOrden{
         return sucursales.stream().filter(s-> gradoSalida(s)==0).findFirst().get();
     }
 
+   /* public static void main(String[] args) throws SQLException {
+        // TODO Auto-generated method stub
+        ConnectionPool.setup();
+        FlujoMaximo f = new FlujoMaximo();
+        List<List<Camino>> caminos = new ArrayList<>();
+        float cap = f.flujoMaximo(caminos);
+        System.out.println(cap);
+        System.out.println(caminos);
 
+
+    } */
 
 }

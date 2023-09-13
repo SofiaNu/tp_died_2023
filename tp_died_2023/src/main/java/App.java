@@ -19,12 +19,7 @@ public class App {
 		ConnectionPool.setup();
 		Inicio inicio = new Inicio();
 		inicio.setVisible(true);
-		//gestionOrden ordens = new gestionOrden();
-		//ordens.prueba();
-		//SucursalServicios sucursalServicios = new SucursalServicios();
-		//Sucursal sucursal = sucursalServicios.buscarSucursal(7);
-		//sucursalServicios.pageRank();
-		//PageRank pageRank ne
+
 
 	}
 

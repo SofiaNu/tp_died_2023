@@ -160,7 +160,7 @@ public class gestionOrden {
         System.out.println(encontrarCaminos(resultado));
 
     }
-    public static void main(String[] args) throws SQLException {
+   /* public static void main(String[] args) throws SQLException {
         // TODO Auto-generated method stub
         ConnectionPool.setup();
         OrdenProvisionServicios ordenProvisionServicios = new OrdenProvisionServicios();
@@ -176,5 +176,5 @@ public class gestionOrden {
         System.out.println(rutas);
 
 
-    }
+    }*/
 }

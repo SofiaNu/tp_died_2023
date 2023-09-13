@@ -190,18 +190,6 @@ public class PageRank {
         return retorno;
     }
 
-
-    public static void main(String[] args) {
-
-        PageRank pageRank = new PageRank();
-        pageRank.calcularPR(100);
-
-
-
-
-
-    }
-
 }
 
 
