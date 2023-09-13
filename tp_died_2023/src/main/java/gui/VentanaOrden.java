@@ -575,18 +575,27 @@ public class VentanaOrden extends JFrame{
         frame.setSize(500, 300);
         frame.setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel resultadobusqueda = new JPanel();
-        String[] columnNames = {"Id", "Fecha", "Tiempo Limite", "Peso", "Estado"};
+        JPanel resultadobusqueda = new JPanel(new FlowLayout());
+        String[] columnNames = {"Id", "Fecha", "Tiempo Limite", "Estado"};
         String[][] resultado ={{String.valueOf(o.getId()),String.valueOf(o.getFecha()),
-                String.valueOf(o.getTiempoLimite()),String.valueOf(o.getPeso()),String.valueOf(o.getEstado())}};
+                String.valueOf(o.getTiempoLimite()),String.valueOf(o.getEstado())}};
 
-        JTable tablaResultados = new JTable(resultado,columnNames);
+        JTable tablaResultados = new JTable(new DefaultTableModel(resultado,columnNames));
+        JScrollPane contenedorTabla = new JScrollPane(tablaResultados);
+
+        int maxVisibleRows = 2;
+        int rowHeight = tablaResultados.getRowHeight();
+        int headerHeight = tablaResultados.getTableHeader().getPreferredSize().height;
+        Dimension preferredSize = new Dimension(contenedorTabla.getPreferredSize().width,
+                maxVisibleRows * rowHeight + headerHeight);
+        contenedorTabla.setPreferredSize(preferredSize);
+
         JButton verProductosbtn = new JButton("Ver Listado Productos");
         JButton bajabtn = new JButton("Dar de Baja Orden");
         JButton mapabtn = new JButton("Seleccionar Recorrido");
         JButton cerrarbtn = new JButton("Cerrar");
 
-        resultadobusqueda.add(tablaResultados);
+        resultadobusqueda.add(contenedorTabla);
         resultadobusqueda.add(verProductosbtn);
         resultadobusqueda.add(mapabtn);
         resultadobusqueda.add(bajabtn);
@@ -745,7 +754,7 @@ public class VentanaOrden extends JFrame{
 //        caminosB.add(caminoPruebtotal);
 //        final List<List<Camino>> caminos = caminosB; //fortesting; Comment for real
         //---</other pruebas>
-        JFrame frame = new JFrame("Resultado Busqueda:");
+        JFrame frame = new JFrame("Seleccion recorrido orden:");
         frame.setBounds(100, 100, 700, 700);
         if(caminos == null || caminos.isEmpty()){
             JOptionPane.showMessageDialog(frame, "No hay caminos para mostrar");
@@ -782,11 +791,11 @@ public class VentanaOrden extends JFrame{
         }
         JPanel containerPanel = new JPanel(new FlowLayout());
         containerPanel.setSize(500,900);
-        JPanel headerPanel = new JPanel();
-        JLabel tituloLabel = new JLabel("Seleccione un camino de la lista inferior");
-        JLabel subtituloLabel = new JLabel("Luego de seleccionar un camino presione el boton Asignar");
+        JPanel botones = new JPanel(new GridLayout(2,1));
         JButton asignarBtn = new JButton("Asignar");
-
+        JButton cerrarbtn = new JButton("Cancelar");
+        botones.add(asignarBtn);
+        botones.add(cerrarbtn);
         JTable tablaResultados = new JTable(resultadosArray,columnNames);
         tablaResultados.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         if(resultadosArray.length > 0){
@@ -803,12 +812,9 @@ public class VentanaOrden extends JFrame{
                 maxVisibleRows * rowHeight + headerHeight);
         contenedorTabla.setPreferredSize(preferredSize);
 
-        headerPanel.add(tituloLabel);
-        headerPanel.add(subtituloLabel);
-        containerPanel.add(headerPanel);
         containerPanel.add(contenedorTabla, BorderLayout.NORTH);
         containerPanel.add(routeGUI);
-        containerPanel.add(asignarBtn, BorderLayout.SOUTH);
+        containerPanel.add(botones);
         frame.add(containerPanel);
 
         tablaResultados.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -844,13 +850,21 @@ public class VentanaOrden extends JFrame{
 
                 if(result){
                     JOptionPane.showMessageDialog(frame, "Asignado correctamente");
+                    frame.dispose();
                 }
 
             }
         });
 
+        cerrarbtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+
+            }
+        });
         //resultadobusqueda.add(bajabtn);
-        //resultadobusqueda.add(cerrarbtn);
+        containerPanel.add(cerrarbtn);
 
         //frame.add(routeGUI, BorderLayout.SOUTH);
         frame.setVisible(true);

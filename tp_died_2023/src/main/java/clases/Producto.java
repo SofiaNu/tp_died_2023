@@ -55,4 +55,15 @@ public class Producto {
 		return nombre;
 	}
 
+	@Override
+	public boolean equals(Object o){
+		if(o instanceof Producto){
+			Producto p = (Producto) o;
+		if(p.getId() == this.id){
+			return true;}
+		else{return false;}
+		}
+		else{ return false;}
+	}
+
 }

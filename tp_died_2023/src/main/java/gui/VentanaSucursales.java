@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -581,7 +582,7 @@ public class VentanaSucursales extends JFrame {
 		StockProducto stock = new StockProducto();
 		JPanel panel = new JPanel(new GridLayout(3,1));
 		JLabel lbl= new JLabel("Seleccione el producto y la cantidad");
-		List<Producto> productos= listaProductos();
+		List<Producto> productos= listaProductos(sucursal);
 		DefaultComboBoxModel<Producto> comboBoxModel = new DefaultComboBoxModel<>(productos.toArray(new Producto[0]));
 		JComboBox<Producto> productosComboBox = new JComboBox<>(comboBoxModel);
 		JTextField cantidadtxt = new JTextField(3);
@@ -624,9 +625,14 @@ public class VentanaSucursales extends JFrame {
 		return cant;
 	}
 
-	private List<Producto> listaProductos() throws SQLException {
+	private List<Producto> listaProductos(Sucursal sucursal) throws SQLException {
 		ProductoServicios productoServicios = new ProductoServicios();
-		return productoServicios.listarProductos();
+		List<Producto> enStock = sucursal.getStock()
+				.stream().map(stock-> stock.getProducto()).collect(Collectors.toList());
+		List<Producto> todosLosProd = productoServicios.listarProductos();
+		todosLosProd= todosLosProd.stream().filter(p -> !enStock.contains(p)).collect(Collectors.toList());
+		return todosLosProd;
+
 	}
 
 }

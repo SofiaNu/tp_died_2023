@@ -311,6 +311,7 @@ public class VentanaCaminos extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				showModificarEstadoDialog(camino);
+				resultadoFrame.dispose();
 			}
 		});
 
